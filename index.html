@@ -1,13 +1,19 @@
+nano index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<style>:root { color-scheme: light only; }</style>
 <title>Continuum — A Living Financial Plan</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root { --cream:#F5F0E8; --pink:#E8186D; --navy:#1E2340; --slate:#3D4270; --muted:#9A9BB0; --border:#E8E4DC; }
-* { box-sizing:border-box; margin:0; padding:0; }
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; }
 .phone { width:390px; min-height:844px; background:var(--cream); border-radius:44px; overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.25),0 0 0 1px rgba(0,0,0,0.08); display:flex; flex-direction:column; position:relative; }
 .screen { display:none; flex-direction:column; flex:1; min-height:844px; position:relative; overflow-y:auto; }
@@ -28,8 +34,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 
 /* SPLASH */
 #splash { background:var(--navy); justify-content:center; align-items:center; }
-.splash-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 70% 30%,rgba(232,24,109,0.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(61,66,112,0.5) 0%,transparent 50%); }
-.splash-content { position:relative; text-align:center; padding:48px 40px; }
+.splash-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 70% 30%,rgba(232,24,109,0.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(61,66,112,0.5) 0%,transparent 50%); pointer-events:none; }
+.splash-content { position:relative; text-align:center; padding:48px 40px; z-index:1; }
 .logo-mark { width:64px; height:64px; background:var(--pink); border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 28px; box-shadow:0 8px 32px rgba(232,24,109,0.4); }
 .logo-mark svg { width:36px; height:36px; }
 .splash-title { font-family:'DM Serif Display',serif; font-size:42px; color:var(--cream); letter-spacing:-1px; line-height:1; margin-bottom:8px; }
@@ -37,9 +43,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .splash-tagline { font-family:'DM Serif Display',serif; font-style:italic; font-size:18px; color:rgba(245,240,232,0.7); line-height:1.5; margin-bottom:56px; }
 
 /* BUTTONS */
-.btn-primary { background:var(--pink); color:white; border:none; border-radius:16px; padding:16px 32px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; width:100%; transition:all 0.2s; }
+.btn-primary { background:var(--pink); color:white; border:none; border-radius:16px; padding:16px 32px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; width:100%; transition:all 0.2s; touch-action:manipulation; }
 .btn-primary:hover { background:#c9155d; transform:translateY(-1px); box-shadow:0 8px 24px rgba(232,24,109,0.35); }
-.btn-secondary { background:transparent; color:var(--muted); border:none; padding:14px; font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; width:100%; margin-top:8px; }
+.btn-secondary { background:transparent; color:var(--muted); border:none; padding:14px; font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; width:100%; margin-top:8px; touch-action:manipulation; }
 
 /* ONBOARDING */
 .ob-header { padding:56px 28px 20px; }
@@ -319,8 +325,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="splash-title">Continuum</div>
     <div class="splash-sub">A Living Financial Plan</div>
     <div class="splash-tagline">"Your financial life will change many times.<br>Your plan should change with it."</div>
-    <button class="btn-primary" onclick="goTo('ob1')">Get Started</button>
-    <button class="btn-secondary" onclick="goTo('ob1')">I already have an account</button>
+    <button class="btn-primary" onclick="goTo('ob1')" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">Get Started</button>
+    <button class="btn-secondary" onclick="goTo('ob1')" style="-webkit-tap-highlight-color:transparent;">I already have an account</button>
   </div>
 </div>
 
@@ -540,22 +546,47 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       <div class="ob-label">401k / 403b Contribution</div>
       <div class="ob-sublabel">What you contribute from each paycheck</div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;">
-          <span class="ob-prefix-symbol">%</span>
-          <input class="ob-input" id="s401kPct" type="number" placeholder="6" min="0" max="100"
-            style="padding-left:30px;"
-            oninput="syncSavingsInput('pct','s401kPct','s401kAmt')"/>
-        </div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">of gross  or</div>
-        <div class="ob-input-prefix" style="flex:1;">
-          <span class="ob-prefix-symbol">$</span>
-          <input class="ob-input" id="s401kAmt" type="number" placeholder="425" min="0"
-            oninput="syncSavingsInput('amt','s401kAmt','s401kPct')"/>
-        </div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="s401kPct" type="number" placeholder="6" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','s401kPct','s401kAmt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="s401kAmt" type="number" placeholder="425" min="0" oninput="syncSavingsInput('amt','s401kAmt','s401kPct')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Enter 0 if not contributing yet — that's fine, we'll address it in your plan.</div>
     </div>
+
+    <div class="ob-input-group">
+      <div class="ob-label">Traditional IRA</div>
+      <div class="ob-sublabel">Monthly contribution to a traditional IRA</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sIraPct" type="number" placeholder="2" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sIraPct','sIraAmt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sIraAmt" type="number" placeholder="100" min="0" oninput="syncSavingsInput('amt','sIraAmt','sIraPct')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+
+    <div class="ob-input-group">
+      <div class="ob-label">Roth IRA</div>
+      <div class="ob-sublabel">Monthly contribution to a Roth IRA (after-tax)</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sRothPct" type="number" placeholder="2" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sRothPct','sRothAmt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sRothAmt" type="number" placeholder="100" min="0" oninput="syncSavingsInput('amt','sRothAmt','sRothPct')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+
+    <div class="ob-input-group">
+      <div class="ob-label">SEP IRA</div>
+      <div class="ob-sublabel">Self-employed retirement account (1099 filers)</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sSepPct" type="number" placeholder="5" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sSepPct','sSepAmt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sSepAmt" type="number" placeholder="200" min="0" oninput="syncSavingsInput('amt','sSepAmt','sSepPct')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:var(--muted);margin-top:-4px;">Enter 0 for any accounts you don't use — we'll address gaps in your plan.</div>
 
     <div class="ob-input-group">
       <div class="ob-label">Automated Savings Account Transfer</div>
@@ -817,7 +848,7 @@ const state = {
   // Spouse
   spouseName:'', spouseAge:null, spouseWorks:null, spouseIncome:0,
   // Intentional savings inputs
-  s401kMonthly:0, sAutoSavings:0, sAutoInvest:0,
+  s401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
   checks:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
@@ -896,7 +927,8 @@ function nextOb(step) {
 }
 
 function skipSavings() {
-  state.s401kMonthly = 0; state.sAutoSavings = 0; state.sAutoInvest = 0;
+  state.s401kMonthly = 0; state.sIraMonthly = 0; state.sRothMonthly = 0;
+  state.sSepMonthly = 0; state.sAutoSavings = 0; state.sAutoInvest = 0;
   goTo('ob5');
 }
 
@@ -923,7 +955,10 @@ function resolveMonthly(pctId, amtId) {
 }
 
 function collectSavingsInputs() {
-  state.s401kMonthly  = resolveMonthly('s401kPct',       's401kAmt');
+  state.s401kMonthly  = resolveMonthly('s401kPct',  's401kAmt');
+  state.sIraMonthly   = resolveMonthly('sIraPct',   'sIraAmt');
+  state.sRothMonthly  = resolveMonthly('sRothPct',  'sRothAmt');
+  state.sSepMonthly   = resolveMonthly('sSepPct',   'sSepAmt');
   state.sAutoSavings  = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
   state.sAutoInvest   = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
 }
@@ -931,10 +966,13 @@ function collectSavingsInputs() {
 function updateSavingsPreview() {
   const gross = state.grossIncome;
   if (gross <= 0) return;
-  const monthly401k = resolveMonthly('s401kPct', 's401kAmt');
+  const monthly401k = resolveMonthly('s401kPct',  's401kAmt');
+  const monthlyIra  = resolveMonthly('sIraPct',   'sIraAmt');
+  const monthlyRoth = resolveMonthly('sRothPct',  'sRothAmt');
+  const monthlySep  = resolveMonthly('sSepPct',   'sSepAmt');
   const autoSav     = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
   const autoInv     = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
-  const totalMonthly = monthly401k + autoSav + autoInv;
+  const totalMonthly = monthly401k + monthlyIra + monthlyRoth + monthlySep + autoSav + autoInv;
   const totalAnnual  = totalMonthly * 12;
   const rate = gross > 0 ? (totalAnnual / gross) * 100 : 0;
   const recommended = 15;
@@ -1131,9 +1169,12 @@ function computeFinancials() {
 
   // Actual intentional savings
   const actual401k    = state.s401kMonthly  || 0;
+  const actualIra     = state.sIraMonthly   || 0;
+  const actualRoth    = state.sRothMonthly  || 0;
+  const actualSep     = state.sSepMonthly   || 0;
   const actualAutoSav = state.sAutoSavings  || 0;
   const actualAutoInv = state.sAutoInvest   || 0;
-  const totalActualSavingsMonthly = actual401k + actualAutoSav + actualAutoInv;
+  const totalActualSavingsMonthly = actual401k + actualIra + actualRoth + actualSep + actualAutoSav + actualAutoInv;
   const totalActualSavingsAnnual  = totalActualSavingsMonthly * 12;
   const actualSavingsRate = householdGross > 0 ? (totalActualSavingsAnnual / householdGross) * 100 : 0;
 
