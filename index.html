@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continuum — A Living Financial Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root { --cream:#F5F0E8; --pink:#E8186D; --navy:#1E2340; --slate:#3D4270; --muted:#9A9BB0; --border:#E8E4DC; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; }
+.phone { width:390px; min-height:844px; background:var(--cream); border-radius:44px; overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.25),0 0 0 1px rgba(0,0,0,0.08); display:flex; flex-direction:column; position:relative; }
+.screen { display:none; flex-direction:column; flex:1; min-height:844px; position:relative; overflow-y:auto; }
+
+/* ── MOBILE: go full screen, remove the phone shell ── */
+@media (max-width: 480px) {
+  body { background:var(--cream); padding:0; align-items:flex-start; }
+  .phone { width:100%; min-height:100vh; min-height:100dvh; border-radius:0; box-shadow:none; }
+  .screen { min-height:100vh; min-height:100dvh; }
+}
+.screen.active { display:flex; animation:fadeUp 0.3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes popIn { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(300px) rotate(720deg);opacity:0} }
+@keyframes counterUp { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* SPLASH */
+#splash { background:var(--navy); justify-content:center; align-items:center; }
+.splash-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 70% 30%,rgba(232,24,109,0.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(61,66,112,0.5) 0%,transparent 50%); }
+.splash-content { position:relative; text-align:center; padding:48px 40px; }
+.logo-mark { width:64px; height:64px; background:var(--pink); border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 28px; box-shadow:0 8px 32px rgba(232,24,109,0.4); }
+.logo-mark svg { width:36px; height:36px; }
+.splash-title { font-family:'DM Serif Display',serif; font-size:42px; color:var(--cream); letter-spacing:-1px; line-height:1; margin-bottom:8px; }
+.splash-sub { font-size:13px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:48px; }
+.splash-tagline { font-family:'DM Serif Display',serif; font-style:italic; font-size:18px; color:rgba(245,240,232,0.7); line-height:1.5; margin-bottom:56px; }
+
+/* BUTTONS */
+.btn-primary { background:var(--pink); color:white; border:none; border-radius:16px; padding:16px 32px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; width:100%; transition:all 0.2s; }
+.btn-primary:hover { background:#c9155d; transform:translateY(-1px); box-shadow:0 8px 24px rgba(232,24,109,0.35); }
+.btn-secondary { background:transparent; color:var(--muted); border:none; padding:14px; font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; width:100%; margin-top:8px; }
+
+/* ONBOARDING */
+.ob-header { padding:56px 28px 20px; }
+.ob-step-indicator { display:flex; gap:6px; margin-bottom:28px; }
+.ob-step-dot { height:4px; border-radius:2px; background:var(--border); transition:all 0.3s; flex:1; }
+.ob-step-dot.active { background:var(--pink); }
+.ob-step-dot.done { background:var(--navy); }
+.ob-question { font-family:'DM Serif Display',serif; font-size:26px; color:var(--navy); line-height:1.25; margin-bottom:8px; }
+.ob-hint { font-size:14px; color:var(--muted); line-height:1.5; }
+.ob-body { padding:8px 28px 32px; flex:1; display:flex; flex-direction:column; gap:12px; }
+.ob-option { background:white; border:2px solid var(--border); border-radius:16px; padding:18px 20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:14px; }
+.ob-option:hover { border-color:var(--pink); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+.ob-option.selected { border-color:var(--pink); background:#FDF0F5; }
+.ob-option-icon { width:40px; height:40px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.ob-option.selected .ob-option-icon { background:rgba(232,24,109,0.1); }
+.ob-option-label { font-weight:600; font-size:15px; color:var(--navy); }
+.ob-option-desc { font-size:13px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.ob-footer { padding:16px 28px 40px; }
+.ob-input-group { display:flex; flex-direction:column; gap:8px; }
+.ob-label { font-size:12px; font-weight:700; color:var(--slate); letter-spacing:0.05em; text-transform:uppercase; }
+.ob-sublabel { font-size:12px; color:var(--muted); margin-top:-4px; }
+.ob-input { background:white; border:2px solid var(--border); border-radius:14px; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--navy); outline:none; transition:border-color 0.2s; width:100%; }
+.ob-input:focus { border-color:var(--pink); }
+.ob-input-row { display:flex; gap:10px; }
+.ob-input-row .ob-input-group { flex:1; }
+.ob-input-prefix { position:relative; }
+.ob-input-prefix .ob-input { padding-left:32px; }
+.ob-prefix-symbol { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:16px; color:var(--muted); pointer-events:none; }
+.ob-debt-row { background:white; border:1px solid var(--border); border-radius:14px; padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+.ob-debt-row-top { display:flex; align-items:center; gap:8px; }
+.ob-debt-row-top input { flex:1; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--navy); background:transparent; min-width:0; }
+.ob-debt-row-bottom { display:flex; gap:8px; }
+.ob-debt-field { flex:1; display:flex; flex-direction:column; gap:3px; background:var(--cream); border-radius:8px; padding:7px 10px; }
+.ob-debt-field-label { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:0.05em; text-transform:uppercase; }
+.ob-debt-field input { border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--navy); background:transparent; width:100%; }
+.ob-debt-remove { background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
+.add-debt-btn { background:transparent; border:2px dashed var(--border); border-radius:14px; padding:13px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--muted); cursor:pointer; width:100%; transition:all 0.2s; }
+.add-debt-btn:hover { border-color:var(--pink); color:var(--pink); }
+
+/* RESULT */
+#result { background:var(--navy); }
+.result-header { padding:56px 28px 28px; position:relative; }
+.result-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 80% 20%,rgba(232,24,109,0.2) 0%,transparent 55%); }
+.result-label { font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; position:relative; }
+.result-stage { font-family:'DM Serif Display',serif; font-size:34px; color:var(--cream); line-height:1.1; margin-bottom:12px; position:relative; }
+.result-desc { font-size:14px; color:rgba(245,240,232,0.65); line-height:1.6; position:relative; }
+.result-body { background:var(--cream); border-radius:28px 28px 0 0; padding:28px 28px 48px; flex:1; margin-top:8px; }
+.result-section-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.focus-card { background:white; border-radius:16px; padding:18px; margin-bottom:10px; display:flex; align-items:flex-start; gap:14px; border:1px solid var(--border); }
+.focus-icon { width:40px; height:40px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.focus-title { font-weight:600; font-size:14px; color:var(--navy); }
+.focus-sub { font-size:12px; color:var(--muted); margin-top:3px; line-height:1.4; }
+.focus-amount { font-size:13px; font-weight:700; color:var(--pink); margin-top:5px; }
+.focus-priority { margin-left:auto; flex-shrink:0; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:4px 8px; border-radius:6px; }
+.focus-priority.high { background:rgba(232,24,109,0.1); color:var(--pink); }
+.focus-priority.med { background:rgba(61,66,112,0.1); color:var(--slate); }
+
+/* NUMBERS SUMMARY CARD */
+.numbers-card { background:var(--navy); border-radius:18px; padding:20px; margin-bottom:16px; }
+.numbers-card-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.5); margin-bottom:14px; }
+.numbers-row { display:flex; justify-content:space-between; margin-bottom:10px; align-items:baseline; }
+.numbers-row:last-child { margin-bottom:0; }
+.numbers-label { font-size:13px; color:rgba(245,240,232,0.6); }
+.numbers-value { font-family:'DM Serif Display',serif; font-size:18px; color:white; }
+.numbers-value.pink { color:var(--pink); }
+.numbers-divider { height:1px; background:rgba(255,255,255,0.08); margin:10px 0; }
+
+/* ROADMAP */
+#roadmap { background:var(--cream); }
+.roadmap-header { padding:56px 28px 20px; border-bottom:1px solid var(--border); }
+.roadmap-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--navy); }
+.roadmap-sub { font-size:13px; color:var(--muted); margin-top:4px; }
+.roadmap-body { padding:20px 28px 20px; }
+.phase-item { display:flex; gap:16px; margin-bottom:4px; }
+.phase-spine { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+.phase-dot { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; border:2px solid transparent; transition:all 0.3s; }
+.phase-dot.done { background:var(--navy); color:white; border-color:var(--navy); }
+.phase-dot.active { background:var(--pink); color:white; border-color:var(--pink); box-shadow:0 0 0 4px rgba(232,24,109,0.2); }
+.phase-dot.locked { background:white; color:var(--muted); border-color:var(--border); }
+.phase-line { width:2px; flex:1; min-height:24px; background:var(--border); margin:4px 0; }
+.phase-line.done { background:var(--navy); }
+.phase-line.active { background:linear-gradient(to bottom,var(--pink),var(--border)); }
+.phase-content { flex:1; padding-bottom:16px; }
+.phase-card { background:white; border-radius:18px; padding:18px; border:2px solid transparent; transition:all 0.3s; }
+.phase-card.active { border-color:var(--pink); box-shadow:0 4px 20px rgba(232,24,109,0.12); }
+.phase-card.locked { opacity:0.5; }
+.phase-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.phase-name { font-weight:700; font-size:15px; color:var(--navy); }
+.phase-badge { font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; }
+.phase-badge.active { background:rgba(232,24,109,0.1); color:var(--pink); }
+.phase-badge.done { background:rgba(30,35,64,0.1); color:var(--navy); }
+.phase-badge.locked { background:var(--cream); color:var(--muted); }
+.phase-desc { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:12px; }
+.phase-target-chip { display:inline-flex; align-items:center; gap:5px; background:rgba(232,24,109,0.08); border:1px solid rgba(232,24,109,0.2); border-radius:10px; padding:5px 10px; font-size:12px; font-weight:600; color:var(--pink); margin-bottom:12px; }
+.phase-actions { display:flex; flex-direction:column; gap:8px; }
+.phase-action-item { display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--navy); line-height:1.4; }
+.action-check { width:20px; height:20px; border-radius:6px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; background:white; margin-top:1px; }
+.action-check.checked { background:var(--navy); border-color:var(--navy); }
+.action-check.checked::after { content:'✓'; color:white; font-size:11px; font-weight:700; }
+.phase-progress-bar { height:4px; background:var(--border); border-radius:2px; margin-top:14px; }
+.phase-progress-fill { height:100%; border-radius:2px; background:var(--pink); transition:width 0.5s ease; }
+
+/* CHECKING */
+.checking-screen { background:var(--navy); flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:20px; padding:40px; text-align:center; }
+.checking-spinner { width:56px; height:56px; border:3px solid rgba(232,24,109,0.2); border-top-color:var(--pink); border-radius:50%; animation:spin 0.8s linear infinite; }
+.checking-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--cream); }
+.checking-sub { font-size:14px; color:var(--muted); line-height:1.6; }
+
+/* LIFE CHANGES */
+#lifechange { background:var(--cream); }
+.lc-header { padding:56px 28px 20px; border-bottom:1px solid var(--border); }
+.lc-back { font-size:13px; font-weight:600; color:var(--pink); cursor:pointer; margin-bottom:16px; display:inline-flex; align-items:center; gap:6px; }
+.lc-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--navy); margin-bottom:6px; }
+.lc-sub { font-size:13px; color:var(--muted); line-height:1.5; }
+.lc-body { padding:20px 28px 48px; display:flex; flex-direction:column; gap:10px; }
+.lc-event { background:white; border:2px solid var(--border); border-radius:18px; padding:18px 20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:14px; }
+.lc-event:hover { border-color:var(--pink); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.07); }
+.lc-event.selected { border-color:var(--pink); background:#FDF0F5; }
+.lc-event-icon { width:48px; height:48px; border-radius:14px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.lc-event.selected .lc-event-icon { background:rgba(232,24,109,0.1); }
+.lc-event-label { font-weight:600; font-size:15px; color:var(--navy); }
+.lc-event-desc { font-size:12px; color:var(--muted); margin-top:3px; line-height:1.4; }
+
+/* RECALIBRATING */
+#recalibrating { background:var(--navy); }
+.recal-screen { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px; text-align:center; }
+.recal-event-badge { background:rgba(232,24,109,0.15); border:1px solid rgba(232,24,109,0.3); border-radius:24px; padding:8px 18px; font-size:13px; font-weight:600; color:var(--pink); margin-bottom:32px; }
+.recal-icon-ring { width:80px; height:80px; border-radius:50%; border:3px solid rgba(232,24,109,0.2); border-top-color:var(--pink); animation:spin 1s linear infinite; display:flex; align-items:center; justify-content:center; margin-bottom:28px; position:relative; }
+.recal-inner { position:absolute; font-size:28px; }
+.recal-title { font-family:'DM Serif Display',serif; font-size:24px; color:var(--cream); margin-bottom:12px; }
+.recal-steps { display:flex; flex-direction:column; gap:10px; margin-top:32px; width:100%; }
+.recal-step { background:rgba(255,255,255,0.06); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; font-size:13px; color:rgba(245,240,232,0.6); opacity:0; transition:opacity 0.4s; }
+.recal-step.visible { opacity:1; }
+.recal-step-dot { width:8px; height:8px; border-radius:50%; background:var(--pink); flex-shrink:0; }
+
+/* PLAN UPDATE */
+#planupdate { background:var(--navy); }
+.pu-header { padding:56px 28px 28px; position:relative; }
+.pu-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 20% 80%,rgba(232,24,109,0.2) 0%,transparent 55%); }
+.pu-event-chip { display:inline-flex; align-items:center; gap:6px; background:rgba(232,24,109,0.15); border:1px solid rgba(232,24,109,0.3); border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; color:var(--pink); margin-bottom:16px; position:relative; }
+.pu-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--cream); line-height:1.15; margin-bottom:10px; position:relative; }
+.pu-desc { font-size:13px; color:rgba(245,240,232,0.65); line-height:1.6; position:relative; }
+.pu-body { background:var(--cream); border-radius:28px 28px 0 0; padding:24px 28px 60px; flex:1; }
+.pu-section { margin-bottom:24px; }
+.pu-section-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.change-card { background:white; border-radius:14px; padding:14px 16px; margin-bottom:8px; border:1px solid var(--border); }
+.change-card.new { border-left:4px solid var(--pink); }
+.change-card.updated { border-left:4px solid var(--slate); }
+.change-card.preserved { border-left:4px solid #4CAF50; }
+.change-tag { font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; padding:3px 8px; border-radius:5px; display:inline-block; margin-bottom:6px; }
+.change-tag.new { background:rgba(232,24,109,0.1); color:var(--pink); }
+.change-tag.updated { background:rgba(61,66,112,0.1); color:var(--slate); }
+.change-tag.preserved { background:rgba(76,175,80,0.1); color:#2E7D32; }
+.change-title { font-weight:600; font-size:14px; color:var(--navy); margin-bottom:3px; }
+.change-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+.insight-box { background:var(--navy); border-radius:16px; padding:18px; display:flex; gap:12px; align-items:flex-start; margin-bottom:16px; }
+.insight-icon { font-size:20px; flex-shrink:0; margin-top:2px; }
+.insight-text { font-size:13px; color:rgba(245,240,232,0.8); line-height:1.6; }
+.insight-text strong { color:white; }
+
+/* PROGRESS */
+#progress-screen { background:var(--cream); }
+.prog-header { padding:56px 28px 24px; background:var(--navy); position:relative; }
+.prog-header-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 80% 20%,rgba(232,24,109,0.2) 0%,transparent 60%); }
+.prog-header-label { font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--pink); margin-bottom:8px; position:relative; }
+.prog-header-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--cream); position:relative; margin-bottom:6px; }
+.prog-header-sub { font-size:13px; color:rgba(245,240,232,0.5); position:relative; margin-bottom:24px; }
+.prog-score-row { display:flex; gap:10px; position:relative; }
+.prog-score-card { flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:14px 12px; text-align:center; }
+.prog-score-val { font-family:'DM Serif Display',serif; font-size:24px; color:white; line-height:1; margin-bottom:4px; transition:all 0.4s; }
+.prog-score-label { font-size:10px; color:rgba(245,240,232,0.45); font-weight:600; letter-spacing:0.04em; }
+.prog-body { background:var(--cream); border-radius:28px 28px 0 0; padding:24px 28px 80px; margin-top:-2px; }
+.prog-section { margin-bottom:28px; }
+.prog-section-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.pps-card { background:white; border-radius:14px; padding:16px 18px; margin-bottom:8px; border:1px solid var(--border); }
+.pps-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.pps-name { font-weight:600; font-size:14px; color:var(--navy); }
+.pps-pct { font-size:12px; font-weight:700; }
+.pps-bar { height:5px; background:var(--border); border-radius:3px; }
+.pps-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+.next-action-card { background:white; border-radius:16px; padding:18px; border:2px solid var(--pink); margin-bottom:10px; display:flex; gap:14px; align-items:flex-start; }
+.nac-icon { width:42px; height:42px; border-radius:12px; background:rgba(232,24,109,0.1); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.nac-badge { font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--pink); margin-bottom:4px; }
+.nac-title { font-weight:600; font-size:14px; color:var(--navy); margin-bottom:3px; }
+.nac-desc { font-size:12px; color:var(--muted); line-height:1.4; }
+.insight-strip { background:rgba(232,24,109,0.06); border:1px solid rgba(232,24,109,0.15); border-radius:14px; padding:14px 16px; display:flex; gap:10px; align-items:flex-start; }
+.insight-strip-icon { font-size:16px; margin-top:1px; flex-shrink:0; }
+.insight-strip-text { font-size:13px; color:var(--navy); line-height:1.5; }
+.activity-item { background:white; border-radius:12px; padding:14px 16px; border:1px solid var(--border); display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.activity-dot { width:8px; height:8px; border-radius:50%; background:var(--pink); flex-shrink:0; }
+.activity-text { font-size:13px; color:var(--navy); flex:1; }
+.activity-time { font-size:11px; color:var(--muted); }
+
+/* CELEBRATION OVERLAY */
+.celebration-overlay { position:absolute; inset:0; background:rgba(30,35,64,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.3s; border-radius:44px; }
+@media (max-width:480px) { .celebration-overlay { border-radius:0; } }
+.celebration-overlay.show { opacity:1; pointer-events:auto; }
+.celebration-emoji { font-size:64px; animation:popIn 0.5s ease, float 2s ease-in-out 0.5s infinite; margin-bottom:20px; }
+.celebration-title { font-family:'DM Serif Display',serif; font-size:28px; color:white; text-align:center; margin-bottom:8px; animation:counterUp 0.4s ease 0.3s both; }
+.celebration-sub { font-size:14px; color:rgba(245,240,232,0.6); text-align:center; max-width:260px; line-height:1.5; animation:counterUp 0.4s ease 0.5s both; }
+.celebration-action { font-size:13px; font-weight:600; color:var(--pink); margin-top:20px; cursor:pointer; animation:counterUp 0.4s ease 0.7s both; }
+.confetti-piece { position:absolute; width:8px; height:8px; border-radius:2px; animation:confettiFall 1.5s ease-in forwards; }
+
+/* PROFILE */
+#profile-screen { background:var(--cream); }
+.prof-header { padding:56px 28px 28px; background:var(--navy); position:relative; }
+.prof-header-bg { position:absolute; inset:0; background:radial-gradient(ellipse at 30% 80%,rgba(61,66,112,0.6) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(232,24,109,0.15) 0%,transparent 50%); }
+.prof-avatar { width:64px; height:64px; border-radius:20px; background:var(--pink); display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px; position:relative; box-shadow:0 6px 20px rgba(232,24,109,0.35); }
+.prof-name { font-family:'DM Serif Display',serif; font-size:26px; color:var(--cream); position:relative; margin-bottom:8px; }
+.prof-stage-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(232,24,109,0.2); border:1px solid rgba(232,24,109,0.3); border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; color:var(--pink); position:relative; }
+.prof-body { padding:20px 28px 80px; }
+.prof-section { margin-bottom:24px; }
+.prof-section-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.prof-card { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; }
+.prof-row { display:flex; align-items:center; padding:15px 18px; border-bottom:1px solid var(--border); gap:12px; }
+.prof-row:last-child { border-bottom:none; }
+.prof-row-icon { width:34px; height:34px; border-radius:10px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.prof-row-content { flex:1; min-width:0; }
+.prof-row-label { font-size:11px; color:var(--muted); font-weight:600; letter-spacing:0.03em; text-transform:uppercase; margin-bottom:2px; }
+.prof-row-value { font-size:14px; font-weight:600; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.toggle-switch { width:44px; height:26px; background:var(--border); border-radius:13px; position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; margin-left:auto; }
+.toggle-switch.on { background:var(--pink); }
+.toggle-knob { width:20px; height:20px; background:white; border-radius:50%; position:absolute; top:3px; left:3px; transition:left 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.15); }
+.toggle-switch.on .toggle-knob { left:21px; }
+.life-event-chips { display:flex; flex-wrap:wrap; gap:8px; }
+.life-event-chip { display:inline-flex; align-items:center; gap:5px; background:white; border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:12px; color:var(--navy); font-weight:500; }
+.prof-btn { width:100%; border-radius:14px; padding:16px; text-align:center; cursor:pointer; font-weight:600; font-size:14px; transition:all 0.2s; margin-bottom:10px; border:none; font-family:'DM Sans',sans-serif; }
+.prof-btn.ghost { background:white; border:1px solid var(--border); color:var(--navy); }
+.prof-btn.danger { background:white; border:1px solid #FFCDD2; color:#C62828; }
+
+/* SAVINGS SCREEN */
+.ob-input-prefix { position:relative; }
+.ob-prefix-symbol { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:15px; pointer-events:none; z-index:1; }
+
+/* INCOME BREAKDOWN VISUAL */
+.breakdown-visual { background:white; border-radius:18px; border:1px solid var(--border); padding:20px; margin-bottom:16px; }
+.bv-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+.bv-bar-wrap { display:flex; height:28px; border-radius:10px; overflow:hidden; margin-bottom:16px; gap:2px; }
+.bv-segment { height:100%; transition:width 0.6s ease; position:relative; min-width:0; }
+.bv-segment.taxes   { background:#C62828; }
+.bv-segment.expenses { background:var(--slate); }
+.bv-segment.saving  { background:#2E7D32; }
+.bv-segment.gap     { background:var(--pink); }
+.bv-segment.unalloc { background:var(--border); }
+.bv-legend { display:flex; flex-direction:column; gap:8px; }
+.bv-legend-row { display:flex; align-items:center; justify-content:space-between; }
+.bv-legend-left { display:flex; align-items:center; gap:8px; }
+.bv-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+.bv-dot.taxes   { background:#C62828; }
+.bv-dot.expenses { background:var(--slate); }
+.bv-dot.saving  { background:#2E7D32; }
+.bv-dot.gap     { background:var(--pink); }
+.bv-dot.unalloc { background:var(--border); border:1px solid var(--border); }
+.bv-legend-label { font-size:13px; color:var(--navy); }
+.bv-legend-val { font-size:13px; font-weight:700; color:var(--navy); }
+.bv-legend-val.gap { color:var(--pink); }
+.bv-legend-val.saving { color:#2E7D32; }
+.bv-savings-gap-card { background:rgba(232,24,109,0.06); border:1px solid rgba(232,24,109,0.2); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
+.bv-on-track-card { background:rgba(46,125,50,0.06); border:1px solid rgba(46,125,50,0.2); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
+
+/* BOTTOM NAV */
+.bottom-nav { display:flex; background:white; border-top:1px solid var(--border); padding:12px 0 28px; flex-shrink:0; }
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px 0; }
+.nav-icon { font-size:20px; }
+.nav-label { font-size:10px; font-weight:600; color:var(--muted); letter-spacing:0.04em; }
+.nav-item.active .nav-label { color:var(--pink); }
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- SPLASH -->
+<div class="screen active" id="splash">
+  <div class="splash-bg"></div>
+  <div class="splash-content">
+    <div class="logo-mark"><svg viewBox="0 0 36 36" fill="none"><path d="M6 18 Q6 8 18 8 Q30 8 30 18 Q30 28 18 28" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="18" cy="28" r="3" fill="white"/><path d="M13 18 L18 13 L23 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="splash-title">Continuum</div>
+    <div class="splash-sub">A Living Financial Plan</div>
+    <div class="splash-tagline">"Your financial life will change many times.<br>Your plan should change with it."</div>
+    <button class="btn-primary" onclick="goTo('ob1')">Get Started</button>
+    <button class="btn-secondary" onclick="goTo('ob1')">I already have an account</button>
+  </div>
+</div>
+
+<!-- OB1: Name/Age -->
+<div class="screen" id="ob1">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">Let's start with the basics.</div>
+    <div class="ob-hint">This helps us personalize your experience.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group"><div class="ob-label">First Name</div><input class="ob-input" id="firstName" type="text" placeholder="e.g. Alex"/></div>
+    <div class="ob-input-group"><div class="ob-label">Age</div><input class="ob-input" id="userAge" type="number" placeholder="32" min="18" max="75"/></div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb(1)">Continue →</button></div>
+</div>
+
+<!-- OB2: Life Stage -->
+<div class="screen" id="ob2">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">What's your current life situation?</div>
+    <div class="ob-hint">Select all that apply.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-option" onclick="toggleOption(this,'single')"><div class="ob-option-icon">🙋</div><div><div class="ob-option-label">Single, no dependents</div><div class="ob-option-desc">Just focused on myself right now</div></div></div>
+    <div class="ob-option" onclick="toggleOption(this,'partner')"><div class="ob-option-icon">💑</div><div><div class="ob-option-label">Partner / Spouse</div><div class="ob-option-desc">In a committed relationship or married</div></div></div>
+    <div class="ob-option" onclick="toggleOption(this,'kids')"><div class="ob-option-icon">👶</div><div><div class="ob-option-label">Children or dependents</div><div class="ob-option-desc">I have people who rely on my income</div></div></div>
+    <div class="ob-option" onclick="toggleOption(this,'homeowner')"><div class="ob-option-icon">🏡</div><div><div class="ob-option-label">Homeowner</div><div class="ob-option-desc">I own or am buying a home</div></div></div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb(2)">Continue →</button></div>
+</div>
+
+<!-- OB2.5: Spouse Details (shown only if partner selected) -->
+<div class="screen" id="ob25">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">Tell us about your partner.</div>
+    <div class="ob-hint">This helps us personalise protection targets, filing status, and long-term planning for both of you.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">Partner's First Name</div>
+      <input class="ob-input" id="spouseName" type="text" placeholder="e.g. Jordan"/>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Partner's Age</div>
+      <input class="ob-input" id="spouseAge" type="number" placeholder="34" min="18" max="75"/>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="nextOb(25)">Continue →</button>
+    <button class="btn-secondary" onclick="goTo('ob3')">Skip for now</button>
+  </div>
+</div>
+
+<!-- OB3: Financial Snapshot -->
+<div class="screen" id="ob3">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">Where are you financially?</div>
+    <div class="ob-hint">Rough estimates are totally fine — we're not tracking to the dollar.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-option" onclick="selectOption(this,'stability','fragile')"><div class="ob-option-icon">😬</div><div><div class="ob-option-label">Feeling fragile</div><div class="ob-option-desc">Living paycheck to paycheck, limited buffer</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'stability','building')"><div class="ob-option-icon">🧱</div><div><div class="ob-option-label">Building stability</div><div class="ob-option-desc">Some savings, but not where I want to be</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'stability','stable')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Stable, growing</div><div class="ob-option-desc">Emergency fund in place, investing regularly</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'stability','optimizing')"><div class="ob-option-icon">📈</div><div><div class="ob-option-label">Optimizing</div><div class="ob-option-desc">Solid foundation, want to do more with what I have</div></div></div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb(3)">Continue →</button></div>
+</div>
+
+<!-- OB4: Income & Tax -->
+<div class="screen" id="ob4">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question" id="ob4Title">Tell us your income.</div>
+    <div class="ob-hint">We'll calculate real take-home using actual 2024 tax brackets.</div>
+  </div>
+  <div class="ob-body">
+
+    <!-- ── YOUR INCOME ── -->
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);margin-bottom:4px;" id="ob4YouLabel">Your Income</div>
+    <div class="ob-input-group">
+      <div class="ob-label">Gross Annual Income</div>
+      <div class="ob-sublabel">Total before any taxes or deductions</div>
+      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="grossIncome" type="number" placeholder="85,000" min="0" oninput="ob4UpdateHouseholdPreview()"/></div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">How do you get paid?</div>
+      <div style="display:flex;gap:10px;">
+        <div class="ob-option" id="ob4-w2" style="flex:1;flex-direction:column;align-items:center;padding:14px 10px;" onclick="ob4SelectType('w2')">
+          <div class="ob-option-icon" style="margin:0 0 6px;">🏢</div>
+          <div class="ob-option-label" style="font-size:14px;">W-2</div>
+          <div class="ob-option-desc" style="font-size:11px;text-align:center;">Taxes withheld<br>by employer</div>
+        </div>
+        <div class="ob-option" id="ob4-1099" style="flex:1;flex-direction:column;align-items:center;padding:14px 10px;" onclick="ob4SelectType('1099')">
+          <div class="ob-option-icon" style="margin:0 0 6px;">💼</div>
+          <div class="ob-option-label" style="font-size:14px;">1099</div>
+          <div class="ob-option-desc" style="font-size:11px;text-align:center;">Self-employed<br>or contractor</div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Filing Status</div>
+      <div style="display:flex;gap:8px;">
+        <div class="ob-option" id="ob4-single" style="flex:1;padding:12px 6px;justify-content:center;" onclick="ob4SelectFiling('single')"><div class="ob-option-label" style="font-size:13px;">Single</div></div>
+        <div class="ob-option" id="ob4-married" style="flex:1;padding:12px 6px;justify-content:center;" onclick="ob4SelectFiling('married')"><div class="ob-option-label" style="font-size:13px;">Married MFJ</div></div>
+        <div class="ob-option" id="ob4-hoh" style="flex:1;padding:12px 6px;justify-content:center;" onclick="ob4SelectFiling('hoh')"><div class="ob-option-label" style="font-size:13px;">Head of HH</div></div>
+      </div>
+    </div>
+
+    <!-- ── SPOUSE INCOME (shown only if partner selected) ── -->
+    <div id="spouseIncomeSection" style="display:none;">
+      <div style="height:1px;background:var(--border);margin:4px 0 16px;"></div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);margin-bottom:4px;" id="ob4SpouseLabel">Partner's Income</div>
+      <div class="ob-input-group">
+        <div class="ob-label">Gross Annual Income</div>
+        <div class="ob-sublabel">Enter 0 if your partner doesn't work</div>
+        <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spouseGrossIncome" type="number" placeholder="65,000" min="0" oninput="ob4UpdateHouseholdPreview()"/></div>
+      </div>
+      <div class="ob-input-group">
+        <div class="ob-label">How does your partner get paid?</div>
+        <div style="display:flex;gap:10px;">
+          <div class="ob-option" id="sp4-w2" style="flex:1;flex-direction:column;align-items:center;padding:12px 10px;" onclick="sp4SelectType('w2')">
+            <div class="ob-option-icon" style="margin:0 0 4px;font-size:16px;">🏢</div>
+            <div class="ob-option-label" style="font-size:13px;">W-2</div>
+          </div>
+          <div class="ob-option" id="sp4-1099" style="flex:1;flex-direction:column;align-items:center;padding:12px 10px;" onclick="sp4SelectType('1099')">
+            <div class="ob-option-icon" style="margin:0 0 4px;font-size:16px;">💼</div>
+            <div class="ob-option-label" style="font-size:13px;">1099</div>
+          </div>
+          <div class="ob-option" id="sp4-none" style="flex:1;flex-direction:column;align-items:center;padding:12px 10px;" onclick="sp4SelectType('none')">
+            <div class="ob-option-icon" style="margin:0 0 4px;font-size:16px;">🏠</div>
+            <div class="ob-option-label" style="font-size:13px;">Not working</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Household preview card -->
+      <div id="householdPreviewCard" style="background:var(--navy);border-radius:14px;padding:16px;display:none;margin-top:4px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:10px;">Household Income Preview</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:13px;color:rgba(245,240,232,0.6);" id="hhYouLabel">You</span>
+          <span style="font-size:14px;font-weight:600;color:white;" id="hhYouAmt">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:13px;color:rgba(245,240,232,0.6);" id="hhSpouseLabel">Partner</span>
+          <span style="font-size:14px;font-weight:600;color:white;" id="hhSpouseAmt">—</span>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,0.1);margin-bottom:8px;"></div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;color:rgba(245,240,232,0.8);">Household gross</span>
+          <span style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--pink);" id="hhTotalAmt">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SHARED FIELDS ── -->
+    <div style="height:1px;background:var(--border);margin:4px 0 4px;"></div>
+    <div class="ob-input-group">
+      <div class="ob-label">State of Residence</div>
+      <select class="ob-input" id="stateSelect" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+        <option value="">Select your state…</option>
+        <option value="AL">Alabama</option><option value="AK">Alaska (no income tax)</option>
+        <option value="AZ">Arizona</option><option value="AR">Arkansas</option>
+        <option value="CA">California</option><option value="CO">Colorado</option>
+        <option value="CT">Connecticut</option><option value="DE">Delaware</option>
+        <option value="FL">Florida (no income tax)</option><option value="GA">Georgia</option>
+        <option value="HI">Hawaii</option><option value="ID">Idaho</option>
+        <option value="IL">Illinois</option><option value="IN">Indiana</option>
+        <option value="IA">Iowa</option><option value="KS">Kansas</option>
+        <option value="KY">Kentucky</option><option value="LA">Louisiana</option>
+        <option value="ME">Maine</option><option value="MD">Maryland</option>
+        <option value="MA">Massachusetts</option><option value="MI">Michigan</option>
+        <option value="MN">Minnesota</option><option value="MS">Mississippi</option>
+        <option value="MO">Missouri</option><option value="MT">Montana</option>
+        <option value="NE">Nebraska</option><option value="NV">Nevada (no income tax)</option>
+        <option value="NH">New Hampshire (no wage tax)</option><option value="NJ">New Jersey</option>
+        <option value="NM">New Mexico</option><option value="NY">New York</option>
+        <option value="NC">North Carolina</option><option value="ND">North Dakota</option>
+        <option value="OH">Ohio</option><option value="OK">Oklahoma</option>
+        <option value="OR">Oregon</option><option value="PA">Pennsylvania</option>
+        <option value="RI">Rhode Island</option><option value="SC">South Carolina</option>
+        <option value="SD">South Dakota (no income tax)</option><option value="TN">Tennessee (no wage tax)</option>
+        <option value="TX">Texas (no income tax)</option><option value="UT">Utah</option>
+        <option value="VT">Vermont</option><option value="VA">Virginia</option>
+        <option value="WA">Washington (no income tax)</option><option value="WV">West Virginia</option>
+        <option value="WI">Wisconsin</option><option value="WY">Wyoming (no income tax)</option>
+        <option value="DC">Washington D.C.</option>
+      </select>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Monthly Living Expenses</div>
+      <div class="ob-sublabel">Combined household — rent, food, utilities, transport, etc.</div>
+      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="monthlyExpenses" type="number" placeholder="3,500" min="0"/></div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Current Savings</div>
+      <div class="ob-sublabel">Cash your household could access in an emergency</div>
+      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="currentSavings" type="number" placeholder="2,000" min="0"/></div>
+    </div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb(4)">Continue →</button></div>
+</div>
+
+<!-- OB4.5: Current Savings Activity -->
+<div class="screen" id="ob45">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">What are you actually saving?</div>
+    <div class="ob-hint">Surplus in your account isn't savings until it's intentionally put somewhere. Tell us what's automated today.</div>
+  </div>
+  <div class="ob-body">
+
+    <div class="ob-input-group">
+      <div class="ob-label">401k / 403b Contribution</div>
+      <div class="ob-sublabel">What you contribute from each paycheck</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;">
+          <span class="ob-prefix-symbol">%</span>
+          <input class="ob-input" id="s401kPct" type="number" placeholder="6" min="0" max="100"
+            style="padding-left:30px;"
+            oninput="syncSavingsInput('pct','s401kPct','s401kAmt')"/>
+        </div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">of gross  or</div>
+        <div class="ob-input-prefix" style="flex:1;">
+          <span class="ob-prefix-symbol">$</span>
+          <input class="ob-input" id="s401kAmt" type="number" placeholder="425" min="0"
+            oninput="syncSavingsInput('amt','s401kAmt','s401kPct')"/>
+        </div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Enter 0 if not contributing yet — that's fine, we'll address it in your plan.</div>
+    </div>
+
+    <div class="ob-input-group">
+      <div class="ob-label">Automated Savings Account Transfer</div>
+      <div class="ob-sublabel">Monthly auto-transfer to savings or HYSA</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;">
+          <span class="ob-prefix-symbol">%</span>
+          <input class="ob-input" id="sAutoSavingsPct" type="number" placeholder="3" min="0" max="100"
+            style="padding-left:30px;"
+            oninput="syncSavingsInput('pct','sAutoSavingsPct','sAutoSavingsAmt')"/>
+        </div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">of gross  or</div>
+        <div class="ob-input-prefix" style="flex:1;">
+          <span class="ob-prefix-symbol">$</span>
+          <input class="ob-input" id="sAutoSavingsAmt" type="number" placeholder="200" min="0"
+            oninput="syncSavingsInput('amt','sAutoSavingsAmt','sAutoSavingsPct')"/>
+        </div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+
+    <div class="ob-input-group">
+      <div class="ob-label">Automated Investment Transfer</div>
+      <div class="ob-sublabel">Brokerage, Roth IRA, or other investment auto-deposit</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;">
+          <span class="ob-prefix-symbol">%</span>
+          <input class="ob-input" id="sAutoInvestPct" type="number" placeholder="2" min="0" max="100"
+            style="padding-left:30px;"
+            oninput="syncSavingsInput('pct','sAutoInvestPct','sAutoInvestAmt')"/>
+        </div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">of gross  or</div>
+        <div class="ob-input-prefix" style="flex:1;">
+          <span class="ob-prefix-symbol">$</span>
+          <input class="ob-input" id="sAutoInvestAmt" type="number" placeholder="100" min="0"
+            oninput="syncSavingsInput('amt','sAutoInvestAmt','sAutoInvestPct')"/>
+        </div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+
+    <!-- Live savings rate preview -->
+    <div id="savingsPreviewCard" style="background:var(--navy);border-radius:16px;padding:18px;display:none;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-bottom:12px;">Your Current Savings Rate</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:36px;color:white;" id="savingsRateBig">0%</div>
+        <div style="font-size:13px;color:rgba(245,240,232,0.5);">of gross income</div>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;margin-bottom:10px;">
+        <div id="savingsRateBar" style="height:100%;border-radius:3px;background:var(--pink);transition:width 0.4s ease;width:0%;"></div>
+      </div>
+      <div style="font-size:12px;color:rgba(245,240,232,0.55);" id="savingsRateMsg">Add your contributions above to see your savings rate.</div>
+    </div>
+
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="nextOb(45)">Continue →</button>
+    <button class="btn-secondary" onclick="skipSavings()">I'm not saving anything yet — skip</button>
+  </div>
+</div>
+
+<!-- OB5: Debts & Challenge -->
+<div class="screen" id="ob5">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Any debts to factor in?</div>
+    <div class="ob-hint">Add your main debts — we'll prioritize them for you. Skip if none.</div>
+  </div>
+  <div class="ob-body">
+    <div id="debtRows"></div>
+    <button class="add-debt-btn" onclick="addDebtRow()">+ Add a debt (credit card, loan, etc.)</button>
+    <div style="height:8px;"></div>
+    <div class="ob-input-group">
+      <div class="ob-label">Your Biggest Challenge</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectOption(this,'challenge','prioritize')"><div class="ob-option-icon">🎯</div><div><div class="ob-option-label">Not sure what to do first</div></div></div>
+        <div class="ob-option" onclick="selectOption(this,'challenge','debt')"><div class="ob-option-icon">💳</div><div><div class="ob-option-label">Dealing with debt</div></div></div>
+        <div class="ob-option" onclick="selectOption(this,'challenge','saving')"><div class="ob-option-icon">🐷</div><div><div class="ob-option-label">Saving consistently</div></div></div>
+        <div class="ob-option" onclick="selectOption(this,'challenge','future')"><div class="ob-option-icon">🔭</div><div><div class="ob-option-label">Planning for the future</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="buildPlan()">Build My Plan →</button></div>
+</div>
+
+<!-- CHECKING -->
+<div class="screen" id="checking">
+  <div class="checking-screen">
+    <div class="checking-spinner"></div>
+    <div class="checking-title">Crunching your numbers…</div>
+    <div class="checking-sub">We're calculating your personal targets and building a plan specific to your situation.</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="result">
+  <div class="result-header">
+    <div class="result-bg"></div>
+    <div class="result-label">Your Personal Plan</div>
+    <div class="result-stage" id="resultStage">Foundation Phase</div>
+    <div class="result-desc" id="resultDesc"></div>
+  </div>
+  <div class="result-body">
+    <div id="resultNumbersCard"></div>
+    <div class="result-section-title">Your Top Priorities</div>
+    <div id="focusAreas"></div>
+    <br>
+    <button class="btn-primary" onclick="goTo('roadmap')">See My Full Roadmap →</button>
+  </div>
+</div>
+
+<!-- ROADMAP -->
+<div class="screen" id="roadmap">
+  <div class="roadmap-header">
+    <div class="roadmap-title" id="roadmapGreeting">Your Plan</div>
+    <div class="roadmap-sub">Actions with your actual numbers</div>
+  </div>
+  <div class="roadmap-body" id="roadmapBody"></div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- LIFE CHANGE -->
+<div class="screen" id="lifechange">
+  <div class="lc-header">
+    <div class="lc-back" onclick="goTo('roadmap')">← Back to Roadmap</div>
+    <div class="lc-title">Something changed?</div>
+    <div class="lc-sub">Tell us what happened and we'll recalibrate your plan — keeping all your progress intact.</div>
+  </div>
+  <div class="lc-body">
+    <div class="lc-event" onclick="selectLifeEvent(this,'baby','👶','Having a Baby')"><div class="lc-event-icon">👶</div><div><div class="lc-event-label">Having a Baby</div><div class="lc-event-desc">Expecting or recently welcomed a child</div></div></div>
+    <div class="lc-event" onclick="selectLifeEvent(this,'married','💍','Got Married')"><div class="lc-event-icon">💍</div><div><div class="lc-event-label">Got Married</div><div class="lc-event-desc">Recently married or newly combining finances</div></div></div>
+    <div class="lc-event" onclick="selectLifeEvent(this,'newjob','💼','New Job or Promotion')"><div class="lc-event-icon">💼</div><div><div class="lc-event-label">New Job or Promotion</div><div class="lc-event-desc">Changed employers or got a significant raise</div></div></div>
+    <div class="lc-event" onclick="selectLifeEvent(this,'house','🏡','Buying a Home')"><div class="lc-event-icon">🏡</div><div><div class="lc-event-label">Buying a Home</div><div class="lc-event-desc">Purchasing or recently closed on a home</div></div></div>
+    <div class="lc-event" onclick="selectLifeEvent(this,'divorce','💔','Separation or Divorce')"><div class="lc-event-icon">💔</div><div><div class="lc-event-label">Separation or Divorce</div><div class="lc-event-desc">Going through or recently completed a separation</div></div></div>
+    <div class="lc-event" onclick="selectLifeEvent(this,'inheritance','🏦','Received an Inheritance')"><div class="lc-event-icon">🏦</div><div><div class="lc-event-label">Received an Inheritance</div><div class="lc-event-desc">Came into a significant amount of money or assets</div></div></div>
+    <div class="lc-event" onclick="selectLifeEvent(this,'jobloss','😟','Job Loss')"><div class="lc-event-icon">😟</div><div><div class="lc-event-label">Job Loss</div><div class="lc-event-desc">Recently unemployed or income significantly reduced</div></div></div>
+    <div style="padding-bottom:20px;"><button class="btn-primary" id="lcContinueBtn" onclick="startRecalibration()" style="opacity:0.4;pointer-events:none;">Recalibrate My Plan →</button></div>
+  </div>
+</div>
+
+<!-- RECALIBRATING -->
+<div class="screen" id="recalibrating">
+  <div class="recal-screen">
+    <div class="recal-event-badge" id="recalEventBadge">Life Change Detected</div>
+    <div class="recal-icon-ring"><div class="recal-inner" id="recalIcon">🔄</div></div>
+    <div class="recal-title">Recalibrating your plan…</div>
+    <div class="recal-steps">
+      <div class="recal-step"><div class="recal-step-dot"></div>Reviewing your completed progress</div>
+      <div class="recal-step"><div class="recal-step-dot"></div>Assessing impact of life change</div>
+      <div class="recal-step"><div class="recal-step-dot"></div>Resequencing priorities</div>
+      <div class="recal-step"><div class="recal-step-dot"></div>Preserving your existing work</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAN UPDATE -->
+<div class="screen" id="planupdate">
+  <div class="pu-header">
+    <div class="pu-bg"></div>
+    <div class="pu-event-chip" id="puEventChip">🔄 Life Change Applied</div>
+    <div class="pu-title" id="puTitle">Your plan has been updated</div>
+    <div class="pu-desc" id="puDesc"></div>
+  </div>
+  <div class="pu-body">
+    <div class="pu-section"><div class="pu-section-title">What's changed</div><div id="puChanges"></div></div>
+    <div class="pu-section"><div class="pu-section-title">Why this matters</div><div class="insight-box"><div class="insight-icon">💡</div><div class="insight-text" id="puInsightText"></div></div></div>
+    <button class="btn-primary" onclick="applyPlanUpdate()">See Updated Roadmap →</button>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="screen" id="progress-screen">
+  <div class="prog-header">
+    <div class="prog-header-bg"></div>
+    <div class="prog-header-label">Your Momentum</div>
+    <div class="prog-header-title" id="progTitle">Progress</div>
+    <div class="prog-header-sub" id="progSub">Here's how you're tracking across your plan.</div>
+    <div class="prog-score-row">
+      <div class="prog-score-card"><div class="prog-score-val" id="progActionsVal">0</div><div class="prog-score-label">Actions Done</div></div>
+      <div class="prog-score-card"><div class="prog-score-val" id="progPhaseVal">—</div><div class="prog-score-label">Current Phase</div></div>
+      <div class="prog-score-card"><div class="prog-score-val" id="progStreakVal">🔥 0</div><div class="prog-score-label">Momentum</div></div>
+    </div>
+  </div>
+  <div class="prog-body">
+    <div class="prog-section"><div class="prog-section-title">Phase Completion</div><div id="progPhases"></div></div>
+    <div class="prog-section"><div class="prog-section-title">Up Next</div><div id="progNextAction"></div></div>
+    <div class="prog-section"><div class="prog-section-title">Recent Activity</div><div id="progActivity"></div></div>
+    <div class="prog-section"><div class="prog-section-title">Planning Insight</div><div class="insight-strip"><div class="insight-strip-icon">✨</div><div class="insight-strip-text" id="progInsightText">Complete your first action to start building momentum.</div></div></div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="profile-screen">
+  <div class="prof-header">
+    <div class="prof-header-bg"></div>
+    <div class="prof-avatar" id="profAvatar">👤</div>
+    <div class="prof-name" id="profName">Your Profile</div>
+    <div class="prof-stage-pill" id="profStagePill">📍 Foundation Phase</div>
+  </div>
+  <div class="prof-body">
+    <div class="prof-section">
+      <div class="prof-section-title">Your Details</div>
+      <div class="prof-card">
+        <div class="prof-row"><div class="prof-row-icon">👤</div><div class="prof-row-content"><div class="prof-row-label">Name</div><div class="prof-row-value" id="profDetailName">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">🎂</div><div class="prof-row-content"><div class="prof-row-label">Age</div><div class="prof-row-value" id="profDetailAge">—</div></div></div>
+        <div class="prof-row" id="profSpouseRow" style="display:none;"><div class="prof-row-icon">💑</div><div class="prof-row-content"><div class="prof-row-label">Partner</div><div class="prof-row-value" id="profDetailSpouse">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">💵</div><div class="prof-row-content"><div class="prof-row-label">Gross Annual Income</div><div class="prof-row-value" id="profDetailIncome">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">🧾</div><div class="prof-row-content"><div class="prof-row-label">Income Type / Filing</div><div class="prof-row-value" id="profDetailTaxType">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">📊</div><div class="prof-row-content"><div class="prof-row-label">Effective Tax Rate</div><div class="prof-row-value" id="profDetailTaxRate">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">🏠</div><div class="prof-row-content"><div class="prof-row-label">Monthly Expenses</div><div class="prof-row-value" id="profDetailExpenses">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">💳</div><div class="prof-row-content"><div class="prof-row-label">Total Debt</div><div class="prof-row-value" id="profDetailDebt">—</div></div></div>
+      </div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-section-title">Your Targets</div>
+      <div class="prof-card" id="profTargetsCard"></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-section-title">Life Events Logged</div>
+      <div class="life-event-chips" id="profLifeEvents"><div style="font-size:13px;color:var(--muted);font-style:italic;padding:4px 0;">No life events logged yet.</div></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-section-title">Notifications</div>
+      <div class="prof-card">
+        <div class="prof-row"><div class="prof-row-icon">📬</div><div class="prof-row-content"><div class="prof-row-label">Weekly check-in reminders</div><div class="prof-row-value">Every Monday</div></div><div class="toggle-switch on" onclick="this.classList.toggle('on');this.querySelector('.toggle-knob').style.left=this.classList.contains('on')?'21px':'3px'"><div class="toggle-knob" style="left:21px"></div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">🎯</div><div class="prof-row-content"><div class="prof-row-label">Action reminders</div><div class="prof-row-value">When actions are due</div></div><div class="toggle-switch on" onclick="this.classList.toggle('on');this.querySelector('.toggle-knob').style.left=this.classList.contains('on')?'21px':'3px'"><div class="toggle-knob" style="left:21px"></div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">🔄</div><div class="prof-row-content"><div class="prof-row-label">Life change prompts</div><div class="prof-row-value">Quarterly check-ins</div></div><div class="toggle-switch" onclick="this.classList.toggle('on');this.querySelector('.toggle-knob').style.left=this.classList.contains('on')?'21px':'3px'"><div class="toggle-knob"></div></div></div>
+      </div>
+    </div>
+    <div class="prof-section">
+      <button class="prof-btn ghost" onclick="goTo('roadmap')">← Back to My Plan</button>
+      <button class="prof-btn danger" onclick="if(confirm('Reset your plan? This cannot be undone.'))location.reload()">Reset & Start Over</button>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRATION OVERLAY -->
+<div class="celebration-overlay" id="celebrationOverlay" onclick="hideCelebration()">
+  <div id="celebrationEmoji" class="celebration-emoji">✅</div>
+  <div class="celebration-title" id="celebrationTitle">Action Complete!</div>
+  <div class="celebration-sub" id="celebrationSub">Keep going — every action compounds.</div>
+  <div class="celebration-action">Tap anywhere to continue</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav" style="display:none;">
+  <div class="nav-item active" onclick="goTo('roadmap')"><div class="nav-icon">🗺️</div><div class="nav-label">Roadmap</div></div>
+  <div class="nav-item" onclick="openProgress()"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></div>
+  <div class="nav-item" onclick="openLifeChange()"><div class="nav-icon">🔄</div><div class="nav-label">Life Change</div></div>
+  <div class="nav-item" onclick="openProfile()"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+</div>
+
+</div><!-- /phone -->
+<script>
+const state = {
+  name:'', age:null, location:'', lifeStage:[], stability:null, challenge:null,
+  grossIncome:0, incomeType:'w2', filingStatus:'single', stateCode:'',
+  monthlyIncome:0, monthlyExpenses:0, currentSavings:0, debts:[],
+  // Spouse
+  spouseName:'', spouseAge:null, spouseWorks:null, spouseIncome:0,
+  // Intentional savings inputs
+  s401kMonthly:0, sAutoSavings:0, sAutoInvest:0,
+  checks:{}, currentPhase:1, lifeEvents:[], activity:[],
+  joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
+  calc:{}, taxCalc:{}
+};
+
+const fmt = n => '$' + Math.round(n).toLocaleString();
+const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
+
+// ── NAVIGATION ──
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const navScreens = ['roadmap','progress-screen','lifechange','planupdate','profile-screen'];
+  document.getElementById('bottomNav').style.display = navScreens.includes(id) ? 'flex' : 'none';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navMap = {roadmap:0,'progress-screen':1,lifechange:2,planupdate:2,'profile-screen':3};
+  if (navMap[id] !== undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
+  document.getElementById(id).scrollTop = 0;
+  if (id === 'ob4') ob4Setup();
+}
+
+// ── ONBOARDING ──
+function toggleOption(el, val) {
+  el.classList.toggle('selected');
+  const idx = state.lifeStage.indexOf(val);
+  if (idx > -1) state.lifeStage.splice(idx,1); else state.lifeStage.push(val);
+}
+let optionGroups = {};
+function selectOption(el, group, val) {
+  const siblings = el.closest('.ob-body') ? el.closest('.ob-body').querySelectorAll('.ob-option') : document.querySelectorAll(`[onclick*="selectOption"][onclick*="${group}"]`);
+  el.closest('.ob-body') && el.closest('.ob-body').querySelectorAll('.ob-option').forEach(o => { if(o.getAttribute('onclick') && o.getAttribute('onclick').includes(group)) o.classList.remove('selected'); });
+  if (optionGroups[group]) optionGroups[group].classList.remove('selected');
+  el.classList.add('selected'); optionGroups[group] = el; state[group] = val;
+}
+let debtCount = 0;
+function addDebtRow() {
+  debtCount++;
+  const id = `debt_${debtCount}`;
+  const row = document.createElement('div');
+  row.className = 'ob-debt-row';
+  row.id = id;
+  row.innerHTML = `<input type="text" placeholder="e.g. Credit card" style="flex:2;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--navy);background:transparent;" /><div class="ob-debt-divider"></div><input type="number" placeholder="Amount $" style="flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--navy);background:transparent;text-align:right;" /><div class="ob-debt-divider"></div><input type="number" placeholder="APR%" style="width:52px;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);background:transparent;text-align:right;" />`;
+  document.getElementById('debtRows').appendChild(row);
+}
+function nextOb(step) {
+  if (step===1) { state.name = document.getElementById('firstName').value||'Friend'; state.age = parseInt(document.getElementById('userAge').value)||30; goTo('ob2'); }
+  else if (step===2) {
+    // Route to spouse screen only if partner selected
+    if (state.lifeStage.includes('partner')) goTo('ob25');
+    else goTo('ob3');
+  }
+  else if (step===25) {
+    state.spouseName = document.getElementById('spouseName').value || '';
+    state.spouseAge  = parseInt(document.getElementById('spouseAge').value) || null;
+    goTo('ob3');
+  }
+  else if (step===3) goTo('ob4');
+  else if (step===4) {
+    state.grossIncome   = parseFloat(document.getElementById('grossIncome').value) || 0;
+    state.incomeType    = ob4Type;
+    state.filingStatus  = ob4Filing;
+    state.stateCode     = document.getElementById('stateSelect').value || '';
+    state.monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+    state.currentSavings  = parseFloat(document.getElementById('currentSavings').value) || 0;
+    // Spouse income
+    if (state.lifeStage.includes('partner')) {
+      state.spouseIncome     = parseFloat(document.getElementById('spouseGrossIncome').value) || 0;
+      state.spouseIncomeType = sp4Type;
+    }
+    goTo('ob45');
+  }
+  else if (step===45) {
+    collectSavingsInputs();
+    goTo('ob5');
+  }
+}
+
+function skipSavings() {
+  state.s401kMonthly = 0; state.sAutoSavings = 0; state.sAutoInvest = 0;
+  goTo('ob5');
+}
+
+// Sync pct/amt for any savings field pair
+function syncSavingsInput(changedType, changedId, otherFieldId) {
+  const gross = state.grossIncome;
+  if (gross <= 0) return;
+  const val = parseFloat(document.getElementById(changedId).value) || 0;
+  const other = document.getElementById(otherFieldId);
+  if (changedType === 'pct') {
+    other.value = val > 0 ? Math.round(gross * (val / 100) / 12) : '';
+  } else {
+    other.value = val > 0 ? ((val * 12 / gross) * 100).toFixed(1) : '';
+  }
+  updateSavingsPreview();
+}
+
+// Resolve a pct/amt pair to a monthly $ amount (pct takes priority if both entered)
+function resolveMonthly(pctId, amtId) {
+  const gross = state.grossIncome;
+  const pct = parseFloat(document.getElementById(pctId).value) || 0;
+  const amt = parseFloat(document.getElementById(amtId).value) || 0;
+  return pct > 0 ? Math.round(gross * (pct / 100) / 12) : amt;
+}
+
+function collectSavingsInputs() {
+  state.s401kMonthly  = resolveMonthly('s401kPct',       's401kAmt');
+  state.sAutoSavings  = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
+  state.sAutoInvest   = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
+}
+
+function updateSavingsPreview() {
+  const gross = state.grossIncome;
+  if (gross <= 0) return;
+  const monthly401k = resolveMonthly('s401kPct', 's401kAmt');
+  const autoSav     = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
+  const autoInv     = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
+  const totalMonthly = monthly401k + autoSav + autoInv;
+  const totalAnnual  = totalMonthly * 12;
+  const rate = gross > 0 ? (totalAnnual / gross) * 100 : 0;
+  const recommended = 15;
+  const card = document.getElementById('savingsPreviewCard');
+  card.style.display = 'block';
+  document.getElementById('savingsRateBig').textContent = rate.toFixed(1) + '%';
+  const barPct = Math.min(100, (rate / recommended) * 100);
+  const bar = document.getElementById('savingsRateBar');
+  bar.style.width = barPct + '%';
+  bar.style.background = rate >= recommended ? '#4CAF50' : rate >= 10 ? 'var(--pink)' : '#C62828';
+  const msg = document.getElementById('savingsRateMsg');
+  const gap = recommended - rate;
+  if (rate >= recommended) {
+    msg.textContent = `✓ You're hitting the 15% target. Great position.`;
+    msg.style.color = 'rgba(76,175,80,0.9)';
+  } else if (rate > 0) {
+    msg.textContent = `${gap.toFixed(1)}% below the 15% recommended rate — we'll show you how to close this gap.`;
+    msg.style.color = 'rgba(245,240,232,0.55)';
+  } else {
+    msg.textContent = `Nothing saved yet — that's exactly what your plan will address.`;
+    msg.style.color = 'rgba(245,240,232,0.45)';
+  }
+}
+
+// Attach live listeners once DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  ['sAutoSavingsAmt','sAutoSavingsPct','sAutoInvestAmt','sAutoInvestPct'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateSavingsPreview);
+  });
+});
+function buildPlan() {
+  // collect debts
+  state.debts = [];
+  document.querySelectorAll('#debtRows .ob-debt-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const name = inputs[0].value||'Debt';
+    const amount = parseFloat(inputs[1].value)||0;
+    const apr = parseFloat(inputs[2].value)||0;
+    if (amount > 0) state.debts.push({name, amount, apr});
+  });
+  state.debts.sort((a,b) => b.apr - a.apr); // highest APR first
+  goTo('checking');
+  setTimeout(()=>{ computeFinancials(); computePlan(); goTo('result'); }, 2200);
+}
+
+// ── OB4 SELECTION HELPERS ──
+let ob4Type = 'w2';
+let ob4Filing = 'single';
+let sp4Type = 'w2';
+
+function ob4SelectType(type) {
+  ob4Type = type;
+  document.getElementById('ob4-w2').classList.toggle('selected', type === 'w2');
+  document.getElementById('ob4-1099').classList.toggle('selected', type === '1099');
+}
+function ob4SelectFiling(filing) {
+  ob4Filing = filing;
+  ['single','married','hoh'].forEach(f => document.getElementById('ob4-'+f).classList.toggle('selected', f === filing));
+}
+function sp4SelectType(type) {
+  sp4Type = type;
+  ['w2','1099','none'].forEach(t => document.getElementById('sp4-'+t).classList.toggle('selected', t === type));
+  ob4UpdateHouseholdPreview();
+}
+
+// Show spouse section and personalise labels when entering OB4
+function ob4Setup() {
+  const hasPartner = state.lifeStage.includes('partner');
+  const spouseSec = document.getElementById('spouseIncomeSection');
+  spouseSec.style.display = hasPartner ? 'block' : 'none';
+  if (hasPartner) {
+    const spouseName = state.spouseName || 'Partner';
+    document.getElementById('ob4Title').textContent = 'Tell us your household income.';
+    document.getElementById('ob4YouLabel').textContent = `Your Income — ${state.name || 'You'}`;
+    document.getElementById('ob4SpouseLabel').textContent = `${spouseName}'s Income`;
+    document.getElementById('hhYouLabel').textContent = state.name || 'You';
+    document.getElementById('hhSpouseLabel').textContent = spouseName;
+    // Pre-select sp4-w2
+    sp4SelectType('w2');
+  }
+}
+
+function ob4UpdateHouseholdPreview() {
+  const yourGross = parseFloat(document.getElementById('grossIncome').value) || 0;
+  const spouseGross = parseFloat(document.getElementById('spouseGrossIncome')?.value) || 0;
+  const hasPartner = state.lifeStage.includes('partner');
+  if (!hasPartner || yourGross === 0) {
+    document.getElementById('householdPreviewCard').style.display = 'none';
+    return;
+  }
+  document.getElementById('householdPreviewCard').style.display = 'block';
+  document.getElementById('hhYouAmt').textContent = fmt(yourGross) + '/yr';
+  document.getElementById('hhSpouseAmt').textContent = spouseGross > 0 ? fmt(spouseGross) + '/yr' : sp4Type === 'none' ? 'Not working' : '—';
+  document.getElementById('hhTotalAmt').textContent = fmt(yourGross + spouseGross) + '/yr';
+}
+
+// ── TAX ENGINE (2024 brackets, validated) ──
+const FED_BRACKETS = {
+  single:  [{max:11600,rate:.10},{max:47150,rate:.12},{max:100525,rate:.22},{max:191950,rate:.24},{max:243725,rate:.32},{max:609350,rate:.35},{max:Infinity,rate:.37}],
+  married: [{max:23200,rate:.10},{max:94300,rate:.12},{max:201050,rate:.22},{max:383900,rate:.24},{max:487450,rate:.32},{max:731200,rate:.35},{max:Infinity,rate:.37}],
+  hoh:     [{max:16550,rate:.10},{max:63100,rate:.12},{max:100500,rate:.22},{max:191950,rate:.24},{max:243700,rate:.32},{max:609350,rate:.35},{max:Infinity,rate:.37}]
+};
+const STD_DEDUCTION = { single:14600, married:29200, hoh:21900 };
+const STATE_RATES = {
+  AL:{rate:.05},  AK:{rate:0},    AZ:{rate:.025}, AR:{rate:.044},
+  CA:{rate:.093}, CO:{rate:.044}, CT:{rate:.05},  DE:{rate:.066},
+  FL:{rate:0},    GA:{rate:.0549},HI:{rate:.09},  ID:{rate:.058},
+  IL:{rate:.0495},IN:{rate:.0305},IA:{rate:.057}, KS:{rate:.057},
+  KY:{rate:.045}, LA:{rate:.0425},ME:{rate:.0715},MD:{rate:.0575},
+  MA:{rate:.05},  MI:{rate:.0425},MN:{rate:.0985},MS:{rate:.047},
+  MO:{rate:.048}, MT:{rate:.0675},NE:{rate:.0664},NV:{rate:0},
+  NH:{rate:0},    NJ:{rate:.0637},NM:{rate:.059}, NY:{rate:.0685},
+  NC:{rate:.045}, ND:{rate:.025}, OH:{rate:.0375},OK:{rate:.0475},
+  OR:{rate:.099}, PA:{rate:.0307},RI:{rate:.0599},SC:{rate:.064},
+  SD:{rate:0},    TN:{rate:0},    TX:{rate:0},    UT:{rate:.0465},
+  VT:{rate:.0875},VA:{rate:.0575},WA:{rate:0},    WV:{rate:.065},
+  WI:{rate:.0765},WY:{rate:0},    DC:{rate:.0875}
+};
+
+function calcFedTax(gross, status) {
+  const deduction = STD_DEDUCTION[status] || STD_DEDUCTION.single;
+  const taxable = Math.max(0, gross - deduction);
+  const brackets = FED_BRACKETS[status] || FED_BRACKETS.single;
+  let tax = 0, prev = 0;
+  for (const b of brackets) {
+    if (taxable <= prev) break;
+    tax += (Math.min(taxable, b.max) - prev) * b.rate;
+    prev = b.max;
+    if (b.max === Infinity) break;
+  }
+  return tax;
+}
+
+function calcStateTax(gross, stateCode, status) {
+  const s = STATE_RATES[stateCode];
+  if (!s || s.rate === 0) return 0;
+  const deduction = (STD_DEDUCTION[status] || STD_DEDUCTION.single) * 0.5;
+  return Math.max(0, gross - deduction) * s.rate;
+}
+
+function getMarginalRate(gross, status) {
+  const deduction = STD_DEDUCTION[status] || STD_DEDUCTION.single;
+  const taxable = Math.max(0, gross - deduction);
+  for (const b of (FED_BRACKETS[status] || FED_BRACKETS.single)) {
+    if (taxable <= b.max) return b.rate;
+  }
+  return 0.37;
+}
+
+// ── FINANCIAL CALCULATIONS ──
+function computeFinancials() {
+  const gross  = state.grossIncome;
+  const status = state.filingStatus || 'single';
+  const stateCode = state.stateCode || '';
+
+  // Primary income tax
+  const fedTax   = calcFedTax(gross, status);
+  const stateTax = calcStateTax(gross, stateCode, status);
+  const totalTax = fedTax + stateTax;
+  const takeHomeAnnual  = Math.max(0, gross - totalTax);
+  const takeHomeMonthly = takeHomeAnnual / 12;
+  const effectiveRate   = gross > 0 ? totalTax / gross : 0;
+  const marginalRate    = getMarginalRate(gross, status);
+
+  state.taxCalc = { gross, fedTax, stateTax, totalTax, takeHomeAnnual, takeHomeMonthly, effectiveRate, marginalRate, stateCode };
+
+  // Spouse income tax (calculated independently using single brackets if they work)
+  const spouseGross = state.spouseIncome || 0;
+  const spouseStatus = 'single'; // spouse taxed individually
+  let spouseTaxCalc = null;
+  if (spouseGross > 0 && state.lifeStage.includes('partner')) {
+    const spFed   = calcFedTax(spouseGross, spouseStatus);
+    const spState = calcStateTax(spouseGross, stateCode, spouseStatus);
+    const spTotal = spFed + spState;
+    const spTakeHomeAnnual  = Math.max(0, spouseGross - spTotal);
+    spouseTaxCalc = { gross: spouseGross, fedTax: spFed, stateTax: spState, totalTax: spTotal, takeHomeAnnual: spTakeHomeAnnual, takeHomeMonthly: spTakeHomeAnnual / 12 };
+  }
+  state.spouseTaxCalc = spouseTaxCalc;
+
+  // Household combined take-home
+  const spTakeHomeMonthly = spouseTaxCalc ? spouseTaxCalc.takeHomeMonthly : 0;
+  const householdTakeHomeMonthly = takeHomeMonthly + spTakeHomeMonthly;
+  const householdGross = gross + spouseGross;
+  state.monthlyIncome = householdTakeHomeMonthly;
+
+  const inc = householdTakeHomeMonthly;
+  const exp = state.monthlyExpenses;
+  const sav = state.currentSavings;
+  const hasDeps = state.lifeStage.includes('kids') || state.lifeStage.includes('partner');
+  const bufferMonths = hasDeps ? 6 : 3;
+  const emergencyTarget = exp * bufferMonths;
+  const emergencyGap = Math.max(0, emergencyTarget - sav);
+
+  // Actual intentional savings
+  const actual401k    = state.s401kMonthly  || 0;
+  const actualAutoSav = state.sAutoSavings  || 0;
+  const actualAutoInv = state.sAutoInvest   || 0;
+  const totalActualSavingsMonthly = actual401k + actualAutoSav + actualAutoInv;
+  const totalActualSavingsAnnual  = totalActualSavingsMonthly * 12;
+  const actualSavingsRate = householdGross > 0 ? (totalActualSavingsAnnual / householdGross) * 100 : 0;
+
+  const recommendedSavingsRate = 15;
+  const recommendedMonthly  = Math.round(householdGross * 0.15 / 12);
+  const savingsGapMonthly   = Math.max(0, recommendedMonthly - totalActualSavingsMonthly);
+  const savingsGapRate      = Math.max(0, recommendedSavingsRate - actualSavingsRate);
+  const onTrack = actualSavingsRate >= recommendedSavingsRate;
+  const unallocatedSurplus  = Math.max(0, inc - exp - totalActualSavingsMonthly);
+  const monthsToBuffer      = emergencyGap > 0 && unallocatedSurplus > 0 ? Math.ceil(emergencyGap / (unallocatedSurplus * 0.5)) : 0;
+
+  const totalDebt        = state.debts.reduce((s,d) => s + d.amount, 0);
+  const highInterestDebt = state.debts.filter(d => d.apr >= 7).reduce((s,d) => s + d.amount, 0);
+  const lifeInsuranceTarget     = hasDeps ? householdGross * 10 : gross * 5;
+  const disabilityMonthlyTarget = Math.round(takeHomeMonthly * 0.6);
+  const retirementMonthly = recommendedMonthly;
+
+  state.calc = {
+    emergencyTarget, emergencyGap, bufferMonths,
+    monthlySurplus: unallocatedSurplus,
+    totalActualSavingsMonthly, totalActualSavingsAnnual, actualSavingsRate,
+    actual401k, actualAutoSav, actualAutoInv,
+    recommendedSavingsRate, recommendedMonthly, savingsGapMonthly,
+    savingsGapRate: savingsGapRate.toFixed(1), onTrack,
+    monthsToBuffer, totalDebt, highInterestDebt,
+    lifeInsuranceTarget, disabilityMonthlyTarget,
+    retirementMonthly, annualIncome: gross, grossAnnual: gross,
+    householdGross, householdTakeHomeMonthly,
+    marginalRate, effectiveRate,
+    // Breakdown visual
+    taxMonthly:    (totalTax + (spouseTaxCalc?.totalTax || 0)) / 12,
+    expMonthly:    exp,
+    savingsMonthly: totalActualSavingsMonthly,
+    unallocMonthly: unallocatedSurplus,
+    takeHomeMonthly: householdTakeHomeMonthly
+  };
+}
+
+// ── PLAN COMPUTATION ──
+function computePlan() {
+  const {stability, lifeStage, challenge, name} = state;
+  const c = state.calc;
+  let phase, stageLabel, stageDesc, focuses;
+
+  if (stability==='fragile'||stability==='building') {
+    phase=1; stageLabel='Foundation Phase';
+    stageDesc=`Based on your numbers, ${name}, your first priority is building a ${c.bufferMonths}-month cash buffer of ${fmt(c.emergencyTarget)}. You're currently ${c.emergencyGap > 0 ? fmt(c.emergencyGap) + ' short' : 'on track'}. Everything else compounds from here.`;
+    focuses=[
+      {icon:'🛡️', title:'Build your cash buffer', sub:`Target: ${fmt(c.emergencyTarget)} (${c.bufferMonths} months of expenses)`, amount: c.emergencyGap > 0 ? `${fmt(c.emergencyGap)} to go · ~${c.monthsToBuffer} months at current surplus` : '✓ You\'re already there!', priority:'high'},
+      {icon:'💳', title:'Tackle high-interest debt first', sub: c.highInterestDebt > 0 ? `You have ${fmt(c.highInterestDebt)} in high-interest debt (7%+ APR). This is your biggest return.` : 'No high-interest debt found — great position.', amount: c.highInterestDebt > 0 ? `Prioritize over investing until cleared` : null, priority:'high'},
+      {icon:'⚙️', title: c.onTrack ? 'Keep your savings rate on track' : 'Close your savings gap', sub: c.onTrack ? `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross — at or above the 15% target. Focus on where the money is going, not just how much.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Closing the gap to 15% means adding ${fmt(c.savingsGapMonthly)}/month more.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month needed · target: 15% of gross`, priority: c.onTrack ? 'med' : 'high'}
+    ];
+  } else if (stability==='stable') {
+    phase = lifeStage.includes('kids') ? 3 : 2;
+    stageLabel = lifeStage.includes('kids') ? 'Growth + Protection Phase' : 'Growth Phase';
+    stageDesc = `Your base is solid, ${name}. You have ${fmt(state.currentSavings)} saved. Now it's about growing intentionally${lifeStage.includes('kids') ? ' and protecting the people who depend on you' : ''}.`;
+    focuses = lifeStage.includes('kids') ? [
+      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `Saving ${c.actualSavingsRate.toFixed(1)}% — on track. Now optimize the allocation between protection and growth.` : `Add ${fmt(c.savingsGapMonthly)}/month across your 401k and automated transfers to reach 15%.`, amount: c.onTrack ? null : `${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority: c.onTrack ? 'med' : 'high'},
+      {icon:'🛡️', title:'Get your life coverage right', sub:`With dependents, aim for ${fmtK(c.lifeInsuranceTarget)} in life insurance and ${fmt(c.disabilityMonthlyTarget)}/month disability cover.`, amount:`${fmtK(c.lifeInsuranceTarget)} life · ${fmt(c.disabilityMonthlyTarget)}/mo disability`, priority:'high'},
+      {icon:'👶', title:'Name your beneficiaries', sub:'Check all retirement accounts and insurance policies reflect the right people.', amount:null, priority:'med'}
+    ] : [
+      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — solid. Now focus on optimizing where those savings go.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Add ${fmt(c.savingsGapMonthly)}/month to hit the 15% target.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month to reach ${c.recommendedSavingsRate}%`, priority: c.onTrack ? 'med' : 'high'},
+      {icon:'🏦', title:'Automate long-term investing', sub:`Aim for ${fmt(c.retirementMonthly)}/month total across 401k and investment accounts. You're currently at ${fmt(c.totalActualSavingsMonthly)}/month.`, amount:`${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority:'high'},
+      {icon:'🪣', title:'Learn your tax buckets', sub:'Understand Roth vs. traditional vs. taxable — the right mix for your income bracket matters.', amount:null, priority:'med'}
+    ];
+  } else {
+    phase=4; stageLabel='Optimization Phase';
+    stageDesc=`You're in a strong position, ${name}. Monthly surplus of ${fmt(c.monthlySurplus)}. The focus now shifts from accumulating more to making what you have work harder.`;
+    focuses=[
+      {icon:'🧩', title:'Clarify your asset mix', sub:'Map all accounts by tax treatment: pre-tax, Roth, and taxable. Efficiency lives in the gaps.', amount:`${fmt(c.annualIncome * 12)} annual income — tax diversification is now high leverage`, priority:'high'},
+      {icon:'📍', title:'Optimize asset location', sub:'Hold bonds and REITs in tax-deferred accounts; growth equities in taxable. Small shifts = big tax savings.', amount:null, priority:'high'},
+      {icon:'🎯', title:'Review concentration risk', sub:'Are you overweight in employer stock or a single sector? Reduce where needed.', amount:null, priority:'med'}
+    ];
+  }
+  state.currentPhase = phase;
+
+  document.getElementById('resultStage').textContent = stageLabel;
+  document.getElementById('resultDesc').textContent = stageDesc;
+
+  // Numbers card + income breakdown visual
+  const nc = document.getElementById('resultNumbersCard');
+  if (state.grossIncome > 0 && state.taxCalc) {
+    const t = state.taxCalc;
+    const c2 = state.calc;
+    const gross = state.grossIncome;
+    const pct = n => (n * 100).toFixed(1) + '%';
+
+    // Breakdown visual — use household gross as the base
+    const grossMonthly = (c2.householdGross || gross) / 12;
+    const taxPct   = grossMonthly > 0 ? (c2.taxMonthly / grossMonthly * 100) : 0;
+    const expPct   = grossMonthly > 0 ? (c2.expMonthly / grossMonthly * 100) : 0;
+    const savPct   = grossMonthly > 0 ? (c2.savingsMonthly / grossMonthly * 100) : 0;
+    const gapPct   = grossMonthly > 0 ? (c2.savingsGapMonthly / grossMonthly * 100) : 0;
+    const unalPct  = grossMonthly > 0 ? (c2.unallocMonthly / grossMonthly * 100) : 0;
+
+    const spouseRow = state.spouseTaxCalc
+      ? `<div class="numbers-row"><span class="numbers-label">${state.spouseName || 'Partner'}'s gross</span><span class="numbers-value">${fmt(state.spouseTaxCalc.gross)}/yr</span></div>
+         <div class="numbers-row"><span class="numbers-label">${state.spouseName || 'Partner'}'s tax</span><span class="numbers-value pink">−${fmt(state.spouseTaxCalc.totalTax)}</span></div>` : '';
+    const householdRow = state.spouseTaxCalc
+      ? `<div class="numbers-row"><span class="numbers-label">Household gross</span><span class="numbers-value">${fmt(c2.householdGross)}/yr</span></div>
+         <div class="numbers-row"><span class="numbers-label">Household take-home</span><span class="numbers-value">${fmt(c2.householdTakeHomeMonthly)}/mo</span></div>` : '';
+    const stateRow = t.stateTax > 0
+      ? `<div class="numbers-row"><span class="numbers-label">${t.stateCode} state income tax</span><span class="numbers-value pink">−${fmt(t.stateTax)}</span></div>`
+      : t.stateCode ? `<div class="numbers-row"><span class="numbers-label">${t.stateCode} — no state income tax</span><span class="numbers-value" style="color:#2E7D32">$0</span></div>` : '';
+
+    const savingsStatusHtml = c2.onTrack
+      ? `<div class="bv-on-track-card"><div style="font-size:13px;color:#2E7D32;font-weight:600;margin-bottom:4px;">✓ On track — ${c2.actualSavingsRate.toFixed(1)}% savings rate</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">You're hitting the 15% target across your 401k and automated transfers. Your plan will focus on optimizing where it goes.</div></div>`
+      : `<div class="bv-savings-gap-card"><div style="font-size:13px;color:var(--pink);font-weight:600;margin-bottom:4px;">Savings gap: ${fmt(c2.savingsGapMonthly)}/month (${c2.savingsGapRate}% below target)</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">You're saving ${c2.actualSavingsRate.toFixed(1)}% of gross. The recommended rate is 15% — your plan will show exactly how to close this gap.</div></div>`;
+
+    nc.innerHTML = `
+      <div class="breakdown-visual">
+        <div class="bv-title">Where Your Gross Income Goes</div>
+        <div class="bv-bar-wrap">
+          <div class="bv-segment taxes"   style="width:${taxPct.toFixed(1)}%"></div>
+          <div class="bv-segment expenses" style="width:${expPct.toFixed(1)}%"></div>
+          <div class="bv-segment saving"  style="width:${savPct.toFixed(1)}%"></div>
+          ${gapPct > 0 ? `<div class="bv-segment gap" style="width:${gapPct.toFixed(1)}%"></div>` : ''}
+          <div class="bv-segment unalloc" style="width:${unalPct.toFixed(1)}%"></div>
+        </div>
+        <div class="bv-legend">
+          <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot taxes"></div><div class="bv-legend-label">Taxes (${pct(t.effectiveRate)} effective)</div></div><div class="bv-legend-val">${fmt(t.totalTax / 12)}/mo</div></div>
+          <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot expenses"></div><div class="bv-legend-label">Living expenses</div></div><div class="bv-legend-val">${fmt(c2.expMonthly)}/mo</div></div>
+          <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot saving"></div><div class="bv-legend-label">Intentional savings</div></div><div class="bv-legend-val saving">${fmt(c2.savingsMonthly)}/mo</div></div>
+          ${gapPct > 0 ? `<div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot gap"></div><div class="bv-legend-label">Savings gap (to reach 15%)</div></div><div class="bv-legend-val gap">−${fmt(c2.savingsGapMonthly)}/mo</div></div>` : ''}
+          <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot unalloc"></div><div class="bv-legend-label">Unallocated surplus</div></div><div class="bv-legend-val">${fmt(c2.unallocMonthly)}/mo</div></div>
+        </div>
+      </div>
+      ${savingsStatusHtml}
+      <div class="numbers-card">
+        <div class="numbers-card-title">${state.spouseTaxCalc ? 'Household Tax Breakdown (2024)' : 'Tax Breakdown (2024)'}</div>
+        <div class="numbers-row"><span class="numbers-label">${state.name || 'Your'} gross income</span><span class="numbers-value">${fmt(t.gross)}/yr</span></div>
+        <div class="numbers-row"><span class="numbers-label">${state.name || 'Your'} federal tax</span><span class="numbers-value pink">−${fmt(t.fedTax)}</span></div>
+        ${stateRow}
+        ${spouseRow}
+        ${state.spouseTaxCalc ? '<div class="numbers-divider"></div>' : ''}
+        ${householdRow}
+        <div class="numbers-divider"></div>
+        <div class="numbers-row"><span class="numbers-label">Your effective rate</span><span class="numbers-value">${pct(t.effectiveRate)}</span></div>
+        <div class="numbers-row"><span class="numbers-label">Your marginal rate</span><span class="numbers-value">${pct(t.marginalRate)}</span></div>
+        <div class="numbers-divider"></div>
+        <div class="numbers-row"><span class="numbers-label">Intentional savings</span><span class="numbers-value" style="color:#2E7D32">${fmt(c2.savingsMonthly)}/mo</span></div>
+        <div class="numbers-row"><span class="numbers-label">Emergency fund target</span><span class="numbers-value">${fmt(c2.emergencyTarget)}</span></div>
+        ${c2.totalDebt > 0 ? `<div class="numbers-row"><span class="numbers-label">Total debt tracked</span><span class="numbers-value pink">−${fmt(c2.totalDebt)}</span></div>` : ''}
+      </div>`;
+  } else { nc.innerHTML = ''; }
+
+  const fa = document.getElementById('focusAreas'); fa.innerHTML='';
+  focuses.forEach(f => {
+    fa.innerHTML += `<div class="focus-card"><div class="focus-icon">${f.icon}</div><div class="focus-text"><div class="focus-title">${f.title}</div><div class="focus-sub">${f.sub}</div>${f.amount?`<div class="focus-amount">${f.amount}</div>`:''}</div><div class="focus-priority ${f.priority}">${f.priority==='high'?'Now':'Soon'}</div></div>`;
+  });
+
+  buildRoadmap(phase, state.name);
+}
+
+// ── PHASES ──
+function getPhases() {
+  const c = state.calc;
+  const hasDeps = state.lifeStage.includes('kids') || state.lifeStage.includes('partner');
+  const inc = state.monthlyIncome;
+  return [
+    { num:1, name:'Foundation', emoji:'🏗️',
+      desc:'Build stability and consistent money habits. Every plan depends on a resilient base.',
+      target: inc > 0 ? `Target: ${fmt(c.emergencyTarget)} emergency fund` : null,
+      actions:[
+        inc > 0 ? `Set up a dedicated savings account for your ${c.bufferMonths}-month buffer` : 'Set up a dedicated emergency savings account',
+        inc > 0 ? `Build cash buffer to ${fmt(c.emergencyTarget)} (${c.bufferMonths}× expenses)` : 'Build a 3–6 month cash buffer',
+        inc > 0 ? `Automate ${fmt(Math.round(c.monthlySurplus * 0.3))}/month recurring savings transfer` : 'Automate a recurring savings transfer',
+        'Capture full employer 401k match (free money first)',
+        c.highInterestDebt > 0 ? `List debts by APR — ${fmt(c.highInterestDebt)} is above 7% and costs you most` : 'List all debts with interest rates'
+      ]
+    },
+    { num:2, name:'Growth', emoji:'🌱',
+      desc:'Accumulate wealth intentionally through better saving, investing, and efficiency.',
+      target: inc > 0 ? `Target: ${fmt(c.retirementMonthly)}/mo to retirement` : null,
+      actions:[
+        inc > 0 ? `Increase savings rate to ${c.recommendedSavingsRate}% (${fmt(c.monthlySavingsTarget)}/month)` : 'Increase savings rate by 1–2%',
+        inc > 0 ? `Contribute ${fmt(c.retirementMonthly)}/month to retirement accounts` : 'Set consistent retirement contributions',
+        'Understand your tax buckets: Roth, traditional, taxable',
+        c.totalDebt > 0 ? `Eliminate remaining debt — ${fmt(c.totalDebt)} total tracked` : 'Eliminate high-interest debt',
+        'Open or fully fund taxable investment account'
+      ]
+    },
+    { num:3, name:'Protection', emoji:'🛡️',
+      desc:'Overlay growth with protection when others depend on your income.',
+      target: inc > 0 && hasDeps ? `Target: ${fmtK(c.lifeInsuranceTarget)} life insurance` : null,
+      actions:[
+        inc > 0 && hasDeps ? `Review life insurance — target ${fmtK(c.lifeInsuranceTarget)} (10× income)` : 'Review life insurance coverage',
+        inc > 0 ? `Check disability insurance — should cover ${fmt(c.disabilityMonthlyTarget)}/mo (60% of income)` : 'Check disability insurance',
+        'Name or update beneficiaries on all accounts',
+        hasDeps ? 'Establish guardian designations for dependents' : 'Create a basic will or estate document',
+        'Build a protection-focused to-do checklist'
+      ]
+    },
+    { num:4, name:'Optimization', emoji:'⚙️',
+      desc:'Shift from more to better. Tax-aware investing and portfolio efficiency.',
+      target: inc > 0 ? `Annual income: ${fmt(c.annualIncome)} — tax efficiency is now high leverage` : null,
+      actions:[
+        'Map your full asset mix across all accounts and tax categories',
+        'Review tax diversification: pre-tax vs. Roth vs. taxable balance',
+        c.totalDebt > 0 ? 'Confirm all debt is eliminated before accelerating optimization' : 'Reduce concentration risk in employer stock or single sector',
+        'Align assets to time horizons (near-term vs. long-term)',
+        'Preview retirement withdrawal sequencing strategy'
+      ]
+    },
+    { num:5, name:'Legacy', emoji:'🌅',
+      desc:'Continuity, intention, and long-term impact for those who come after you.',
+      target: null,
+      actions:[
+        'Define what legacy means to you personally',
+        'Review all beneficiary designations across every account',
+        'Understand basic estate planning tools (wills, trusts, POA)',
+        'Establish decision authority documents',
+        'Create a legacy-oriented to-do list for loved ones'
+      ]
+    }
+  ];
+}
+
+function buildRoadmap(currentPhase, name) {
+  document.getElementById('roadmapGreeting').textContent = `${name}'s Roadmap`;
+  const body = document.getElementById('roadmapBody'); body.innerHTML='';
+  const phases = getPhases();
+  phases.forEach((phase,i) => {
+    const status = phase.num < currentPhase ? 'done' : phase.num===currentPhase ? 'active' : 'locked';
+    const isLast = i===phases.length-1;
+    const key=`p${phase.num}`; if (!state.checks[key]) state.checks[key]=[];
+    const completed=state.checks[key].length; const total=phase.actions.length;
+    const pct=Math.round((completed/total)*100);
+    let actionsHTML='';
+    if (status==='active'||status==='done') {
+      const targetChip = phase.target ? `<div class="phase-target-chip">🎯 ${phase.target}</div>` : '';
+      actionsHTML = targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
+        const checked = state.checks[key].includes(ai);
+        return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><span style="${checked?'text-decoration:line-through;color:var(--muted)':'color:var(--navy)'}">${a}</span></div>`;
+      }).join('') + `</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div>`;
+    }
+    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${actionsHTML}</div></div></div>`;
+  });
+}
+
+// ── CHECK / CELEBRATION ──
+let celebrationTimeout;
+function toggleCheck(phaseNum, actionIdx) {
+  const key=`p${phaseNum}`; const arr=state.checks[key]; const idx=arr.indexOf(actionIdx);
+  const adding = idx===-1;
+  if (idx>-1) arr.splice(idx,1); else arr.push(actionIdx);
+  buildRoadmap(state.currentPhase, state.name);
+  if (adding) {
+    const phases = getPhases();
+    const phase = phases.find(p=>p.num===phaseNum);
+    const action = phase ? phase.actions[actionIdx] : 'action';
+    state.activity.unshift({text:`Completed: ${action}`, time:'Just now', phase:phase?phase.name:''});
+    if (state.activity.length > 10) state.activity.pop();
+    showCelebration(phaseNum, actionIdx, arr.length, phase);
+  }
+}
+
+function showCelebration(phaseNum, actionIdx, doneCount, phase) {
+  const total = phase ? phase.actions.length : 5;
+  const allDone = doneCount === total;
+  const overlay = document.getElementById('celebrationOverlay');
+  // Clear old confetti
+  overlay.querySelectorAll('.confetti-piece').forEach(c => c.remove());
+
+  if (allDone) {
+    document.getElementById('celebrationEmoji').textContent = '🎉';
+    document.getElementById('celebrationTitle').textContent = `${phase.name} Phase Complete!`;
+    document.getElementById('celebrationSub').textContent = `You've finished all ${total} actions in the ${phase.name} phase. Incredible momentum.`;
+    spawnConfetti(overlay, 30);
+  } else {
+    const emojis = ['✅','⚡','🎯','💪','🔥','🌟'];
+    document.getElementById('celebrationEmoji').textContent = emojis[doneCount % emojis.length];
+    document.getElementById('celebrationTitle').textContent = `${doneCount} of ${total} done!`;
+    document.getElementById('celebrationSub').textContent = `${phase ? phase.name + ' Phase' : ''} · ${total - doneCount} action${total-doneCount!==1?'s':''} remaining.`;
+    spawnConfetti(overlay, 12);
+  }
+  overlay.classList.add('show');
+  clearTimeout(celebrationTimeout);
+  celebrationTimeout = setTimeout(hideCelebration, allDone ? 3500 : 2200);
+}
+
+function spawnConfetti(parent, count) {
+  const colors = ['#E8186D','#1E2340','#3D4270','#F5F0E8','#FFD700','#4CAF50'];
+  for (let i=0; i<count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `left:${10+Math.random()*80}%;top:${Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.6}s;animation-duration:${1+Math.random()*0.8}s;transform:rotate(${Math.random()*360}deg);${Math.random()>0.5?'border-radius:50%':''}`;
+    parent.appendChild(piece);
+    setTimeout(() => piece.remove(), 2200);
+  }
+}
+
+function hideCelebration() {
+  document.getElementById('celebrationOverlay').classList.remove('show');
+}
+
+// ── LIFE CHANGES ──
+let selectedEvent = null;
+function openLifeChange() {
+  selectedEvent=null;
+  document.querySelectorAll('.lc-event').forEach(e=>e.classList.remove('selected'));
+  const btn=document.getElementById('lcContinueBtn'); btn.style.opacity='0.4'; btn.style.pointerEvents='none';
+  goTo('lifechange');
+}
+function selectLifeEvent(el, id, icon, label) {
+  document.querySelectorAll('.lc-event').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected'); selectedEvent={id,icon,label};
+  const btn=document.getElementById('lcContinueBtn'); btn.style.opacity='1'; btn.style.pointerEvents='auto';
+}
+function startRecalibration() {
+  if (!selectedEvent) return;
+  document.getElementById('recalEventBadge').textContent=`${selectedEvent.icon} ${selectedEvent.label}`;
+  document.getElementById('recalIcon').textContent=selectedEvent.icon;
+  goTo('recalibrating');
+  const steps=document.querySelectorAll('.recal-step');
+  steps.forEach(s=>s.classList.remove('visible'));
+  steps.forEach((s,i)=>setTimeout(()=>s.classList.add('visible'),400+i*500));
+  setTimeout(()=>{ computeLifeChangeUpdate(); goTo('planupdate'); },3200);
+}
+const lifeChangeData = {
+  baby:{newPhase:3,chip:'👶 Having a Baby',title:'Protection is now a priority alongside Growth.',desc:'With a new dependent, Protection has been added in parallel with Growth. Your existing progress is fully preserved.',changes:[{tag:'new',title:'🛡️ Protection Phase unlocked',desc:'Added immediately alongside Growth — dependents change everything.'},{tag:'new',title:'📋 Review life insurance coverage',desc:'With a child, confirm adequate term life coverage for your family.'},{tag:'new',title:'👶 Name a guardian & beneficiaries',desc:'Establish who cares for your child and who inherits your accounts.'},{tag:'updated',title:'💰 Emergency fund target raised',desc:'Buffer target increased from 3 to 6 months — dependents require more cushion.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'Every item you\'ve already checked off stays complete.'}],insight:'Having a child is the single most common trigger for protection gaps. Most parents delay reviewing coverage — <strong>Continuum surfaces this immediately</strong> so your family isn\'t exposed while you focus on growth.'},
+  married:{newPhase:null,chip:'💍 Got Married',title:'Your plan now reflects your shared financial life.',desc:'Marriage introduces shared goals, combined income, and new protection needs.',changes:[{tag:'new',title:'💍 Beneficiary review added',desc:'Update all accounts to reflect your spouse — IRAs, 401ks, insurance policies.'},{tag:'new',title:'📄 Review insurance together',desc:'Can you combine plans? Is one spouse underinsured?'},{tag:'updated',title:'🏦 Savings goals updated',desc:'Targets now account for combined income and shared milestones.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'Nothing resets.'}],insight:'One of the most overlooked post-marriage steps is <strong>updating beneficiary designations</strong>. An old 401k beneficiary overrides any will — this action is now at the top of your list.'},
+  newjob:{newPhase:null,chip:'💼 New Job',title:'A salary change is a planning opportunity.',desc:'New jobs bring new benefits, new 401k rules, and often more income.',changes:[{tag:'new',title:'⚙️ Capture new employer benefits',desc:'Enroll in 401k immediately and capture any match — this is free money.'},{tag:'new',title:'📈 Revisit savings rate',desc:'Income increase? Even directing half the raise to savings is high leverage.'},{tag:'new',title:'🔄 Roll over old 401k',desc:'Don\'t leave your prior employer\'s plan behind.'},{tag:'updated',title:'💼 Benefits review moved to top',desc:'Repriorised — employer benefits windows are time-sensitive.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'Your existing progress is fully intact.'}],insight:'The first 30 days at a new job are your highest-leverage financial window. <strong>Missing the benefits enrollment period can cost thousands</strong> — your plan now flags this as immediate priority.'},
+  house:{newPhase:null,chip:'🏡 Buying a Home',title:'Homeownership changes your financial picture.',desc:'A home is your largest asset and your largest liability.',changes:[{tag:'new',title:'🏠 Homeowners insurance review',desc:'Confirm adequate coverage for your home\'s value and belongings.'},{tag:'new',title:'🔧 Build a home maintenance fund',desc:'Set aside 1% of home value annually for repairs and upkeep.'},{tag:'updated',title:'💰 Emergency fund target raised',desc:'Homeowners need a larger buffer — unexpected repairs happen.'},{tag:'updated',title:'🏦 Savings priorities reordered',desc:'Cash buffer temporarily prioritised above accelerated investing.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'Nothing resets.'}],insight:'New homeowners often drain savings at closing. <strong>Rebuilding your buffer before accelerating investments</strong> is the right sequence — your plan now reflects this.'},
+  divorce:{newPhase:1,chip:'💔 Separation',title:'Your plan has been rebuilt for your individual situation.',desc:'Separation resets many financial assumptions. We\'ve reorganised priorities around stability first.',changes:[{tag:'new',title:'🛡️ Rebuild your individual buffer',desc:'Re-establish a personal emergency fund as a separated individual.'},{tag:'new',title:'📋 Update all beneficiaries immediately',desc:'Accounts, insurance, and retirement plans all need updating now.'},{tag:'new',title:'💳 Establish individual credit',desc:'If you relied on joint credit, building your own history is essential.'},{tag:'updated',title:'🔁 Protection phase repriorised',desc:'If you have dependents, protection has moved to top priority.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'Your individual progress is preserved.'}],insight:'Separation is one of the few events that genuinely resets a plan. <strong>Stability before growth</strong> is the right sequence — your plan reflects your new individual starting point.'},
+  inheritance:{newPhase:4,chip:'🏦 Inheritance',title:'A significant asset change unlocks new priorities.',desc:'An inheritance accelerates your timeline. Optimization is now relevant.',changes:[{tag:'new',title:'⚙️ Optimization Phase unlocked',desc:'Asset location, tax diversification, and allocation strategy are now relevant.'},{tag:'new',title:'🧾 Understand inherited account rules',desc:'Inherited IRAs have specific withdrawal rules — review these first.'},{tag:'new',title:'🎯 Review concentration risk',desc:'Inherited assets may create overexposure to a single stock or class.'},{tag:'updated',title:'📋 Legacy phase previewed',desc:'With significant assets, estate planning is now visible on your roadmap.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'The plan builds forward, not from scratch.'}],insight:'Inheritances are often mishandled because recipients feel pressure to act immediately. <strong>Understanding tax implications before moving any assets</strong> is the highest-priority step.'},
+  jobloss:{newPhase:1,chip:'😟 Job Loss',title:'Stability is the immediate priority.',desc:'Income loss changes everything temporarily. Your plan has been refocused on cash conservation.',changes:[{tag:'new',title:'🛡️ Protect your cash buffer',desc:'Pause non-essential savings goals and protect your existing buffer.'},{tag:'new',title:'📋 Review COBRA and benefits',desc:'Understand your health coverage options and timeline immediately.'},{tag:'new',title:'💳 Minimum payments only',desc:'Cash conservation takes priority over debt paydown right now.'},{tag:'updated',title:'🔁 Growth phase paused temporarily',desc:'Investment contributions deprioritised while income is restored.'},{tag:'preserved',title:'✅ All completed actions kept',desc:'Everything you\'ve built is still here. This is a pause, not a reset.'}],insight:'Protecting your emergency buffer is more important than continuing to invest during income loss. <strong>Your growth phase will resume when you\'re ready</strong> — this is the right sequence.'}
+};
+function computeLifeChangeUpdate() {
+  const ev=selectedEvent; const data=lifeChangeData[ev.id];
+  document.getElementById('puEventChip').textContent=data.chip;
+  document.getElementById('puTitle').textContent=data.title;
+  document.getElementById('puDesc').textContent=data.desc;
+  document.getElementById('puInsightText').innerHTML=data.insight;
+  const changesEl=document.getElementById('puChanges'); changesEl.innerHTML='';
+  data.changes.forEach(c=>{ changesEl.innerHTML+=`<div class="change-card ${c.tag}"><div class="change-tag ${c.tag}">${c.tag==='new'?'+ New':c.tag==='updated'?'↑ Updated':'✓ Preserved'}</div><div class="change-title">${c.title}</div><div class="change-desc">${c.desc}</div></div>`; });
+  state.pendingPhase = data.newPhase!==null ? data.newPhase : state.currentPhase;
+  state.lifeEvents = state.lifeEvents||[]; state.lifeEvents.push({id:ev.id,icon:ev.icon,label:ev.label});
+  // Recalculate with updated life stage
+  if (['baby','married'].includes(ev.id)) { if (!state.lifeStage.includes('kids')) state.lifeStage.push('kids'); computeFinancials(); }
+  if (ev.id==='jobloss') { state.monthlyIncome = 0; computeFinancials(); }
+}
+function applyPlanUpdate() {
+  if (state.pendingPhase!==undefined) state.currentPhase=state.pendingPhase;
+  buildRoadmap(state.currentPhase, state.name); goTo('roadmap');
+}
+
+// ── PROGRESS ──
+function openProgress() {
+  const totalActions = Object.values(state.checks).reduce((s,a)=>s+a.length,0);
+  const streak = Math.min(totalActions, 8);
+  document.getElementById('progTitle').textContent = `${state.name||'Your'}'s Progress`;
+  document.getElementById('progSub').textContent = `Tracking across all 5 phases, ${state.name||'there'}.`;
+  document.getElementById('progActionsVal').textContent = totalActions;
+  document.getElementById('progPhaseVal').textContent = state.currentPhase||1;
+  document.getElementById('progStreakVal').textContent = `🔥 ${streak}`;
+  const phases = getPhases();
+  const pp = document.getElementById('progPhases'); pp.innerHTML='';
+  phases.forEach(ph => {
+    const key=`p${ph.num}`; const done=(state.checks[key]||[]).length; const total=ph.actions.length;
+    const pct=Math.round((done/total)*100);
+    const status = ph.num < state.currentPhase ? 'complete' : ph.num===state.currentPhase ? 'active' : 'locked';
+    const color = status==='complete'?'#4CAF50':status==='active'?'var(--pink)':'var(--border)';
+    const pctColor = status==='complete'?'#2E7D32':status==='active'?'var(--pink)':'var(--muted)';
+    const label = status==='locked'?'Locked':status==='complete'?'✓ Complete':`${done}/${total} done`;
+    pp.innerHTML+=`<div class="pps-card"><div class="pps-top"><div class="pps-name">${ph.emoji} ${ph.name}</div><div class="pps-pct" style="color:${pctColor}">${label}</div></div><div class="pps-bar"><div class="pps-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+  });
+  const na = document.getElementById('progNextAction'); na.innerHTML='';
+  const curPhase = phases.find(p=>p.num===state.currentPhase);
+  if (curPhase) {
+    const key=`p${curPhase.num}`; const done=state.checks[key]||[];
+    const nextIdx = curPhase.actions.findIndex((_,i)=>!done.includes(i));
+    if (nextIdx>=0) {
+      na.innerHTML=`<div class="next-action-card"><div class="nac-icon">${curPhase.emoji}</div><div><div class="nac-badge">Up next · ${curPhase.name} Phase</div><div class="nac-title">${curPhase.actions[nextIdx]}</div><div class="nac-desc">Tap Roadmap to check this off and earn your next celebration.</div></div></div>`;
+    } else {
+      na.innerHTML=`<div class="next-action-card"><div class="nac-icon">🎉</div><div><div class="nac-badge">Phase Complete!</div><div class="nac-title">All ${curPhase.name} actions done!</div><div class="nac-desc">Head to your Roadmap to advance to the next phase.</div></div></div>`;
+    }
+  }
+  const actEl = document.getElementById('progActivity'); actEl.innerHTML='';
+  const acts = state.activity||[];
+  if (acts.length===0) { actEl.innerHTML=`<div style="font-size:13px;color:var(--muted);font-style:italic;padding:4px 0;">No activity yet — check off your first action on the Roadmap.</div>`; }
+  else { acts.slice(0,5).forEach(a=>{ actEl.innerHTML+=`<div class="activity-item"><div class="activity-dot"></div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div>`; }); }
+  const c = state.calc;
+  const insights = [
+    c.emergencyTarget > 0 ? `Your ${c.bufferMonths}-month emergency target is ${fmt(c.emergencyTarget)}. ${state.currentSavings >= c.emergencyTarget ? 'You\'ve hit it — great foundation.' : 'Every transfer gets you closer.'}` : `You're in Phase ${state.currentPhase} of 5. Consistent small actions compound dramatically.`,
+    totalActions > 0 ? `${totalActions} action${totalActions!==1?'s':''} complete. The hardest part is starting — you\'re well past it.` : 'Check off your first action to start building real momentum.',
+    c.retirementMonthly > 0 ? `Contributing ${fmt(c.retirementMonthly)}/month to retirement lets compounding do the heavy lifting.` : 'Sequencing matters more than optimization early on. Stay focused.',
+    'Life events can change your plan instantly — that\'s the feature. Your progress is always preserved.'
+  ];
+  document.getElementById('progInsightText').textContent = insights[totalActions % insights.length];
+  goTo('progress-screen');
+}
+
+// ── PROFILE ──
+function openProfile() {
+  const c = state.calc;
+  document.getElementById('profName').textContent = state.name||'Your Profile';
+  document.getElementById('profAvatar').textContent = state.name ? state.name[0].toUpperCase() : '👤';
+  const phaseNames=['Foundation','Growth','Protection','Optimization','Legacy'];
+  const phaseEmojis=['🏗️','🌱','🛡️','⚙️','🌅'];
+  const pName = phaseNames[(state.currentPhase||1)-1]||'Foundation';
+  const pEmoji = phaseEmojis[(state.currentPhase||1)-1];
+  document.getElementById('profStagePill').textContent = `${pEmoji} ${pName} Phase`;
+  document.getElementById('profDetailName').textContent = state.name||'—';
+  document.getElementById('profDetailAge').textContent = state.age ? `${state.age} years old` : '—';
+  const spouseRow = document.getElementById('profSpouseRow');
+  if (state.spouseName || state.spouseAge) {
+    spouseRow.style.display = 'flex';
+    const spouseAge = state.spouseAge ? `, ${state.spouseAge}` : '';
+    const spouseInc = state.spouseIncome > 0 ? ` · ${fmt(state.spouseIncome)}/yr` : state.spouseWorks === false ? ' · Not working' : '';
+    document.getElementById('profDetailSpouse').textContent = `${state.spouseName||'Partner'}${spouseAge}${spouseInc}`;
+  } else {
+    spouseRow.style.display = 'none';
+  }
+  document.getElementById('profDetailIncome').textContent = state.grossIncome > 0 ? fmt(state.grossIncome)+'/year' : '—';
+  const taxTypeLabel = state.incomeType === '1099' ? '1099 Self-Employed' : 'W-2 Employee';
+  const filingLabel = {single:'Single',married:'Married Filing Jointly',hoh:'Head of Household'}[state.filingStatus]||'—';
+  document.getElementById('profDetailTaxType').textContent = state.grossIncome > 0 ? `${taxTypeLabel} · ${filingLabel}` : '—';
+  document.getElementById('profDetailTaxRate').textContent = state.taxCalc ? (state.taxCalc.effectiveRate * 100).toFixed(1) + '% effective · ' + (state.taxCalc.marginalRate * 100).toFixed(0) + '% marginal' : '—';
+  document.getElementById('profDetailExpenses').textContent = state.monthlyExpenses > 0 ? fmt(state.monthlyExpenses)+'/month' : '—';
+  document.getElementById('profDetailDebt').textContent = c.totalDebt > 0 ? fmt(c.totalDebt) : 'None tracked';
+
+  // Targets card
+  const tc = document.getElementById('profTargetsCard'); tc.innerHTML='';
+  if (state.monthlyIncome > 0) {
+    const rows = [
+      {icon:'🛡️', label:'Emergency Fund Target', value: fmt(c.emergencyTarget)},
+      {icon:'💰', label:'Monthly Savings Target', value: fmt(c.monthlySavingsTarget)+'/mo'},
+      {icon:'🏦', label:'Retirement Contribution', value: fmt(c.retirementMonthly)+'/mo'},
+    ];
+    if (state.lifeStage.includes('kids')||state.lifeStage.includes('partner')) {
+      rows.push({icon:'🛡️', label:'Life Insurance Target', value: fmtK(c.lifeInsuranceTarget)});
+      rows.push({icon:'⚕️', label:'Disability Cover Target', value: fmt(c.disabilityMonthlyTarget)+'/mo'});
+    }
+    rows.forEach((r,i) => {
+      tc.innerHTML += `<div class="prof-row"${i===rows.length-1?' style="border-bottom:none"':''}><div class="prof-row-icon">${r.icon}</div><div class="prof-row-content"><div class="prof-row-label">${r.label}</div><div class="prof-row-value">${r.value}</div></div></div>`;
+    });
+  } else {
+    tc.innerHTML = `<div class="prof-row"><div class="prof-row-content"><div class="prof-row-value" style="font-size:13px;color:var(--muted);font-weight:400">Add your income and expenses to see personalized targets</div></div></div>`;
+  }
+
+  const chipsEl = document.getElementById('profLifeEvents');
+  if (!state.lifeEvents||state.lifeEvents.length===0) {
+    chipsEl.innerHTML='<div style="font-size:13px;color:var(--muted);font-style:italic;padding:4px 0;">No life events logged yet. Use the Life Change tab when something big happens.</div>';
+  } else {
+    chipsEl.innerHTML = state.lifeEvents.map(e=>`<div class="life-event-chip">${e.icon} ${e.label}</div>`).join('');
+  }
+  goTo('profile-screen');
+}
+</script>
+</body>
+</html>
