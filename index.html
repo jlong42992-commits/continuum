@@ -322,6 +322,20 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .bv-savings-gap-card { background:rgba(232,24,109,0.06); border:1px solid rgba(232,24,109,0.2); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
 .bv-on-track-card { background:rgba(46,125,50,0.06); border:1px solid rgba(46,125,50,0.2); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
 
+/* TOOLTIPS */
+.tip-icon { display:inline-flex; align-items:center; justify-content:center; width:17px; height:17px; border-radius:50%; background:rgba(232,24,109,0.12); font-size:10px; cursor:pointer; margin-left:3px; vertical-align:middle; flex-shrink:0; touch-action:manipulation; user-select:none; -webkit-user-select:none; line-height:1; }
+.tip-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.45); z-index:150; opacity:0; pointer-events:none; transition:opacity 0.25s; border-radius:44px; }
+@media (max-width:480px) { .tip-overlay { border-radius:0; } }
+.tip-overlay.show { opacity:1; pointer-events:auto; }
+.tip-sheet { position:absolute; bottom:0; left:0; right:0; background:white; border-radius:24px 24px 0 0; padding:28px 24px 44px; z-index:151; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+.tip-sheet.show { transform:translateY(0); }
+.tip-pill { display:inline-flex; align-items:center; gap:5px; background:rgba(232,24,109,0.1); border-radius:20px; padding:4px 11px; font-size:11px; font-weight:700; color:var(--pink); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:14px; }
+.tip-term { font-family:'DM Serif Display',serif; font-size:22px; color:var(--navy); margin-bottom:10px; line-height:1.2; }
+.tip-body { font-size:14px; color:var(--slate); line-height:1.65; }
+.tip-close { display:block; text-align:center; font-size:14px; font-weight:600; color:var(--pink); margin-top:22px; cursor:pointer; touch-action:manipulation; }
+.action-hint { font-size:12px; color:var(--muted); line-height:1.4; margin-top:4px; font-style:italic; }
+.focus-beg-sub { font-size:12px; color:var(--slate); line-height:1.5; margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
+
 /* BOTTOM NAV */
 .bottom-nav { display:flex; background:white; border-top:1px solid var(--border); padding:12px 0 28px; flex-shrink:0; }
 .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px 0; }
@@ -395,14 +409,40 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
   <div class="ob-footer">
     <button class="btn-primary" onclick="nextOb(25)">Continue →</button>
-    <button class="btn-secondary" onclick="goTo('ob3')">Skip for now</button>
+    <button class="btn-secondary" onclick="goTo('ob-quiz')">Skip for now</button>
   </div>
+</div>
+
+<!-- OB-QUIZ: Financial Literacy -->
+<div class="screen" id="ob-quiz">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">A few quick questions.</div>
+    <div class="ob-hint">Helps us explain things at the right level — no wrong answers.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-label" style="margin-bottom:10px;">How comfortable are you with investing?</div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ1','beginner')"><div class="ob-option-icon">🌱</div><div><div class="ob-option-label">Beginner</div><div class="ob-option-desc">I'm still figuring out the basics</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ1','some')"><div class="ob-option-icon">📘</div><div><div class="ob-option-label">Some knowledge</div><div class="ob-option-desc">I understand the concepts but not all the details</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ1','confident')"><div class="ob-option-icon">📈</div><div><div class="ob-option-label">Confident</div><div class="ob-option-desc">I manage my own investments comfortably</div></div></div>
+    <div style="height:4px;"></div>
+    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">Do you know the difference between a Roth and Traditional IRA?</div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ2','yes')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Yes</div><div class="ob-option-desc">I understand how they're taxed differently</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ2','sort_of')"><div class="ob-option-icon">🤔</div><div><div class="ob-option-label">Sort of</div><div class="ob-option-desc">I've heard of them but I'm fuzzy on the details</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ2','no')"><div class="ob-option-icon">❓</div><div><div class="ob-option-label">No</div><div class="ob-option-desc">Not familiar with the difference</div></div></div>
+    <div style="height:4px;"></div>
+    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">Have you ever worked with a financial advisor?</div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ3','yes')"><div class="ob-option-icon">🤝</div><div><div class="ob-option-label">Yes</div><div class="ob-option-desc">I've worked with one before</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ3','no')"><div class="ob-option-icon">🙅</div><div><div class="ob-option-label">No</div><div class="ob-option-desc">Never have</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'quizQ3','not_yet')"><div class="ob-option-icon">🔜</div><div><div class="ob-option-label">Not yet</div><div class="ob-option-desc">I'm open to it but haven't yet</div></div></div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb('quiz')">Continue →</button></div>
 </div>
 
 <!-- OB3: Financial Snapshot -->
 <div class="screen" id="ob3">
   <div class="ob-header">
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">Where are you financially?</div>
     <div class="ob-hint">Rough estimates are totally fine — we're not tracking to the dollar.</div>
   </div>
@@ -418,7 +458,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB4: Income & Tax -->
 <div class="screen" id="ob4">
   <div class="ob-header">
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question" id="ob4Title">Tell us your income.</div>
     <div class="ob-hint">We'll calculate real take-home using actual 2024 tax brackets.</div>
   </div>
@@ -802,6 +842,15 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
 </div>
 
+<!-- TOOLTIP MODAL -->
+<div class="tip-overlay" id="tipOverlay" onclick="hideTip()"></div>
+<div class="tip-sheet" id="tipSheet">
+  <div class="tip-pill">💡 Plain English</div>
+  <div class="tip-term" id="tipTerm"></div>
+  <div class="tip-body" id="tipBody"></div>
+  <span class="tip-close" onclick="hideTip()">Got it</span>
+</div>
+
 <!-- CELEBRATION OVERLAY -->
 <div class="celebration-overlay" id="celebrationOverlay" onclick="hideCelebration()">
   <div id="celebrationEmoji" class="celebration-emoji">✅</div>
@@ -828,6 +877,7 @@ const state = {
   spouseName:'', spouseAge:null, spouseWorks:null, spouseIncome:0,
   // Intentional savings inputs
   s401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
+  literacyLevel:'', quizQ1:null, quizQ2:null, quizQ3:null,
   checks:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
@@ -835,6 +885,72 @@ const state = {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
+
+// ── TOOLTIPS / LITERACY ──
+const GLOSSARY = {
+  emergency_fund:  { term:'Emergency Fund', body:'Money set aside for unexpected expenses — job loss, medical bills, or big repairs. Keep it in a separate high-yield savings account so it\'s accessible but not tempting to spend.' },
+  match_401k:      { term:'401k Employer Match', body:'Free money from your employer. If they match 4%, contributing at least 4% doubles that portion instantly — a guaranteed 100% return. Not capturing it is like turning down part of your salary.' },
+  apr:             { term:'APR (Annual Percentage Rate)', body:'The yearly cost of carrying a debt. A credit card at 22% APR costs you 22 cents per year for every dollar you owe. Higher APR = more urgent to pay it off first.' },
+  savings_rate:    { term:'Savings Rate', body:'The percentage of your gross income you set aside across all accounts — 401k, IRA, and auto-transfers. A 15% rate is the widely-used target for long-term financial health.' },
+  roth_trad:       { term:'Roth vs. Traditional', body:'Traditional: contribute pre-tax (pay taxes when you withdraw in retirement). Roth: contribute after-tax (pay taxes now, withdraw tax-free). Roth is often better early in your career when your tax rate is lower.' },
+  tax_buckets:     { term:'Tax Buckets', body:'Three ways money gets taxed in investing: pre-tax (Traditional 401k/IRA — defer taxes), Roth (tax-free growth), and taxable brokerage (pay taxes on gains each year). Spreading across all three gives you flexibility in retirement.' },
+  taxable_acct:    { term:'Taxable Brokerage Account', body:'An investment account with no special tax rules — no annual limits, no withdrawal restrictions. You pay taxes on dividends and gains each year. More flexible than retirement accounts but less tax-efficient.' },
+  life_insurance:  { term:'Life Insurance', body:'Pays a lump sum to your family if you die. Term life covers a set period (like 20 years) at a low monthly cost. Most families with dependents need coverage equal to 10× their annual income.' },
+  disability_ins:  { term:'Disability Insurance', body:'Replaces 60% of your income if illness or injury prevents you from working. Statistically, you\'re far more likely to be disabled during your working years than to die. Often the most overlooked coverage.' },
+  beneficiary:     { term:'Beneficiaries', body:'The people named to receive your accounts or insurance payouts when you die. Must be set on each account individually — a will alone does not override a beneficiary designation.' },
+  guardian:        { term:'Guardian Designations', body:'A legal document naming who would raise your children if both parents died. Without it, a court decides. Can be part of a simple will and takes less than an hour to set up.' },
+  asset_location:  { term:'Asset Location', body:'Placing investments in the right account type to minimize taxes. Example: hold bonds (taxed as income) inside a 401k; hold growth stocks in a taxable account where gains are taxed at the lower capital gains rate.' },
+  concentration:   { term:'Concentration Risk', body:'Having too much money in one stock, sector, or employer. If it drops sharply, your whole portfolio suffers. Diversifying across many companies and asset types reduces this risk.' },
+  poa:             { term:'Power of Attorney (POA)', body:'A legal document authorizing someone to act on your behalf for financial or medical decisions if you\'re unable to. Every adult should have one — without it, even a spouse may face hurdles managing your affairs.' },
+  estate_planning: { term:'Estate Planning', body:'Preparing what happens to your assets and dependents after you die or become incapacitated. Includes a will, beneficiary designations, and powers of attorney. It protects your family — not just your wealth.' },
+  asset_mix:       { term:'Asset Mix', body:'How your investments are spread across different types — stocks, bonds, real estate, cash. Your mix should reflect how long until you need the money and how much risk you\'re comfortable with.' },
+};
+
+const TERM_MAP = [
+  [/emergency\s+(?:savings\s+)?account|cash\s+buffer|\d+-month\s+buffer/i,   'emergency_fund'],
+  [/employer\s+(?:401k\s+)?match|401k\s+match|free\s+money\s+first/i,        'match_401k'],
+  [/\bAPR\b/,                                                                   'apr'],
+  [/savings\s+rate|15%\s+(?:target|of\s+gross)/i,                              'savings_rate'],
+  [/\bRoth\b|\btraditional\s+IRA\b/i,                                           'roth_trad'],
+  [/tax\s+bucket/i,                                                              'tax_buckets'],
+  [/taxable\s+investment\s+account/i,                                            'taxable_acct'],
+  [/life\s+insurance/i,                                                          'life_insurance'],
+  [/disability\s+insurance/i,                                                    'disability_ins'],
+  [/beneficiar(?:y|ies)/i,                                                       'beneficiary'],
+  [/guardian\s+designations?/i,                                                  'guardian'],
+  [/asset\s+location/i,                                                          'asset_location'],
+  [/concentration\s+risk/i,                                                      'concentration'],
+  [/\bPOA\b/,                                                                    'poa'],
+  [/estate\s+planning/i,                                                         'estate_planning'],
+  [/asset\s+mix|full\s+asset/i,                                                  'asset_mix'],
+];
+
+function annotateTips(text) {
+  if (state.literacyLevel !== 'beginner') return text;
+  let result = text;
+  const used = new Set();
+  for (const [pattern, key] of TERM_MAP) {
+    if (used.has(key)) continue;
+    if (pattern.test(result)) {
+      used.add(key);
+      result = result.replace(pattern, m => `${m}<span class="tip-icon" onclick="showTip('${key}')">💡</span>`);
+    }
+  }
+  return result;
+}
+
+function showTip(key) {
+  const g = GLOSSARY[key]; if (!g) return;
+  document.getElementById('tipTerm').textContent = g.term;
+  document.getElementById('tipBody').textContent = g.body;
+  document.getElementById('tipOverlay').classList.add('show');
+  document.getElementById('tipSheet').classList.add('show');
+}
+
+function hideTip() {
+  document.getElementById('tipOverlay').classList.remove('show');
+  document.getElementById('tipSheet').classList.remove('show');
+}
 
 // ── NAVIGATION ──
 function goTo(id) {
@@ -877,11 +993,24 @@ function nextOb(step) {
   else if (step===2) {
     // Route to spouse screen only if partner selected
     if (state.lifeStage.includes('partner')) goTo('ob25');
-    else goTo('ob3');
+    else goTo('ob-quiz');
   }
   else if (step===25) {
     state.spouseName = document.getElementById('spouseName').value || '';
     state.spouseAge  = parseInt(document.getElementById('spouseAge').value) || null;
+    goTo('ob-quiz');
+  }
+  else if (step==='quiz') {
+    const scores = {
+      quizQ1: { beginner:0, some:1, confident:2 },
+      quizQ2: { no:0, sort_of:1, yes:2 },
+      quizQ3: { no:0, not_yet:1, yes:2 }
+    };
+    let total = 0;
+    ['quizQ1','quizQ2','quizQ3'].forEach(q => {
+      if (state[q] && scores[q][state[q]] !== undefined) total += scores[q][state[q]];
+    });
+    state.literacyLevel = total <= 2 ? 'beginner' : total <= 4 ? 'intermediate' : 'advanced';
     goTo('ob3');
   }
   else if (step===3) goTo('ob4');
@@ -1276,30 +1405,42 @@ function computePlan() {
     phase=1; stageLabel='Foundation Phase';
     stageDesc=`Based on your numbers, ${name}, your first priority is building a ${c.bufferMonths}-month cash buffer of ${fmt(c.emergencyTarget)}. You're currently ${c.emergencyGap > 0 ? fmt(c.emergencyGap) + ' short' : 'on track'}. Everything else compounds from here.`;
     focuses=[
-      {icon:'🛡️', title:'Build your cash buffer', sub:`Target: ${fmt(c.emergencyTarget)} (${c.bufferMonths} months of expenses)`, amount: c.emergencyGap > 0 ? `${fmt(c.emergencyGap)} to go · ~${c.monthsToBuffer} months at current surplus` : '✓ You\'re already there!', priority:'high'},
-      {icon:'💳', title:'Tackle high-interest debt first', sub: c.highInterestDebt > 0 ? `You have ${fmt(c.highInterestDebt)} in high-interest debt (7%+ APR). This is your biggest return.` : 'No high-interest debt found — great position.', amount: c.highInterestDebt > 0 ? `Prioritize over investing until cleared` : null, priority:'high'},
-      {icon:'⚙️', title: c.onTrack ? 'Keep your savings rate on track' : 'Close your savings gap', sub: c.onTrack ? `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross — at or above the 15% target. Focus on where the money is going, not just how much.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Closing the gap to 15% means adding ${fmt(c.savingsGapMonthly)}/month more.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month needed · target: 15% of gross`, priority: c.onTrack ? 'med' : 'high'}
+      {icon:'🛡️', title:'Build your cash buffer', sub:`Target: ${fmt(c.emergencyTarget)} (${c.bufferMonths} months of expenses)`, amount: c.emergencyGap > 0 ? `${fmt(c.emergencyGap)} to go · ~${c.monthsToBuffer} months at current surplus` : '✓ You\'re already there!', priority:'high',
+        begSub:'Keep this in a high-yield savings account, separate from your everyday spending. Open a free account at any online bank and set up a small automatic transfer to start.'},
+      {icon:'💳', title:'Tackle high-interest debt first', sub: c.highInterestDebt > 0 ? `You have ${fmt(c.highInterestDebt)} in high-interest debt (7%+ APR). This is your biggest return.` : 'No high-interest debt found — great position.', amount: c.highInterestDebt > 0 ? `Prioritize over investing until cleared` : null, priority:'high',
+        begSub:'High-interest debt (like credit cards) grows faster than most investments earn. Paying it off is one of the best financial moves available to you right now.'},
+      {icon:'⚙️', title: c.onTrack ? 'Keep your savings rate on track' : 'Close your savings gap', sub: c.onTrack ? `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross — at or above the 15% target. Focus on where the money is going, not just how much.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Closing the gap to 15% means adding ${fmt(c.savingsGapMonthly)}/month more.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month needed · target: 15% of gross`, priority: c.onTrack ? 'med' : 'high',
+        begSub: c.onTrack ? 'You\'re doing the right things — keep automating and let compounding work over time.' : 'Even automating an extra $50–100/month moves the needle. You can increase it gradually without feeling a big pinch.'}
     ];
   } else if (stability==='stable') {
     phase = lifeStage.includes('kids') ? 3 : 2;
     stageLabel = lifeStage.includes('kids') ? 'Growth + Protection Phase' : 'Growth Phase';
     stageDesc = `Your base is solid, ${name}. You have ${fmt(state.currentSavings)} saved. Now it's about growing intentionally${lifeStage.includes('kids') ? ' and protecting the people who depend on you' : ''}.`;
     focuses = lifeStage.includes('kids') ? [
-      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `Saving ${c.actualSavingsRate.toFixed(1)}% — on track. Now optimize the allocation between protection and growth.` : `Add ${fmt(c.savingsGapMonthly)}/month across your 401k and automated transfers to reach 15%.`, amount: c.onTrack ? null : `${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority: c.onTrack ? 'med' : 'high'},
-      {icon:'🛡️', title:'Get your life coverage right', sub:`With dependents, aim for ${fmtK(c.lifeInsuranceTarget)} in life insurance and ${fmt(c.disabilityMonthlyTarget)}/month disability cover.`, amount:`${fmtK(c.lifeInsuranceTarget)} life · ${fmt(c.disabilityMonthlyTarget)}/mo disability`, priority:'high'},
-      {icon:'👶', title:'Name your beneficiaries', sub:'Check all retirement accounts and insurance policies reflect the right people.', amount:null, priority:'med'}
+      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `Saving ${c.actualSavingsRate.toFixed(1)}% — on track. Now optimize the allocation between protection and growth.` : `Add ${fmt(c.savingsGapMonthly)}/month across your 401k and automated transfers to reach 15%.`, amount: c.onTrack ? null : `${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority: c.onTrack ? 'med' : 'high',
+        begSub: c.onTrack ? 'You\'re hitting the target — now make sure the money is going to the right accounts (401k, Roth IRA, etc.).' : 'Even small increases add up. Try raising your 401k contribution by 1% and setting up a recurring transfer to savings.'},
+      {icon:'🛡️', title:'Get your life coverage right', sub:`With dependents, aim for ${fmtK(c.lifeInsuranceTarget)} in life insurance and ${fmt(c.disabilityMonthlyTarget)}/month disability cover.`, amount:`${fmtK(c.lifeInsuranceTarget)} life · ${fmt(c.disabilityMonthlyTarget)}/mo disability`, priority:'high',
+        begSub:'Term life insurance replaces your income for your family if you die. A 20-year term policy typically costs less than a few dollars a day. Disability coverage protects that same income if you\'re injured or ill.'},
+      {icon:'👶', title:'Name your beneficiaries', sub:'Check all retirement accounts and insurance policies reflect the right people.', amount:null, priority:'med',
+        begSub:'Log in to each retirement account and insurance policy and add or confirm who should receive the money. This takes about 5 minutes per account and is one of the most important things you can do.'}
     ] : [
-      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — solid. Now focus on optimizing where those savings go.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Add ${fmt(c.savingsGapMonthly)}/month to hit the 15% target.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month to reach ${c.recommendedSavingsRate}%`, priority: c.onTrack ? 'med' : 'high'},
-      {icon:'🏦', title:'Automate long-term investing', sub:`Aim for ${fmt(c.retirementMonthly)}/month total across 401k and investment accounts. You're currently at ${fmt(c.totalActualSavingsMonthly)}/month.`, amount:`${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority:'high'},
-      {icon:'🪣', title:'Learn your tax buckets', sub:'Understand Roth vs. traditional vs. taxable — the right mix for your income bracket matters.', amount:null, priority:'med'}
+      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — solid. Now focus on optimizing where those savings go.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Add ${fmt(c.savingsGapMonthly)}/month to hit the 15% target.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month to reach ${c.recommendedSavingsRate}%`, priority: c.onTrack ? 'med' : 'high',
+        begSub: c.onTrack ? 'You\'re doing the right things — keep automating and let compounding work.' : 'Start with your 401k contribution. If your employer matches, increase until you capture the full match first.'},
+      {icon:'🏦', title:'Automate long-term investing', sub:`Aim for ${fmt(c.retirementMonthly)}/month total across 401k and investment accounts. You're currently at ${fmt(c.totalActualSavingsMonthly)}/month.`, amount:`${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority:'high',
+        begSub:'This means setting up regular, automatic transfers to your 401k or IRA so investing happens before you can spend the money. Consistent contributions compound dramatically over decades.'},
+      {icon:'🪣', title:'Learn your tax buckets', sub:'Understand Roth vs. traditional vs. taxable — the right mix for your income bracket matters.', amount:null, priority:'med',
+        begSub:'There are three main ways money gets invested and taxed. Roth accounts grow tax-free. Traditional accounts give you a tax break now. Taxable accounts have no special rules but are flexible. A mix of all three is usually optimal.'}
     ];
   } else {
     phase=4; stageLabel='Optimization Phase';
     stageDesc=`You're in a strong position, ${name}. Monthly surplus of ${fmt(c.monthlySurplus)}. The focus now shifts from accumulating more to making what you have work harder.`;
     focuses=[
-      {icon:'🧩', title:'Clarify your asset mix', sub:'Map all accounts by tax treatment: pre-tax, Roth, and taxable. Efficiency lives in the gaps.', amount:`${fmt(c.annualIncome * 12)} annual income — tax diversification is now high leverage`, priority:'high'},
-      {icon:'📍', title:'Optimize asset location', sub:'Hold bonds and REITs in tax-deferred accounts; growth equities in taxable. Small shifts = big tax savings.', amount:null, priority:'high'},
-      {icon:'🎯', title:'Review concentration risk', sub:'Are you overweight in employer stock or a single sector? Reduce where needed.', amount:null, priority:'med'}
+      {icon:'🧩', title:'Clarify your asset mix', sub:'Map all accounts by tax treatment: pre-tax, Roth, and taxable. Efficiency lives in the gaps.', amount:`${fmt(c.annualIncome * 12)} annual income — tax diversification is now high leverage`, priority:'high',
+        begSub:'List out every account you have (401k, IRA, brokerage, etc.) and what\'s in each. Knowing your full picture is the foundation for making smarter decisions.'},
+      {icon:'📍', title:'Optimize asset location', sub:'Hold bonds and REITs in tax-deferred accounts; growth equities in taxable. Small shifts = big tax savings.', amount:null, priority:'high',
+        begSub:'Where you hold investments matters as much as what you hold. Placing the right types of assets in the right accounts can meaningfully reduce your annual tax bill.'},
+      {icon:'🎯', title:'Review concentration risk', sub:'Are you overweight in employer stock or a single sector? Reduce where needed.', amount:null, priority:'med',
+        begSub:'If a large portion of your portfolio is in one company or industry, a bad quarter there could hurt your whole financial picture. Spreading across many investments reduces that risk.'}
     ];
   }
   state.currentPhase = phase;
@@ -1376,7 +1517,9 @@ function computePlan() {
 
   const fa = document.getElementById('focusAreas'); fa.innerHTML='';
   focuses.forEach(f => {
-    fa.innerHTML += `<div class="focus-card"><div class="focus-icon">${f.icon}</div><div class="focus-text"><div class="focus-title">${f.title}</div><div class="focus-sub">${f.sub}</div>${f.amount?`<div class="focus-amount">${f.amount}</div>`:''}</div><div class="focus-priority ${f.priority}">${f.priority==='high'?'Now':'Soon'}</div></div>`;
+    const begSubHtml = state.literacyLevel === 'beginner' && f.begSub
+      ? `<div class="focus-beg-sub">${f.begSub}</div>` : '';
+    fa.innerHTML += `<div class="focus-card"><div class="focus-icon">${f.icon}</div><div class="focus-text"><div class="focus-title">${f.title}</div><div class="focus-sub">${annotateTips(f.sub)}</div>${f.amount?`<div class="focus-amount">${f.amount}</div>`:''}${begSubHtml}</div><div class="focus-priority ${f.priority}">${f.priority==='high'?'Now':'Soon'}</div></div>`;
   });
 
   buildRoadmap(phase, state.name);
@@ -1397,6 +1540,13 @@ function getPhases() {
         inc > 0 ? `Automate ${fmt(Math.round(c.monthlySurplus * 0.3))}/month recurring savings transfer` : 'Automate a recurring savings transfer',
         'Capture full employer 401k match (free money first)',
         c.highInterestDebt > 0 ? `List debts by APR — ${fmt(c.highInterestDebt)} is above 7% and costs you most` : 'List all debts with interest rates'
+      ],
+      hints:[
+        'Keep this separate from your checking account so you\'re not tempted to spend it.',
+        'This buffer means you won\'t need to borrow money when something unexpected happens.',
+        'Automation removes willpower from the equation — the money saves itself before you see it.',
+        'Your employer match is free money. Not claiming it is like turning down part of your salary.',
+        'Sorting by interest rate shows you which debt is costing you the most each month.'
       ]
     },
     { num:2, name:'Growth', emoji:'🌱',
@@ -1408,6 +1558,13 @@ function getPhases() {
         'Understand your tax buckets: Roth, traditional, taxable',
         c.totalDebt > 0 ? `Eliminate remaining debt — ${fmt(c.totalDebt)} total tracked` : 'Eliminate high-interest debt',
         'Open or fully fund taxable investment account'
+      ],
+      hints:[
+        'Even increasing by 1% of income per year adds up significantly over a career.',
+        'Small, consistent contributions compound dramatically over decades — the amount matters less than the habit.',
+        'The right account type for your income bracket can save you thousands in taxes over time.',
+        'Paying off debt is a guaranteed return equal to its interest rate — often better than investing.',
+        'Unlike a 401k, there are no annual contribution limits or withdrawal rules on a brokerage account.'
       ]
     },
     { num:3, name:'Protection', emoji:'🛡️',
@@ -1419,6 +1576,13 @@ function getPhases() {
         'Name or update beneficiaries on all accounts',
         hasDeps ? 'Establish guardian designations for dependents' : 'Create a basic will or estate document',
         'Build a protection-focused to-do checklist'
+      ],
+      hints:[
+        'Term life insurance is affordable and pays out a lump sum to your family if you die.',
+        'You\'re statistically more likely to be disabled during your working years than to die. This coverage protects your income.',
+        'Log in to each retirement account and insurance policy and confirm the right people are listed.',
+        'Without this, a court decides who raises your children — not you.',
+        'A simple checklist ensures no coverage gaps are left unaddressed.'
       ]
     },
     { num:4, name:'Optimization', emoji:'⚙️',
@@ -1430,6 +1594,13 @@ function getPhases() {
         c.totalDebt > 0 ? 'Confirm all debt is eliminated before accelerating optimization' : 'Reduce concentration risk in employer stock or single sector',
         'Align assets to time horizons (near-term vs. long-term)',
         'Preview retirement withdrawal sequencing strategy'
+      ],
+      hints:[
+        'Knowing exactly what you own and where it\'s held is the foundation of tax-efficient investing.',
+        'Spreading money across all three tax types gives you flexibility to minimize taxes in retirement.',
+        'Holding too much in one investment amplifies your risk — diversification is your hedge.',
+        'Money you\'ll need soon should be in stable investments; money for decades away can take more risk.',
+        'The order you withdraw from accounts in retirement significantly affects your lifetime tax bill.'
       ]
     },
     { num:5, name:'Legacy', emoji:'🌅',
@@ -1441,6 +1612,13 @@ function getPhases() {
         'Understand basic estate planning tools (wills, trusts, POA)',
         'Establish decision authority documents',
         'Create a legacy-oriented to-do list for loved ones'
+      ],
+      hints:[
+        'Legacy doesn\'t require great wealth — it\'s about intention and the impact you leave behind.',
+        'Outdated beneficiaries can send your money to the wrong person, even if your will says otherwise.',
+        'A basic will, healthcare proxy, and POA cover most people\'s needs and can be set up affordably.',
+        'These documents ensure someone you trust can act on your behalf if you can\'t.',
+        'This is a practical gift to your family — it reduces stress and confusion during an already hard time.'
       ]
     }
   ];
@@ -1461,7 +1639,11 @@ function buildRoadmap(currentPhase, name) {
       const targetChip = phase.target ? `<div class="phase-target-chip">🎯 ${phase.target}</div>` : '';
       actionsHTML = targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
         const checked = state.checks[key].includes(ai);
-        return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><span style="${checked?'text-decoration:line-through;color:var(--muted)':'color:var(--navy)'}">${a}</span></div>`;
+        const textStyle = checked ? 'text-decoration:line-through;color:var(--muted)' : 'color:var(--navy)';
+        const annotated = annotateTips(a);
+        const hint = state.literacyLevel === 'beginner' && phase.hints?.[ai]
+          ? `<div class="action-hint">${phase.hints[ai]}</div>` : '';
+        return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><div style="flex:1;min-width:0;"><span style="${textStyle}">${annotated}</span>${hint}</div></div>`;
       }).join('') + `</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div>`;
     }
     body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${actionsHTML}</div></div></div>`;
