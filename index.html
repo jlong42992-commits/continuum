@@ -113,6 +113,22 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .numbers-value.pink { color:var(--pink); }
 .numbers-divider { height:1px; background:rgba(255,255,255,0.08); margin:10px 0; }
 
+/* ROADMAP CONFIRM */
+#roadmap-confirm { background:var(--cream); }
+.rc-header { padding:56px 28px 24px; }
+.rc-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--navy); margin-bottom:8px; line-height:1.2; }
+.rc-sub { font-size:14px; color:var(--muted); line-height:1.55; }
+.rc-body { padding:0 28px 16px; flex:1; }
+.rc-phase-group { margin-bottom:22px; }
+.rc-phase-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+.rc-item { background:white; border:1.5px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:8px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:border-color 0.15s,background 0.15s; touch-action:manipulation; }
+.rc-item.selected { border-color:var(--navy); background:rgba(30,35,64,0.03); }
+.rc-checkbox { width:22px; height:22px; border-radius:7px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; margin-top:1px; }
+.rc-item.selected .rc-checkbox { background:var(--navy); border-color:var(--navy); }
+.rc-item.selected .rc-checkbox::after { content:'✓'; color:white; font-size:12px; font-weight:700; }
+.rc-item-text { font-size:13px; color:var(--navy); line-height:1.45; }
+.rc-footer { padding:12px 28px 44px; display:flex; flex-direction:column; gap:10px; }
+
 /* ROADMAP */
 #roadmap { background:var(--cream); }
 .roadmap-header { padding:56px 28px 20px; border-bottom:1px solid var(--border); }
@@ -644,7 +660,20 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="result-section-title">Your Top Priorities</div>
     <div id="focusAreas"></div>
     <br>
-    <button class="btn-primary" onclick="goTo('roadmap')">See My Full Roadmap →</button>
+    <button class="btn-primary" onclick="showRoadmapConfirm()">See My Full Roadmap →</button>
+  </div>
+</div>
+
+<!-- ROADMAP CONFIRM -->
+<div class="screen" id="roadmap-confirm">
+  <div class="rc-header">
+    <div class="rc-title">What have you already done?</div>
+    <div class="rc-sub">Check off anything you've already taken care of — we'll mark those complete so your roadmap reflects where you actually are.</div>
+  </div>
+  <div class="rc-body" id="rcBody"></div>
+  <div class="rc-footer">
+    <button class="btn-primary" onclick="applyRoadmapConfirm()">Build My Roadmap →</button>
+    <button class="btn-secondary" onclick="skipRoadmapConfirm()">I'm starting fresh</button>
   </div>
 </div>
 
@@ -1437,6 +1466,35 @@ function buildRoadmap(currentPhase, name) {
     }
     body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${actionsHTML}</div></div></div>`;
   });
+}
+
+// ── ROADMAP CONFIRM ──
+function showRoadmapConfirm() {
+  const phases = getPhases().filter(p => p.num <= 3);
+  const body = document.getElementById('rcBody');
+  body.innerHTML = '';
+  phases.forEach(phase => {
+    const items = phase.actions.map((a, ai) =>
+      `<div class="rc-item" data-phase="${phase.num}" data-idx="${ai}" onclick="this.classList.toggle('selected')"><div class="rc-checkbox"></div><div class="rc-item-text">${a}</div></div>`
+    ).join('');
+    body.innerHTML += `<div class="rc-phase-group"><div class="rc-phase-label">${phase.emoji} ${phase.name}</div>${items}</div>`;
+  });
+  goTo('roadmap-confirm');
+}
+
+function applyRoadmapConfirm() {
+  document.querySelectorAll('#rcBody .rc-item.selected').forEach(item => {
+    const phaseNum = parseInt(item.dataset.phase);
+    const actionIdx = parseInt(item.dataset.idx);
+    const key = `p${phaseNum}`;
+    if (!state.checks[key]) state.checks[key] = [];
+    if (!state.checks[key].includes(actionIdx)) state.checks[key].push(actionIdx);
+  });
+  goTo('roadmap');
+}
+
+function skipRoadmapConfirm() {
+  goTo('roadmap');
 }
 
 // ── CHECK / CELEBRATION ──
