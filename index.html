@@ -13,14 +13,15 @@
 <style>
 :root { --cream:#F5F0E8; --pink:#E8186D; --navy:#1E2340; --slate:#3D4270; --muted:#9A9BB0; --border:#E8E4DC; }
 * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html, body { width:100%; overflow-x:hidden; }
 body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; }
 .phone { width:390px; min-height:844px; background:var(--cream); border-radius:44px; overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.25),0 0 0 1px rgba(0,0,0,0.08); display:flex; flex-direction:column; position:relative; }
 .screen { display:none; flex-direction:column; flex:1; min-height:844px; position:relative; overflow-y:auto; }
 
-/* ── MOBILE: go full screen, remove the phone shell ── */
-@media (max-width: 480px) {
-  body { background:var(--cream); padding:0; align-items:flex-start; }
-  .phone { width:100%; min-height:100vh; min-height:100dvh; border-radius:0; box-shadow:none; }
+/* ── MOBILE: full screen ── */
+@media (max-width:480px) {
+  body { background:var(--cream); padding:0; align-items:flex-start; margin:0; }
+  .phone { width:100vw; min-height:100vh; min-height:100dvh; border-radius:0; box-shadow:none; margin:0; }
   .screen { min-height:100vh; min-height:100dvh; }
 }
 .screen.active { display:flex; animation:fadeUp 0.3s ease; }
@@ -536,98 +537,48 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob45">
   <div class="ob-header">
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">What are you actually saving?</div>
-    <div class="ob-hint">Surplus in your account isn't savings until it's intentionally put somewhere. Tell us what's automated today.</div>
+    <div class="ob-question">What are you saving today?</div>
+    <div class="ob-hint">Only include what's automated — money you intentionally set aside.</div>
   </div>
   <div class="ob-body">
 
-    <div class="ob-input-group">
-      <div class="ob-label">401k / 403b Contribution</div>
-      <div class="ob-sublabel">What you contribute from each paycheck</div>
+    <!-- RETIREMENT ACCOUNTS -->
+    <div class="ob-label" style="margin-bottom:10px;">Retirement Accounts</div>
+    <div id="retirementAccountRows"></div>
+    <button class="add-debt-btn" onclick="addRetirementRow()" style="margin-bottom:16px;">+ Add a retirement account</button>
+
+    <!-- AUTO SAVINGS -->
+    <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+    <div class="ob-label" style="margin-bottom:6px;">Do you auto-transfer to a savings account?</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div class="ob-option" id="autoSavYes" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoSav(true)"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
+      <div class="ob-option" id="autoSavNo" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoSav(false)"><div class="ob-option-label" style="font-size:14px;">No</div></div>
+    </div>
+    <div id="autoSavFields" style="display:none;margin-bottom:16px;">
       <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="s401kPct" type="number" placeholder="6" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','s401kPct','s401kAmt')"/></div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sAutoSavingsPct" type="number" placeholder="3" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sAutoSavingsPct','sAutoSavingsAmt')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="s401kAmt" type="number" placeholder="425" min="0" oninput="syncSavingsInput('amt','s401kAmt','s401kPct')"/></div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sAutoSavingsAmt" type="number" placeholder="200" min="0" oninput="syncSavingsInput('amt','sAutoSavingsAmt','sAutoSavingsPct')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
       </div>
     </div>
 
-    <div class="ob-input-group">
-      <div class="ob-label">Traditional IRA</div>
-      <div class="ob-sublabel">Monthly contribution to a traditional IRA</div>
+    <!-- AUTO INVEST -->
+    <div class="ob-label" style="margin-bottom:6px;">Do you auto-invest to a brokerage or other account?</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div class="ob-option" id="autoInvYes" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoInv(true)"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
+      <div class="ob-option" id="autoInvNo" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoInv(false)"><div class="ob-option-label" style="font-size:14px;">No</div></div>
+    </div>
+    <div id="autoInvFields" style="display:none;margin-bottom:16px;">
       <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sIraPct" type="number" placeholder="2" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sIraPct','sIraAmt')"/></div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sAutoInvestPct" type="number" placeholder="2" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sAutoInvestPct','sAutoInvestAmt')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sIraAmt" type="number" placeholder="100" min="0" oninput="syncSavingsInput('amt','sIraAmt','sIraPct')"/></div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sAutoInvestAmt" type="number" placeholder="100" min="0" oninput="syncSavingsInput('amt','sAutoInvestAmt','sAutoInvestPct')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
       </div>
     </div>
 
-    <div class="ob-input-group">
-      <div class="ob-label">Roth IRA</div>
-      <div class="ob-sublabel">Monthly contribution to a Roth IRA (after-tax)</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sRothPct" type="number" placeholder="2" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sRothPct','sRothAmt')"/></div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sRothAmt" type="number" placeholder="100" min="0" oninput="syncSavingsInput('amt','sRothAmt','sRothPct')"/></div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
-      </div>
-    </div>
-
-    <div class="ob-input-group">
-      <div class="ob-label">SEP IRA</div>
-      <div class="ob-sublabel">Self-employed retirement account (1099 filers)</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="sSepPct" type="number" placeholder="5" min="0" max="100" style="padding-left:30px;" oninput="syncSavingsInput('pct','sSepPct','sSepAmt')"/></div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="sSepAmt" type="number" placeholder="200" min="0" oninput="syncSavingsInput('amt','sSepAmt','sSepPct')"/></div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
-      </div>
-    </div>
-
-    <div style="font-size:11px;color:var(--muted);margin-top:-4px;">Enter 0 for any accounts you don't use — we'll address gaps in your plan.</div>
-
-    <div class="ob-input-group">
-      <div class="ob-label">Automated Savings Account Transfer</div>
-      <div class="ob-sublabel">Monthly auto-transfer to savings or HYSA</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;">
-          <span class="ob-prefix-symbol">%</span>
-          <input class="ob-input" id="sAutoSavingsPct" type="number" placeholder="3" min="0" max="100"
-            style="padding-left:30px;"
-            oninput="syncSavingsInput('pct','sAutoSavingsPct','sAutoSavingsAmt')"/>
-        </div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">of gross  or</div>
-        <div class="ob-input-prefix" style="flex:1;">
-          <span class="ob-prefix-symbol">$</span>
-          <input class="ob-input" id="sAutoSavingsAmt" type="number" placeholder="200" min="0"
-            oninput="syncSavingsInput('amt','sAutoSavingsAmt','sAutoSavingsPct')"/>
-        </div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
-      </div>
-    </div>
-
-    <div class="ob-input-group">
-      <div class="ob-label">Automated Investment Transfer</div>
-      <div class="ob-sublabel">Brokerage, Roth IRA, or other investment auto-deposit</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;">
-          <span class="ob-prefix-symbol">%</span>
-          <input class="ob-input" id="sAutoInvestPct" type="number" placeholder="2" min="0" max="100"
-            style="padding-left:30px;"
-            oninput="syncSavingsInput('pct','sAutoInvestPct','sAutoInvestAmt')"/>
-        </div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">of gross  or</div>
-        <div class="ob-input-prefix" style="flex:1;">
-          <span class="ob-prefix-symbol">$</span>
-          <input class="ob-input" id="sAutoInvestAmt" type="number" placeholder="100" min="0"
-            oninput="syncSavingsInput('amt','sAutoInvestAmt','sAutoInvestPct')"/>
-        </div>
-        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
-      </div>
-    </div>
-
-    <!-- Live savings rate preview -->
+    <!-- LIVE PREVIEW -->
     <div id="savingsPreviewCard" style="background:var(--navy);border-radius:16px;padding:18px;display:none;">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-bottom:12px;">Your Current Savings Rate</div>
       <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
@@ -931,6 +882,73 @@ function skipSavings() {
   goTo('ob5');
 }
 
+// ── RETIREMENT ACCOUNT ROWS ──
+const RETIREMENT_TYPES = ['401k / 403b','Traditional IRA','Roth IRA','SEP IRA','HSA','Pension'];
+let retirementRows = [];
+
+function addRetirementRow() {
+  const id = Date.now();
+  retirementRows.push({id, type: RETIREMENT_TYPES[0], pct: 0, amt: 0});
+  renderRetirementRows();
+}
+
+function renderRetirementRows() {
+  const container = document.getElementById('retirementAccountRows');
+  container.innerHTML = '';
+  retirementRows.forEach((row, i) => {
+    container.innerHTML += `
+      <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <select style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:transparent;cursor:pointer;flex:1;" onchange="retirementRows[${i}].type=this.value">
+            ${RETIREMENT_TYPES.map(t => `<option value="${t}" ${t===row.type?'selected':''}>${t}</option>`).join('')}
+          </select>
+          <div onclick="removeRetirementRow(${i})" style="color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">×</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">%</span><input class="ob-input" type="number" placeholder="6" min="0" max="100" style="padding-left:28px;" value="${row.pct||''}" oninput="syncRetRow(${i},'pct',this.value)"/></div>
+          <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+          <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="syncRetRow(${i},'amt',this.value)"/></div>
+          <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+        </div>
+      </div>`;
+  });
+  updateSavingsPreview();
+}
+
+function removeRetirementRow(i) {
+  retirementRows.splice(i, 1);
+  renderRetirementRows();
+}
+
+function syncRetRow(i, type, val) {
+  const gross = state.grossIncome;
+  const v = parseFloat(val) || 0;
+  if (type === 'pct') {
+    retirementRows[i].pct = v;
+    retirementRows[i].amt = gross > 0 ? Math.round(gross * (v/100) / 12) : 0;
+  } else {
+    retirementRows[i].amt = v;
+    retirementRows[i].pct = gross > 0 ? parseFloat(((v * 12 / gross) * 100).toFixed(1)) : 0;
+  }
+  updateSavingsPreview();
+}
+
+// ── AUTO SAV / INV TOGGLES ──
+function toggleAutoSav(yes) {
+  document.getElementById('autoSavYes').classList.toggle('selected', yes);
+  document.getElementById('autoSavNo').classList.toggle('selected', !yes);
+  document.getElementById('autoSavFields').style.display = yes ? 'block' : 'none';
+  if (!yes) { document.getElementById('sAutoSavingsPct').value=''; document.getElementById('sAutoSavingsAmt').value=''; }
+  updateSavingsPreview();
+}
+function toggleAutoInv(yes) {
+  document.getElementById('autoInvYes').classList.toggle('selected', yes);
+  document.getElementById('autoInvNo').classList.toggle('selected', !yes);
+  document.getElementById('autoInvFields').style.display = yes ? 'block' : 'none';
+  if (!yes) { document.getElementById('sAutoInvestPct').value=''; document.getElementById('sAutoInvestAmt').value=''; }
+  updateSavingsPreview();
+}
+
 // Sync pct/amt for any savings field pair
 function syncSavingsInput(changedType, changedId, otherFieldId) {
   const gross = state.grossIncome;
@@ -954,24 +972,20 @@ function resolveMonthly(pctId, amtId) {
 }
 
 function collectSavingsInputs() {
-  state.s401kMonthly  = resolveMonthly('s401kPct',  's401kAmt');
-  state.sIraMonthly   = resolveMonthly('sIraPct',   'sIraAmt');
-  state.sRothMonthly  = resolveMonthly('sRothPct',  'sRothAmt');
-  state.sSepMonthly   = resolveMonthly('sSepPct',   'sSepAmt');
-  state.sAutoSavings  = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
-  state.sAutoInvest   = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
+  // Sum all retirement account rows
+  state.s401kMonthly = retirementRows.reduce((s,r) => s + (r.amt||0), 0);
+  state.sIraMonthly  = 0; state.sRothMonthly = 0; state.sSepMonthly = 0;
+  state.sAutoSavings = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
+  state.sAutoInvest  = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
 }
 
 function updateSavingsPreview() {
   const gross = state.grossIncome;
   if (gross <= 0) return;
-  const monthly401k = resolveMonthly('s401kPct',  's401kAmt');
-  const monthlyIra  = resolveMonthly('sIraPct',   'sIraAmt');
-  const monthlyRoth = resolveMonthly('sRothPct',  'sRothAmt');
-  const monthlySep  = resolveMonthly('sSepPct',   'sSepAmt');
-  const autoSav     = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
-  const autoInv     = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
-  const totalMonthly = monthly401k + monthlyIra + monthlyRoth + monthlySep + autoSav + autoInv;
+  const retTotal = retirementRows.reduce((s,r) => s + (r.amt||0), 0);
+  const autoSav  = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
+  const autoInv  = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
+  const totalMonthly = retTotal + autoSav + autoInv;
   const totalAnnual  = totalMonthly * 12;
   const rate = gross > 0 ? (totalAnnual / gross) * 100 : 0;
   const recommended = 15;
