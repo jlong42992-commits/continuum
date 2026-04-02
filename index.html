@@ -930,6 +930,17 @@ function syncRetRow(i, type, val) {
     retirementRows[i].amt = v;
     retirementRows[i].pct = gross > 0 ? parseFloat(((v * 12 / gross) * 100).toFixed(1)) : 0;
   }
+  // Update the other field visually without re-rendering the whole list
+  const container = document.getElementById('retirementAccountRows');
+  const rowEl = container.children[i];
+  if (rowEl) {
+    const inputs = rowEl.querySelectorAll('input');
+    if (type === 'pct') {
+      inputs[1].value = retirementRows[i].amt || '';
+    } else {
+      inputs[0].value = retirementRows[i].pct || '';
+    }
+  }
   updateSavingsPreview();
 }
 
