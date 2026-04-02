@@ -336,6 +336,30 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .action-hint { font-size:12px; color:var(--muted); line-height:1.4; margin-top:4px; font-style:italic; }
 .focus-beg-sub { font-size:12px; color:var(--slate); line-height:1.5; margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
 
+/* BENCHMARKS */
+.benchmark-section { margin-bottom:4px; }
+.benchmark-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.benchmark-sourcelabel { font-size:11px; color:var(--muted); margin-bottom:12px; line-height:1.4; }
+.benchmark-card { background:white; border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:8px; }
+.benchmark-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
+.benchmark-metric { font-size:13px; font-weight:600; color:var(--navy); }
+.benchmark-vals { display:flex; gap:10px; align-items:baseline; }
+.benchmark-you-val { font-size:13px; font-weight:700; color:var(--pink); }
+.benchmark-avg-val { font-size:11px; color:var(--muted); }
+.benchmark-bar-wrap { height:6px; background:var(--border); border-radius:3px; position:relative; }
+.benchmark-bar-you { height:100%; border-radius:3px; background:var(--pink); }
+.benchmark-bar-peer { position:absolute; top:-3px; width:3px; height:12px; background:var(--navy); border-radius:1px; opacity:0.5; }
+.benchmark-legend { display:flex; gap:12px; margin-top:8px; }
+.benchmark-legend-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--muted); }
+.benchmark-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* RISK NOTE */
+.risk-note-chip { background:rgba(61,66,112,0.07); border:1px solid rgba(61,66,112,0.15); border-radius:10px; padding:10px 13px; font-size:12px; color:var(--slate); line-height:1.5; margin-bottom:12px; display:flex; gap:8px; align-items:flex-start; }
+.risk-note-icon { flex-shrink:0; font-size:13px; }
+
+/* COMPLIANCE */
+.compliance-note { font-size:11px; color:var(--muted); line-height:1.55; text-align:center; padding:14px 20px 0; margin-top:12px; border-top:1px solid var(--border); }
+
 /* BOTTOM NAV */
 .bottom-nav { display:flex; background:white; border-top:1px solid var(--border); padding:12px 0 28px; flex-shrink:0; }
 .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px 0; }
@@ -409,12 +433,12 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
   <div class="ob-footer">
     <button class="btn-primary" onclick="nextOb(25)">Continue →</button>
-    <button class="btn-secondary" onclick="goTo('ob-quiz')">Skip for now</button>
+    <button class="btn-secondary" onclick="goTo('ob25-literacy')">Skip for now</button>
   </div>
 </div>
 
 <!-- OB-QUIZ: Financial Literacy -->
-<div class="screen" id="ob-quiz">
+<div class="screen" id="ob25-literacy">
   <div class="ob-header">
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">A few quick questions.</div>
@@ -436,7 +460,33 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-option" onclick="selectOption(this,'quizQ3','no')"><div class="ob-option-icon">🙅</div><div><div class="ob-option-label">No</div><div class="ob-option-desc">Never have</div></div></div>
     <div class="ob-option" onclick="selectOption(this,'quizQ3','not_yet')"><div class="ob-option-icon">🔜</div><div><div class="ob-option-label">Not yet</div><div class="ob-option-desc">I'm open to it but haven't yet</div></div></div>
   </div>
-  <div class="ob-footer"><button class="btn-primary" onclick="nextOb('quiz')">Continue →</button></div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb('literacy')">Continue →</button></div>
+</div>
+
+<!-- OB25-RISK: Risk Tolerance -->
+<div class="screen" id="ob25-risk">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-question">How do you approach risk?</div>
+    <div class="ob-hint">Helps us tailor your investment recommendations — no wrong answers.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-label" style="margin-bottom:10px;">If your investments dropped 20%, what would you do?</div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ1','sell')"><div class="ob-option-icon">😟</div><div><div class="ob-option-label">Sell</div><div class="ob-option-desc">I'd move to cash to stop further losses</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ1','hold')"><div class="ob-option-icon">🤝</div><div><div class="ob-option-label">Hold</div><div class="ob-option-desc">I'd stay the course and wait for recovery</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ1','buy')"><div class="ob-option-icon">🛒</div><div><div class="ob-option-label">Buy more</div><div class="ob-option-desc">I'd see it as a buying opportunity</div></div></div>
+    <div style="height:4px;"></div>
+    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">When do you expect to need this money?</div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ2','soon')"><div class="ob-option-icon">🗓️</div><div><div class="ob-option-label">Under 5 years</div><div class="ob-option-desc">I may need access to it soon</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ2','medium')"><div class="ob-option-icon">📅</div><div><div class="ob-option-label">5–15 years</div><div class="ob-option-desc">Medium-term horizon</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ2','long')"><div class="ob-option-icon">🌅</div><div><div class="ob-option-label">15+ years</div><div class="ob-option-desc">Long-term — retirement or beyond</div></div></div>
+    <div style="height:4px;"></div>
+    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">How would you describe your investment goal?</div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ3','preserve')"><div class="ob-option-icon">🏦</div><div><div class="ob-option-label">Preserve wealth</div><div class="ob-option-desc">Protect what I have, accept lower returns</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ3','balanced')"><div class="ob-option-icon">⚖️</div><div><div class="ob-option-label">Balanced growth</div><div class="ob-option-desc">Mix of stability and growth</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'riskQ3','maximize')"><div class="ob-option-icon">🚀</div><div><div class="ob-option-label">Maximize growth</div><div class="ob-option-desc">Highest long-term return, accept volatility</div></div></div>
+  </div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb('risk')">Continue →</button></div>
 </div>
 
 <!-- OB3: Financial Snapshot -->
@@ -697,10 +747,12 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
   <div class="result-body">
     <div id="resultNumbersCard"></div>
+    <div id="peerBenchmarks"></div>
     <div class="result-section-title">Your Top Priorities</div>
     <div id="focusAreas"></div>
     <br>
     <button class="btn-primary" onclick="showRoadmapConfirm()">See My Full Roadmap →</button>
+    <p class="compliance-note">Continuum provides financial education, not advice. Consult a licensed advisor for personalized recommendations.</p>
   </div>
 </div>
 
@@ -724,7 +776,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="roadmap-sub">Actions with your actual numbers</div>
   </div>
   <div class="roadmap-body" id="roadmapBody"></div>
-  <div style="height:20px;"></div>
+  <p class="compliance-note" style="margin:0 28px;">Continuum provides financial education, not advice. Consult a licensed advisor for personalized recommendations.</p>
+  <div style="height:24px;"></div>
 </div>
 
 <!-- LIFE CHANGE -->
@@ -878,6 +931,7 @@ const state = {
   // Intentional savings inputs
   s401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
   literacyLevel:'', quizQ1:null, quizQ2:null, quizQ3:null,
+  riskTolerance:'', riskQ1:null, riskQ2:null, riskQ3:null,
   checks:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
@@ -925,12 +979,16 @@ const TERM_MAP = [
   [/asset\s+mix|full\s+asset/i,                                                  'asset_mix'],
 ];
 
+// Terms shown even to intermediate users (higher-complexity only)
+const INTERMEDIATE_KEYS = new Set(['roth_trad','tax_buckets','asset_location','concentration','poa','estate_planning','asset_mix','guardian','disability_ins']);
+
 function annotateTips(text) {
-  if (state.literacyLevel !== 'beginner') return text;
+  if (state.literacyLevel === 'advanced' || !state.literacyLevel) return text;
   let result = text;
   const used = new Set();
   for (const [pattern, key] of TERM_MAP) {
     if (used.has(key)) continue;
+    if (state.literacyLevel === 'intermediate' && !INTERMEDIATE_KEYS.has(key)) continue;
     if (pattern.test(result)) {
       used.add(key);
       result = result.replace(pattern, m => `${m}<span class="tip-icon" onclick="showTip('${key}')">💡</span>`);
@@ -950,6 +1008,69 @@ function showTip(key) {
 function hideTip() {
   document.getElementById('tipOverlay').classList.remove('show');
   document.getElementById('tipSheet').classList.remove('show');
+}
+
+// ── PEER BENCHMARKS ──
+function getPeerBenchmarks(age) {
+  // Approximate national averages by age group (Fed Reserve, Vanguard How America Saves, BLS data)
+  const g = age < 30 ? 0 : age < 40 ? 1 : age < 50 ? 2 : age < 60 ? 3 : 4;
+  return {
+    savingsRate:   { avg:[6,9,12,15,17][g],   label:'Savings rate',              unit:'%',  max:25 },
+    emergencyMos:  { avg:[1.5,2.5,3.5,4.5,5.5][g], label:'Emergency fund',       unit:' mo', max:8 },
+    retirementPct: { avg:[4,7,10,12,13][g],   label:'Retirement contribution',   unit:'%',  max:20 },
+  };
+}
+
+function renderPeerBenchmarks() {
+  const el = document.getElementById('peerBenchmarks');
+  if (!el || !state.grossIncome) { if (el) el.innerHTML=''; return; }
+  const age = state.age || 30;
+  const c = state.calc;
+  const peers = getPeerBenchmarks(age);
+  const ageLabel = age < 30 ? '20s' : age < 40 ? '30s' : age < 50 ? '40s' : age < 60 ? '50s' : '60s+';
+
+  const actualSavRate = Math.min(c.actualSavingsRate || 0, peers.savingsRate.max);
+  const actualMos = (state.currentSavings > 0 && state.monthlyExpenses > 0)
+    ? Math.min(state.currentSavings / state.monthlyExpenses, peers.emergencyMos.max) : 0;
+  // Retirement contribution uses 401k+IRA total vs gross
+  const retPct = state.grossIncome > 0
+    ? Math.min(((c.actual401k || 0) * 12 / state.grossIncome) * 100, peers.retirementPct.max) : 0;
+
+  const stats = [
+    { ...peers.savingsRate,   you: actualSavRate,  youFmt: actualSavRate.toFixed(1)+'%',   avgFmt: peers.savingsRate.avg+'%' },
+    { ...peers.emergencyMos,  you: actualMos,      youFmt: actualMos.toFixed(1)+' mo',      avgFmt: peers.emergencyMos.avg+' mo' },
+    { ...peers.retirementPct, you: retPct,         youFmt: retPct.toFixed(1)+'%',           avgFmt: peers.retirementPct.avg+'%' },
+  ];
+
+  let html = `<div class="benchmark-section">
+    <div class="result-section-title" style="margin-bottom:4px;">How You Compare</div>
+    <div class="benchmark-sourcelabel">Based on national averages for people in their ${ageLabel} — not personalized advice.</div>`;
+
+  stats.forEach(s => {
+    const youPct = s.max > 0 ? Math.min((s.you / s.max) * 100, 100) : 0;
+    const avgPct = s.max > 0 ? Math.min((s.avg / s.max) * 100, 100) : 0;
+    const ahead = s.you >= s.avg;
+    html += `<div class="benchmark-card">
+      <div class="benchmark-row">
+        <span class="benchmark-metric">${s.label}</span>
+        <div class="benchmark-vals">
+          <span class="benchmark-you-val">${s.youFmt}</span>
+          <span class="benchmark-avg-val">peer avg ${s.avgFmt}</span>
+        </div>
+      </div>
+      <div class="benchmark-bar-wrap">
+        <div class="benchmark-bar-you" style="width:${youPct.toFixed(1)}%"></div>
+        <div class="benchmark-bar-peer" style="left:calc(${avgPct.toFixed(1)}% - 1.5px)"></div>
+      </div>
+      <div style="font-size:11px;color:${ahead?'#2E7D32':'var(--pink)'};margin-top:5px;font-weight:600;">${ahead?'✓ Above average':'↑ Room to grow'}</div>
+    </div>`;
+  });
+
+  html += `<div class="benchmark-legend">
+    <div class="benchmark-legend-item"><div class="benchmark-legend-dot" style="background:var(--pink)"></div>You</div>
+    <div class="benchmark-legend-item"><div style="width:3px;height:10px;background:var(--navy);opacity:0.5;border-radius:1px;flex-shrink:0;"></div>Peer average</div>
+  </div></div>`;
+  el.innerHTML = html;
 }
 
 // ── NAVIGATION ──
@@ -993,14 +1114,14 @@ function nextOb(step) {
   else if (step===2) {
     // Route to spouse screen only if partner selected
     if (state.lifeStage.includes('partner')) goTo('ob25');
-    else goTo('ob-quiz');
+    else goTo('ob25-literacy');
   }
   else if (step===25) {
     state.spouseName = document.getElementById('spouseName').value || '';
     state.spouseAge  = parseInt(document.getElementById('spouseAge').value) || null;
-    goTo('ob-quiz');
+    goTo('ob25-literacy');
   }
-  else if (step==='quiz') {
+  else if (step==='literacy') {
     const scores = {
       quizQ1: { beginner:0, some:1, confident:2 },
       quizQ2: { no:0, sort_of:1, yes:2 },
@@ -1011,6 +1132,19 @@ function nextOb(step) {
       if (state[q] && scores[q][state[q]] !== undefined) total += scores[q][state[q]];
     });
     state.literacyLevel = total <= 2 ? 'beginner' : total <= 4 ? 'intermediate' : 'advanced';
+    goTo('ob25-risk');
+  }
+  else if (step==='risk') {
+    const scores = {
+      riskQ1: { sell:0, hold:1, buy:2 },
+      riskQ2: { soon:0, medium:1, long:2 },
+      riskQ3: { preserve:0, balanced:1, maximize:2 }
+    };
+    let total = 0;
+    ['riskQ1','riskQ2','riskQ3'].forEach(q => {
+      if (state[q] && scores[q][state[q]] !== undefined) total += scores[q][state[q]];
+    });
+    state.riskTolerance = total <= 2 ? 'conservative' : total <= 4 ? 'moderate' : 'aggressive';
     goTo('ob3');
   }
   else if (step===3) goTo('ob4');
@@ -1515,6 +1649,8 @@ function computePlan() {
       </div>`;
   } else { nc.innerHTML = ''; }
 
+  renderPeerBenchmarks();
+
   const fa = document.getElementById('focusAreas'); fa.innerHTML='';
   focuses.forEach(f => {
     const begSubHtml = state.literacyLevel === 'beginner' && f.begSub
@@ -1552,6 +1688,13 @@ function getPhases() {
     { num:2, name:'Growth', emoji:'🌱',
       desc:'Accumulate wealth intentionally through better saving, investing, and efficiency.',
       target: inc > 0 ? `Target: ${fmt(c.retirementMonthly)}/mo to retirement` : null,
+      riskNote: state.riskTolerance === 'conservative'
+        ? 'Your risk profile suggests prioritizing stable, diversified index funds with a 30–40% bond allocation to cushion volatility.'
+        : state.riskTolerance === 'aggressive'
+        ? 'Your growth-focused profile supports a stock-heavy portfolio (80%+ equities). Expect volatility — stay the course and avoid emotional selling.'
+        : state.riskTolerance === 'moderate'
+        ? 'Your balanced profile suggests a 60/40 stock-to-bond split as a solid starting point for long-term wealth building.'
+        : null,
       actions:[
         inc > 0 ? `Increase savings rate to ${c.recommendedSavingsRate}% (${fmt(c.monthlySavingsTarget)}/month)` : 'Increase savings rate by 1–2%',
         inc > 0 ? `Contribute ${fmt(c.retirementMonthly)}/month to retirement accounts` : 'Set consistent retirement contributions',
@@ -1588,6 +1731,13 @@ function getPhases() {
     { num:4, name:'Optimization', emoji:'⚙️',
       desc:'Shift from more to better. Tax-aware investing and portfolio efficiency.',
       target: inc > 0 ? `Annual income: ${fmt(c.annualIncome)} — tax efficiency is now high leverage` : null,
+      riskNote: state.riskTolerance === 'conservative'
+        ? 'Your conservative profile means prioritizing capital preservation. Consider increasing bond allocation as you approach your goals.'
+        : state.riskTolerance === 'aggressive'
+        ? 'Your aggressive profile can support higher equity concentration — but actively monitor for single-stock and sector concentration risk.'
+        : state.riskTolerance === 'moderate'
+        ? 'Your moderate profile calls for annual rebalancing to maintain your target allocation across all three tax buckets.'
+        : null,
       actions:[
         'Map your full asset mix across all accounts and tax categories',
         'Review tax diversification: pre-tax vs. Roth vs. taxable balance',
@@ -1646,7 +1796,9 @@ function buildRoadmap(currentPhase, name) {
         return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><div style="flex:1;min-width:0;"><span style="${textStyle}">${annotated}</span>${hint}</div></div>`;
       }).join('') + `</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div>`;
     }
-    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${actionsHTML}</div></div></div>`;
+    const riskNoteHtml = phase.riskNote && state.riskTolerance
+      ? `<div class="risk-note-chip"><span class="risk-note-icon">📊</span>${phase.riskNote}</div>` : '';
+    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div></div></div>`;
   });
 }
 
