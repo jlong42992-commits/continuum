@@ -539,23 +539,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       <div class="ob-sublabel">Total before any taxes or deductions</div>
       <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="grossIncome" type="number" placeholder="85,000" min="0" oninput="ob4UpdateHouseholdPreview()"/></div>
     </div>
-    <div class="ob-input-row">
-      <div class="ob-input-group">
-        <div class="ob-label">How do you get paid?</div>
-        <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
-          <option value="w2">🏢 W-2 — Employer withholds taxes</option>
-          <option value="1099">💼 1099 — Self-employed / contractor</option>
-          <option value="both">🔀 Both — W-2 job + 1099 income</option>
-        </select>
-      </div>
-      <div class="ob-input-group">
-        <div class="ob-label">Filing Status</div>
-        <select class="ob-input" id="ob4FilingSelect" onchange="ob4SelectFiling(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
-          <option value="single">Single</option>
-          <option value="married">Married Filing Jointly</option>
-          <option value="hoh">Head of Household</option>
-        </select>
-      </div>
+    <div class="ob-input-group">
+      <div class="ob-label">How do you get paid?</div>
+      <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+        <option value="w2">🏢 W-2 — Employer withholds taxes</option>
+        <option value="1099">💼 1099 — Self-employed / contractor</option>
+        <option value="both">🔀 Both — W-2 job + 1099 income</option>
+      </select>
     </div>
 
     <!-- ── SPOUSE INCOME (shown only if partner selected) ── -->
@@ -598,6 +588,14 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 
     <!-- ── SHARED FIELDS ── -->
     <div style="height:1px;background:var(--border);margin:4px 0 4px;"></div>
+    <div class="ob-input-group">
+      <div class="ob-label">Filing Status</div>
+      <select class="ob-input" id="ob4FilingSelect" onchange="ob4SelectFiling(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+        <option value="single">Single</option>
+        <option value="married">Married Filing Jointly</option>
+        <option value="hoh">Head of Household</option>
+      </select>
+    </div>
     <div class="ob-input-group">
       <div class="ob-label">State of Residence</div>
       <select class="ob-input" id="stateSelect" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
@@ -710,6 +708,49 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
 </div>
 
+<!-- OB-SPOUSE-SAVINGS: Partner's savings activity -->
+<div class="screen" id="ob-spouse-savings">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question" id="spouseSavingsTitle">What is your partner saving?</div>
+    <div class="ob-hint">Same idea — only automated, intentional savings.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-label" style="margin-bottom:10px;">Retirement Accounts</div>
+    <div id="spouseRetirementRows"></div>
+    <button class="add-debt-btn" onclick="addSpouseRetirementRow()" style="margin-bottom:16px;">+ Add a retirement account</button>
+
+    <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+    <div class="ob-label" style="margin-bottom:6px;">Does your partner auto-transfer to savings?</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div class="ob-option" id="spAutoSavYes" style="flex:1;justify-content:center;padding:12px;" onclick="toggleSpouseAutoSav(true)"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
+      <div class="ob-option" id="spAutoSavNo" style="flex:1;justify-content:center;padding:12px;" onclick="toggleSpouseAutoSav(false)"><div class="ob-option-label" style="font-size:14px;">No</div></div>
+    </div>
+    <div id="spAutoSavFields" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spAutoSavingsAmt" type="number" placeholder="200" min="0"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+
+    <div class="ob-label" style="margin-bottom:6px;">Does your partner auto-invest?</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div class="ob-option" id="spAutoInvYes" style="flex:1;justify-content:center;padding:12px;" onclick="toggleSpouseAutoInv(true)"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
+      <div class="ob-option" id="spAutoInvNo" style="flex:1;justify-content:center;padding:12px;" onclick="toggleSpouseAutoInv(false)"><div class="ob-option-label" style="font-size:14px;">No</div></div>
+    </div>
+    <div id="spAutoInvFields" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spAutoInvestAmt" type="number" placeholder="100" min="0"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="nextOb('spouse-savings')">Continue →</button>
+    <button class="btn-secondary" onclick="goTo('ob5')">Skip — partner isn't saving yet</button>
+  </div>
+</div>
+
 <!-- OB5: Debts & Challenge -->
 <div class="screen" id="ob5">
   <div class="ob-header">
@@ -732,7 +773,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <!-- ASSETS -->
     <div class="al-section-label">Assets — what you own</div>
     <div id="assetRows"></div>
-    <button class="add-debt-btn" onclick="addAssetRow()">+ Add an asset</button>
+    <button class="add-debt-btn" id="addAssetBtn" onclick="addAssetRow()">+ Add an asset</button>
 
     <!-- LIABILITIES -->
     <div class="al-section-label" style="margin-top:20px;">Liabilities — what you owe</div>
@@ -756,7 +797,23 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       </div>
     </div>
   </div>
-  <div class="ob-footer"><button class="btn-primary" onclick="buildPlan()">Build My Plan →</button></div>
+  <div class="ob-footer"><button class="btn-primary" onclick="nextOb(5)">Continue →</button></div>
+</div>
+
+<!-- OB-GOALS: What are you working toward? -->
+<div class="screen" id="ob-goals">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">What are you working toward?</div>
+    <div class="ob-hint">Select everything that applies — we'll shape your plan around your goals.</div>
+  </div>
+  <div class="ob-body">
+    <div id="goalsGrid" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="buildPlan()">Build My Plan →</button>
+    <button class="btn-secondary" onclick="buildPlan()">Skip — I'll add goals later</button>
+  </div>
 </div>
 
 <!-- CHECKING -->
@@ -960,14 +1017,43 @@ const state = {
   assets:[], liabilities:[],
   // Spouse
   spouseName:'', spouseAge:null, spouseWorks:null, spouseIncome:0,
+  spouseIncomeType:'w2', spouseSavings:{rows:[], autoSavings:0, autoInvest:0},
   // Intentional savings inputs
   s401kMonthly:0, sRoth401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
   literacyLevel:'', quizQ1:null, quizQ2:null, quizQ3:null,
   riskTolerance:'', riskQ1:null, riskQ2:null, riskQ3:null,
+  goals:[],
   checks:{}, naItems:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
 };
+
+// ── 2025 IRS CONTRIBUTION LIMITS ──
+const IRS_2025 = {
+  k401: 23500,          // 401k/403b/Roth 401k employee contribution
+  k401_catchup: 31000,  // 401k catchup (age 50+; SECURE 2.0: age 60-63 get $34,750 but use 31k as base)
+  ira: 7000,            // Traditional IRA / Roth IRA
+  ira_catchup: 8000,    // IRA catchup (age 50+)
+  sep: 70000,           // SEP IRA (lesser of 25% of comp or $70,000)
+  hsa_single: 4300,     // HSA single coverage
+  hsa_family: 8550,     // HSA family coverage
+};
+function irsLimit(type, age) {
+  const catchup = (age || 0) >= 50;
+  switch (type) {
+    case '401k / 403b':
+    case 'Roth 401k':  return catchup ? IRS_2025.k401_catchup : IRS_2025.k401;
+    case 'Traditional IRA':
+    case 'Roth IRA':   return catchup ? IRS_2025.ira_catchup : IRS_2025.ira;
+    case 'SEP IRA':    return IRS_2025.sep;
+    case 'HSA':        return IRS_2025.hsa_family; // show family limit as upper bound
+    default:           return null;
+  }
+}
+function irsLimitLabel(type, age) {
+  const lim = irsLimit(type, age);
+  return lim ? `Max: ${fmt(lim)}/yr` : '';
+}
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
@@ -1159,6 +1245,7 @@ function goTo(id) {
   if (navMap[id] !== undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
   document.getElementById(id).scrollTop = 0;
   if (id === 'ob4') ob4Setup();
+  if (id === 'ob-goals') setupGoalsScreen();
 }
 
 // ── ONBOARDING ──
@@ -1194,8 +1281,15 @@ function updateAssetLinks() {
 }
 
 function updateNetWorth() {
-  const totalAssets = Array.from(document.querySelectorAll('#assetRows .al-value-input')).reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
-  const totalLiab   = Array.from(document.querySelectorAll('#liabilityRows .al-bal')).reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
+  let totalAssets = 0;
+  document.querySelectorAll('#assetRows .al-row').forEach(row => {
+    // 401k rows use trad+roth sub-fields
+    const trad = parseFloat(row.querySelector('.asset-trad-bal')?.value) || 0;
+    const roth = parseFloat(row.querySelector('.asset-roth-bal')?.value) || 0;
+    const val  = parseFloat(row.querySelector('.al-value-input')?.value) || 0;
+    totalAssets += (trad + roth) || val;
+  });
+  const totalLiab = Array.from(document.querySelectorAll('#liabilityRows .al-bal')).reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
   const nw = totalAssets - totalLiab;
   const el = document.getElementById('netWorthValue');
   if (el) {
@@ -1211,31 +1305,66 @@ function removeRow(id) {
   updateNetWorth();
 }
 
+function ownerOptions() {
+  const hasPartner = state.lifeStage.includes('partner');
+  const spName = state.spouseName || 'Partner';
+  if (!hasPartner) return `<option value="you">You</option>`;
+  return `<option value="you">You</option><option value="partner">${spName}</option><option value="joint">Joint</option>`;
+}
+
 function addAssetRow() {
   assetCount++;
   const id = `asset_${assetCount}`;
   const row = document.createElement('div');
   row.className = 'al-row';
   row.id = id;
+  const hasPartner = state.lifeStage.includes('partner');
   row.innerHTML = `
     <div class="al-row-top">
-      <select class="al-select asset-type" onchange="updateNetWorth()">
-        <option value="" disabled selected>Select asset type…</option>
+      <select class="al-select asset-type" onchange="onAssetTypeChange('${id}');updateNetWorth()">
+        <option value="" disabled selected>Select type…</option>
         <option value="Home">Home</option>
         <option value="Car">Car</option>
         <option value="Savings Account">Savings Account</option>
         <option value="Checking Account">Checking Account</option>
         <option value="Brokerage Account">Brokerage Account</option>
-        <option value="Retirement Account - 401k">Retirement Account – 401k</option>
-        <option value="Retirement Account - IRA">Retirement Account – IRA</option>
-        <option value="Retirement Account - Roth IRA">Retirement Account – Roth IRA</option>
+        <option value="Retirement Account - 401k">Retirement – 401k</option>
+        <option value="Retirement Account - IRA">Retirement – IRA</option>
+        <option value="Retirement Account - Roth IRA">Retirement – Roth IRA</option>
         <option value="Crypto">Crypto</option>
         <option value="Other">Other</option>
       </select>
-      <input type="number" class="al-value-input" placeholder="Value $" oninput="updateNetWorth()" />
+      ${hasPartner ? `<select class="al-select asset-owner" style="max-width:80px;font-size:13px;">${ownerOptions()}</select>` : ''}
       <button class="ob-debt-remove" onclick="removeRow('${id}')">×</button>
+    </div>
+    <div class="asset-value-row" id="avr_${id}">
+      <input type="number" class="al-value-input" placeholder="Value $" oninput="updateNetWorth()" style="border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--navy);width:100%;margin-top:6px;background:white;outline:none;" />
     </div>`;
   document.getElementById('assetRows').appendChild(row);
+  updateNetWorth();
+}
+
+function onAssetTypeChange(rowId) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  const type = row.querySelector('.asset-type')?.value;
+  const valueRow = document.getElementById(`avr_${rowId}`);
+  if (!valueRow) return;
+  if (type === 'Retirement Account - 401k') {
+    valueRow.innerHTML = `
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <div class="ob-debt-field" style="flex:1;">
+          <div class="ob-debt-field-label">Traditional $</div>
+          <input type="number" class="asset-trad-bal" placeholder="0" oninput="updateNetWorth()" style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:transparent;width:100%;" />
+        </div>
+        <div class="ob-debt-field" style="flex:1;">
+          <div class="ob-debt-field-label">Roth $</div>
+          <input type="number" class="asset-roth-bal" placeholder="0" oninput="updateNetWorth()" style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:transparent;width:100%;" />
+        </div>
+      </div>`;
+  } else {
+    valueRow.innerHTML = `<input type="number" class="al-value-input" placeholder="Value $" oninput="updateNetWorth()" style="border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--navy);width:100%;margin-top:6px;background:white;outline:none;" />`;
+  }
   updateNetWorth();
 }
 
@@ -1245,6 +1374,7 @@ function addLiabilityRow() {
   const row = document.createElement('div');
   row.className = 'al-row';
   row.id = id;
+  const hasPartner = state.lifeStage.includes('partner');
   row.innerHTML = `
     <div class="al-row-top">
       <select class="al-select liability-type">
@@ -1257,6 +1387,7 @@ function addLiabilityRow() {
         <option value="Medical Debt">Medical Debt</option>
         <option value="Other">Other</option>
       </select>
+      ${hasPartner ? `<select class="al-select liability-owner" style="max-width:80px;font-size:13px;">${ownerOptions()}</select>` : ''}
       <button class="ob-debt-remove" onclick="removeRow('${id}')">×</button>
     </div>
     <div class="al-row-bottom">
@@ -1331,14 +1462,32 @@ function nextOb(step) {
   }
   else if (step===45) {
     collectSavingsInputs();
+    if (state.lifeStage.includes('partner')) {
+      setupSpouseSavingsScreen();
+      goTo('ob-spouse-savings');
+    } else {
+      goTo('ob5');
+    }
+  }
+  else if (step==='spouse-savings') {
+    collectSpouseSavingsInputs();
     goTo('ob5');
+  }
+  else if (step===5) {
+    setupGoalsScreen();
+    goTo('ob-goals');
   }
 }
 
 function skipSavings() {
   state.s401kMonthly = 0; state.sRoth401kMonthly = 0; state.sIraMonthly = 0;
   state.sRothMonthly = 0; state.sSepMonthly = 0; state.sAutoSavings = 0; state.sAutoInvest = 0;
-  goTo('ob5');
+  if (state.lifeStage.includes('partner')) {
+    setupSpouseSavingsScreen();
+    goTo('ob-spouse-savings');
+  } else {
+    goTo('ob5');
+  }
 }
 
 // ── RETIREMENT ACCOUNT ROWS ──
@@ -1401,6 +1550,7 @@ function renderRetirementRows() {
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="syncRetRow(${i},'amt',this.value)"/></div>
           <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
         </div>
+        ${irsLimitLabel(row.type, state.age) ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${irsLimitLabel(row.type, state.age)} · 2025 IRS limit${(state.age||0)>=50?' (catch-up)':''}</div>` : ''}
       </div>`;
   });
   updateSavingsPreview();
@@ -1541,25 +1691,183 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.addEventListener('input', updateSavingsPreview);
   });
 });
+// ── SPOUSE SAVINGS ──
+let spouseRetRows = [];
+
+function setupSpouseSavingsScreen() {
+  const name = state.spouseName || 'your partner';
+  const el = document.getElementById('spouseSavingsTitle');
+  if (el) el.textContent = `What is ${name} saving today?`;
+  spouseRetRows = [];
+  renderSpouseRetRows();
+  document.getElementById('spAutoSavYes')?.classList.remove('selected');
+  document.getElementById('spAutoSavNo')?.classList.remove('selected');
+  document.getElementById('spAutoSavFields').style.display = 'none';
+  document.getElementById('spAutoInvYes')?.classList.remove('selected');
+  document.getElementById('spAutoInvNo')?.classList.remove('selected');
+  document.getElementById('spAutoInvFields').style.display = 'none';
+  if (document.getElementById('spAutoSavingsAmt')) document.getElementById('spAutoSavingsAmt').value = '';
+  if (document.getElementById('spAutoInvestAmt')) document.getElementById('spAutoInvestAmt').value = '';
+}
+
+function getSpouseRetirementTypes() {
+  const type  = state.spouseIncomeType || 'w2';
+  const gross = state.spouseIncome || 0;
+  const filing = state.filingStatus || 'single';
+  const rothLimit = filing === 'married' ? 240000 : 161000;
+  const rothOk = gross < rothLimit;
+  const types = [];
+  if (type === 'w2' || type === 'both') {
+    types.push({ value:'401k / 403b',  label:'401k / 403b',     tag:'pre-tax' });
+    types.push({ value:'Roth 401k',    label:'Roth 401k',        tag:'after-tax' });
+  }
+  if (type === '1099' || type === 'both') {
+    types.push({ value:'SEP IRA',      label:'SEP IRA',          tag:'pre-tax' });
+  }
+  types.push({ value:'Traditional IRA', label:'Traditional IRA', tag:'pre-tax' });
+  if (rothOk) types.push({ value:'Roth IRA', label:'Roth IRA',   tag:'after-tax' });
+  types.push({ value:'HSA',  label:'HSA',    tag:'pre-tax' });
+  types.push({ value:'Pension', label:'Pension', tag:'pre-tax' });
+  return types;
+}
+
+function addSpouseRetirementRow() {
+  const types = getSpouseRetirementTypes();
+  spouseRetRows.push({ type: types[0]?.value || '401k / 403b', pct: 0, amt: 0 });
+  renderSpouseRetRows();
+}
+
+function renderSpouseRetRows() {
+  const container = document.getElementById('spouseRetirementRows');
+  if (!container) return;
+  container.innerHTML = '';
+  const availTypes = getSpouseRetirementTypes();
+  const spAge = state.spouseAge || 35;
+  spouseRetRows.forEach((row, i) => {
+    const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
+    const tag = isRoth
+      ? `<span style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.12);color:var(--pink);border-radius:5px;padding:2px 6px;margin-left:6px;">AFTER-TAX</span>`
+      : `<span style="font-size:10px;font-weight:700;background:rgba(30,35,64,0.08);color:var(--muted);border-radius:5px;padding:2px 6px;margin-left:6px;">PRE-TAX</span>`;
+    const limLabel = irsLimitLabel(row.type, spAge);
+    container.innerHTML += `
+      <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;flex:1;min-width:0;">
+            <select style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:transparent;cursor:pointer;min-width:0;flex:1;" onchange="spouseRetRows[${i}].type=this.value;renderSpouseRetRows()">
+              ${availTypes.map(t => `<option value="${t.value}" ${t.value===row.type?'selected':''}>${t.label}</option>`).join('')}
+            </select>${tag}
+          </div>
+          <div onclick="spouseRetRows.splice(${i},1);renderSpouseRetRows()" style="color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;">×</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">%</span><input class="ob-input" type="number" placeholder="6" min="0" max="100" style="padding-left:28px;" value="${row.pct||''}" oninput="spouseRetRows[${i}].pct=parseFloat(this.value)||0;spouseRetRows[${i}].amt=state.spouseIncome>0?Math.round(state.spouseIncome*(parseFloat(this.value)||0)/100/12):0"/></div>
+          <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+          <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="spouseRetRows[${i}].amt=parseFloat(this.value)||0"/></div>
+          <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+        </div>
+        ${limLabel ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${limLabel} · 2025 IRS limit${spAge>=50?' (catch-up)':''}</div>` : ''}
+      </div>`;
+  });
+}
+
+function toggleSpouseAutoSav(yes) {
+  document.getElementById('spAutoSavYes').classList.toggle('selected', yes);
+  document.getElementById('spAutoSavNo').classList.toggle('selected', !yes);
+  document.getElementById('spAutoSavFields').style.display = yes ? 'block' : 'none';
+  if (!yes && document.getElementById('spAutoSavingsAmt')) document.getElementById('spAutoSavingsAmt').value = '';
+}
+function toggleSpouseAutoInv(yes) {
+  document.getElementById('spAutoInvYes').classList.toggle('selected', yes);
+  document.getElementById('spAutoInvNo').classList.toggle('selected', !yes);
+  document.getElementById('spAutoInvFields').style.display = yes ? 'block' : 'none';
+  if (!yes && document.getElementById('spAutoInvestAmt')) document.getElementById('spAutoInvestAmt').value = '';
+}
+
+function collectSpouseSavingsInputs() {
+  const rows = spouseRetRows.map(r => ({ ...r }));
+  const autoSav = parseFloat(document.getElementById('spAutoSavingsAmt')?.value) || 0;
+  const autoInv = parseFloat(document.getElementById('spAutoInvestAmt')?.value) || 0;
+  state.spouseSavings = { rows, autoSavings: autoSav, autoInvest: autoInv };
+}
+
+// ── GOALS SCREEN ──
+const GOAL_OPTIONS = [
+  { id:'home',      icon:'🏡', label:'Buy a home' },
+  { id:'child',     icon:'👶', label:'Have a child' },
+  { id:'college',   icon:'🎓', label:'Save for college' },
+  { id:'emergency', icon:'🛡️', label:'Build an emergency fund' },
+  { id:'debt',      icon:'💳', label:'Pay off debt' },
+  { id:'retire',    icon:'🌴', label:'Retire early' },
+  { id:'trip',      icon:'✈️', label:'Take a dream trip' },
+  { id:'business',  icon:'🚀', label:'Start a business' },
+  { id:'other',     icon:'⭐', label:'Other' },
+];
+const GOAL_TIMELINES = ['Within 1 year','1–3 years','3–5 years','5+ years'];
+
+function setupGoalsScreen() {
+  const grid = document.getElementById('goalsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  GOAL_OPTIONS.forEach(g => {
+    const div = document.createElement('div');
+    div.className = 'ob-option';
+    div.style.cssText = 'flex-direction:row;gap:12px;align-items:flex-start;';
+    div.innerHTML = `
+      <div class="ob-option-icon">${g.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="ob-option-label">${g.label}</div>
+        <div class="goal-timeline" id="gtl_${g.id}" style="display:none;margin-top:8px;">
+          <select class="ob-input" style="font-size:13px;padding:8px 12px;height:auto;" onchange="setGoalTimeline('${g.id}',this.value)">
+            ${GOAL_TIMELINES.map(t => `<option value="${t}">${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>`;
+    div.onclick = (e) => {
+      if (e.target.tagName === 'SELECT' || e.target.closest('select')) return;
+      div.classList.toggle('selected');
+      const tlDiv = document.getElementById(`gtl_${g.id}`);
+      tlDiv.style.display = div.classList.contains('selected') ? 'block' : 'none';
+    };
+    grid.appendChild(div);
+  });
+}
+
+function setGoalTimeline(id, timeline) {
+  // stored when buildPlan collects goals
+}
+
 function buildPlan() {
+  // collect goals
+  state.goals = [];
+  GOAL_OPTIONS.forEach(g => {
+    const card = document.querySelector(`#goalsGrid .ob-option:nth-child(${GOAL_OPTIONS.indexOf(g)+1})`);
+    if (card && card.classList.contains('selected')) {
+      const sel = document.getElementById(`gtl_${g.id}`)?.querySelector('select');
+      state.goals.push({ type: g.label, timeline: sel?.value || '1–3 years' });
+    }
+  });
   // collect assets
   state.assets = [];
   document.querySelectorAll('#assetRows .al-row').forEach(row => {
-    const type = row.querySelector('.asset-type')?.value || 'Asset';
+    const type  = row.querySelector('.asset-type')?.value || 'Asset';
+    const owner = row.querySelector('.asset-owner')?.value || 'you';
     const value = parseFloat(row.querySelector('.al-value-input')?.value) || 0;
-    state.assets.push({ type, value });
+    const tradBal = parseFloat(row.querySelector('.asset-trad-bal')?.value) || 0;
+    const rothBal = parseFloat(row.querySelector('.asset-roth-bal')?.value) || 0;
+    const totalVal = type.includes('401k') ? (tradBal + rothBal) : value;
+    state.assets.push({ type, owner, value: totalVal, tradBal, rothBal });
   });
   // collect liabilities
   state.liabilities = [];
   document.querySelectorAll('#liabilityRows .al-row').forEach(row => {
-    const type = row.querySelector('.liability-type')?.value || 'Debt';
+    const type  = row.querySelector('.liability-type')?.value || 'Debt';
+    const owner = row.querySelector('.liability-owner')?.value || 'you';
     const amount = parseFloat(row.querySelector('.al-bal')?.value) || 0;
-    const apr = parseFloat(row.querySelector('.al-apr')?.value) || 0;
+    const apr    = parseFloat(row.querySelector('.al-apr')?.value) || 0;
     const linkedAsset = row.querySelector('.al-link-select')?.value || '';
-    if (amount > 0) state.liabilities.push({ type, name: type, amount, apr, linkedAsset });
+    if (amount > 0) state.liabilities.push({ type, name: type, owner, amount, apr, linkedAsset });
   });
   state.liabilities.sort((a,b) => b.apr - a.apr);
-  // keep debts in sync for backward compat
   state.debts = state.liabilities;
   goTo('checking');
   setTimeout(()=>{ computeFinancials(); computePlan(); goTo('result'); }, 2200);
