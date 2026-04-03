@@ -323,17 +323,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .bv-on-track-card { background:rgba(46,125,50,0.06); border:1px solid rgba(46,125,50,0.2); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
 
 /* TOOLTIPS */
-.tip-icon { display:inline-flex; align-items:center; justify-content:center; width:17px; height:17px; border-radius:50%; background:rgba(232,24,109,0.12); font-size:10px; cursor:pointer; margin-left:3px; vertical-align:middle; flex-shrink:0; touch-action:manipulation; user-select:none; -webkit-user-select:none; line-height:1; }
-.tip-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.45); z-index:150; opacity:0; pointer-events:none; transition:opacity 0.25s; border-radius:44px; }
-@media (max-width:480px) { .tip-overlay { border-radius:0; } }
-.tip-overlay.show { opacity:1; pointer-events:auto; }
-.tip-sheet { position:absolute; bottom:0; left:0; right:0; background:white; border-radius:24px 24px 0 0; padding:28px 24px 44px; z-index:151; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
-.tip-sheet.show { transform:translateY(0); }
-.tip-pill { display:inline-flex; align-items:center; gap:5px; background:rgba(232,24,109,0.1); border-radius:20px; padding:4px 11px; font-size:11px; font-weight:700; color:var(--pink); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:14px; }
-.tip-term { font-family:'DM Serif Display',serif; font-size:22px; color:var(--navy); margin-bottom:10px; line-height:1.2; }
-.tip-body { font-size:14px; color:var(--slate); line-height:1.65; }
-.tip-close { display:block; text-align:center; font-size:14px; font-weight:600; color:var(--pink); margin-top:22px; cursor:pointer; touch-action:manipulation; }
-.action-hint { font-size:12px; color:var(--muted); line-height:1.4; margin-top:4px; font-style:italic; }
+.tip-icon { display:inline; font-size:14px; cursor:pointer; margin-left:3px; vertical-align:middle; touch-action:manipulation; user-select:none; -webkit-user-select:none; line-height:1; }
+#tooltipBackdrop { display:none; position:fixed; inset:0; z-index:199; }
+#tooltipPopup { display:none; position:absolute; left:20px; right:20px; background:white; border-radius:14px; padding:16px; box-shadow:0 8px 32px rgba(0,0,0,0.18); border:1px solid var(--border); z-index:200; }
+#tooltipPopup .tp-label { font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--pink); margin-bottom:6px; }
+#tooltipPopup .tp-term { font-weight:700; font-size:15px; color:var(--navy); margin-bottom:6px; line-height:1.2; }
+#tooltipPopup .tp-body { font-size:13px; color:var(--slate); line-height:1.55; }
+#tooltipPopup .tp-close { display:block; text-align:center; margin-top:12px; font-size:13px; font-weight:600; color:var(--pink); cursor:pointer; touch-action:manipulation; }
 .focus-beg-sub { font-size:12px; color:var(--slate); line-height:1.5; margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
 
 /* BENCHMARKS */
@@ -358,7 +354,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .risk-note-icon { flex-shrink:0; font-size:13px; }
 
 /* COMPLIANCE */
-.compliance-note { font-size:11px; color:var(--muted); line-height:1.55; text-align:center; padding:14px 20px 0; margin-top:12px; border-top:1px solid var(--border); }
+.compliance-note { font-size:11px; color:var(--muted); line-height:1.55; text-align:center; padding:16px; }
 
 /* BOTTOM NAV */
 .bottom-nav { display:flex; background:white; border-top:1px solid var(--border); padding:12px 0 28px; flex-shrink:0; }
@@ -752,7 +748,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div id="focusAreas"></div>
     <br>
     <button class="btn-primary" onclick="showRoadmapConfirm()">See My Full Roadmap →</button>
-    <p class="compliance-note">Continuum provides financial education, not advice. Consult a licensed advisor for personalized recommendations.</p>
+    <p class="compliance-note">Continuum is for educational purposes only. Not financial advice. Consult a licensed advisor.</p>
   </div>
 </div>
 
@@ -776,7 +772,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="roadmap-sub">Actions with your actual numbers</div>
   </div>
   <div class="roadmap-body" id="roadmapBody"></div>
-  <p class="compliance-note" style="margin:0 28px;">Continuum provides financial education, not advice. Consult a licensed advisor for personalized recommendations.</p>
+  <p class="compliance-note" style="margin:0 28px;">Continuum is for educational purposes only. Not financial advice. Consult a licensed advisor.</p>
   <div style="height:24px;"></div>
 </div>
 
@@ -895,13 +891,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
 </div>
 
-<!-- TOOLTIP MODAL -->
-<div class="tip-overlay" id="tipOverlay" onclick="hideTip()"></div>
-<div class="tip-sheet" id="tipSheet">
-  <div class="tip-pill">💡 Plain English</div>
-  <div class="tip-term" id="tipTerm"></div>
-  <div class="tip-body" id="tipBody"></div>
-  <span class="tip-close" onclick="hideTip()">Got it</span>
+<!-- TOOLTIP POPUP -->
+<div id="tooltipBackdrop" onclick="hideTip()"></div>
+<div id="tooltipPopup">
+  <div class="tp-label">💡 Plain English</div>
+  <div class="tp-term" id="tipTerm"></div>
+  <div class="tp-body" id="tipBody"></div>
+  <span class="tp-close" onclick="hideTip()">Got it</span>
 </div>
 
 <!-- CELEBRATION OVERLAY -->
@@ -939,6 +935,15 @@ const state = {
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
+const fmtSafe = n => (!n && n !== 0) || isNaN(n) || !isFinite(n) ? '' : '$' + Math.round(n).toLocaleString();
+
+function getSavingsTarget(age) {
+  const a = age || 35;
+  if (a < 30) return { min:10, max:15, label:'10–15%', note:'Start here — aim higher as income grows.' };
+  if (a < 40) return { min:15, max:20, label:'15–20%', note:'recommended for your age' };
+  if (a < 50) return { min:20, max:25, label:'20–25%', note:'recommended for your age' };
+  return    { min:25, max:30, label:'25–30%', note:'catch-up contributions available' };
+}
 
 // ── TOOLTIPS / LITERACY ──
 const GLOSSARY = {
@@ -991,23 +996,35 @@ function annotateTips(text) {
     if (state.literacyLevel === 'intermediate' && !INTERMEDIATE_KEYS.has(key)) continue;
     if (pattern.test(result)) {
       used.add(key);
-      result = result.replace(pattern, m => `${m}<span class="tip-icon" onclick="showTip('${key}')">💡</span>`);
+      result = result.replace(pattern, m => `${m}<span class="tip-icon" onclick="showTip('${key}',event)">💡</span>`);
     }
   }
   return result;
 }
 
-function showTip(key) {
+function showTip(key, e) {
   const g = GLOSSARY[key]; if (!g) return;
+  if (e) e.stopPropagation();
   document.getElementById('tipTerm').textContent = g.term;
   document.getElementById('tipBody').textContent = g.body;
-  document.getElementById('tipOverlay').classList.add('show');
-  document.getElementById('tipSheet').classList.add('show');
+  const popup = document.getElementById('tooltipPopup');
+  popup.style.display = 'block';
+  document.getElementById('tooltipBackdrop').style.display = 'block';
+  // Position: below click if upper half of phone, above if lower half
+  const phone = document.querySelector('.phone');
+  const phoneRect = phone.getBoundingClientRect();
+  const clickY = e ? (e.clientY - phoneRect.top + phone.scrollTop) : 200;
+  const phoneH = phone.offsetHeight;
+  const popH = popup.offsetHeight || 160;
+  const topPos = clickY > phoneH * 0.55
+    ? Math.max(8, clickY - popH - 12)
+    : clickY + 20;
+  popup.style.top = Math.min(topPos, phoneH - popH - 8) + 'px';
 }
 
 function hideTip() {
-  document.getElementById('tipOverlay').classList.remove('show');
-  document.getElementById('tipSheet').classList.remove('show');
+  document.getElementById('tooltipPopup').style.display = 'none';
+  document.getElementById('tooltipBackdrop').style.display = 'none';
 }
 
 // ── PEER BENCHMARKS ──
@@ -1291,21 +1308,22 @@ function updateSavingsPreview() {
   const totalMonthly = retTotal + autoSav + autoInv;
   const totalAnnual  = totalMonthly * 12;
   const rate = gross > 0 ? (totalAnnual / gross) * 100 : 0;
-  const recommended = 15;
+  const savTgt = getSavingsTarget(state.age);
+  const recommended = savTgt.min;
   const card = document.getElementById('savingsPreviewCard');
   card.style.display = 'block';
   document.getElementById('savingsRateBig').textContent = rate.toFixed(1) + '%';
-  const barPct = Math.min(100, (rate / recommended) * 100);
+  const barPct = Math.min(100, (rate / savTgt.max) * 100);
   const bar = document.getElementById('savingsRateBar');
   bar.style.width = barPct + '%';
-  bar.style.background = rate >= recommended ? '#4CAF50' : rate >= 10 ? 'var(--pink)' : '#C62828';
+  bar.style.background = rate >= savTgt.max ? '#4CAF50' : rate >= recommended ? 'var(--pink)' : '#C62828';
   const msg = document.getElementById('savingsRateMsg');
   const gap = recommended - rate;
   if (rate >= recommended) {
-    msg.textContent = `✓ You're hitting the 15% target. Great position.`;
+    msg.textContent = `✓ Above the ${recommended}% minimum. Target range: ${savTgt.label}.`;
     msg.style.color = 'rgba(76,175,80,0.9)';
   } else if (rate > 0) {
-    msg.textContent = `${gap.toFixed(1)}% below the 15% recommended rate — we'll show you how to close this gap.`;
+    msg.textContent = `${gap.toFixed(1)}% below the ${recommended}% minimum (${savTgt.label} recommended) — your plan will show how to close this.`;
     msg.style.color = 'rgba(245,240,232,0.55)';
   } else {
     msg.textContent = `Nothing saved yet — that's exactly what your plan will address.`;
@@ -1494,12 +1512,15 @@ function computeFinancials() {
   const totalActualSavingsAnnual  = totalActualSavingsMonthly * 12;
   const actualSavingsRate = householdGross > 0 ? (totalActualSavingsAnnual / householdGross) * 100 : 0;
 
-  const recommendedSavingsRate = 15;
-  const recommendedMonthly  = Math.round(householdGross * 0.15 / 12);
+  const savTarget           = getSavingsTarget(state.age);
+  const recommendedSavingsRate = savTarget.min;
+  const recommendedMonthly  = Math.round((householdGross || 0) * savTarget.min / 100 / 12);
+  const maxMonthly          = Math.round((householdGross || 0) * savTarget.max / 100 / 12);
   const savingsGapMonthly   = Math.max(0, recommendedMonthly - totalActualSavingsMonthly);
-  const savingsGapRate      = Math.max(0, recommendedSavingsRate - actualSavingsRate);
-  const onTrack = actualSavingsRate >= recommendedSavingsRate;
+  const savingsGapRate      = Math.max(0, savTarget.min - actualSavingsRate);
+  const onTrack             = actualSavingsRate >= savTarget.min;
   const unallocatedSurplus  = Math.max(0, inc - exp - totalActualSavingsMonthly);
+  const opportunityMonthly  = onTrack ? Math.max(0, Math.min(unallocatedSurplus, maxMonthly - totalActualSavingsMonthly)) : 0;
   const monthsToBuffer      = emergencyGap > 0 && unallocatedSurplus > 0 ? Math.ceil(emergencyGap / (unallocatedSurplus * 0.5)) : 0;
 
   const totalDebt        = state.debts.reduce((s,d) => s + d.amount, 0);
@@ -1513,8 +1534,8 @@ function computeFinancials() {
     monthlySurplus: unallocatedSurplus,
     totalActualSavingsMonthly, totalActualSavingsAnnual, actualSavingsRate,
     actual401k, actualAutoSav, actualAutoInv,
-    recommendedSavingsRate, recommendedMonthly, savingsGapMonthly,
-    savingsGapRate: savingsGapRate.toFixed(1), onTrack,
+    savTarget, recommendedSavingsRate, recommendedMonthly, maxMonthly,
+    savingsGapMonthly, savingsGapRate: savingsGapRate.toFixed(1), onTrack, opportunityMonthly,
     monthsToBuffer, totalDebt, highInterestDebt,
     lifeInsuranceTarget, disabilityMonthlyTarget,
     retirementMonthly, annualIncome: gross, grossAnnual: gross,
@@ -1543,22 +1564,22 @@ function computePlan() {
         begSub:'Keep this in a high-yield savings account, separate from your everyday spending. Open a free account at any online bank and set up a small automatic transfer to start.'},
       {icon:'💳', title:'Tackle high-interest debt first', sub: c.highInterestDebt > 0 ? `You have ${fmt(c.highInterestDebt)} in high-interest debt (7%+ APR). This is your biggest return.` : 'No high-interest debt found — great position.', amount: c.highInterestDebt > 0 ? `Prioritize over investing until cleared` : null, priority:'high',
         begSub:'High-interest debt (like credit cards) grows faster than most investments earn. Paying it off is one of the best financial moves available to you right now.'},
-      {icon:'⚙️', title: c.onTrack ? 'Keep your savings rate on track' : 'Close your savings gap', sub: c.onTrack ? `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross — at or above the 15% target. Focus on where the money is going, not just how much.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Closing the gap to 15% means adding ${fmt(c.savingsGapMonthly)}/month more.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month needed · target: 15% of gross`, priority: c.onTrack ? 'med' : 'high',
-        begSub: c.onTrack ? 'You\'re doing the right things — keep automating and let compounding work over time.' : 'Even automating an extra $50–100/month moves the needle. You can increase it gradually without feeling a big pinch.'}
+      {icon:'⚙️', title: c.onTrack ? 'Opportunity to save more' : 'Close your savings gap', sub: c.onTrack ? `You're saving ${c.actualSavingsRate.toFixed(1)}% — above the ${c.savTarget?.min}% minimum. You have ${fmtSafe(c.opportunityMonthly)}/month unallocated you could put to work toward your ${c.savTarget?.max}% target.` : `You're saving ${c.actualSavingsRate.toFixed(1)}%. The ${c.savTarget?.label || '15–20%'} range is ${c.savTarget?.note || 'recommended'} — adding ${fmtSafe(c.savingsGapMonthly)}/month closes the gap.`, amount: c.onTrack ? (c.opportunityMonthly > 0 ? `Up to +${fmtSafe(c.opportunityMonthly)}/month available from surplus` : `At ${c.savTarget?.max}% target`) : `+${fmtSafe(c.savingsGapMonthly)}/month to reach ${c.savTarget?.label || '15%'}`, priority: c.onTrack ? 'med' : 'high',
+        begSub: c.onTrack ? 'You\'re doing the right things. The extra unallocated money is an opportunity — even routing half of it to savings makes a real difference.' : 'Even automating an extra $50–100/month moves the needle. You can increase it gradually without feeling a big pinch.'}
     ];
   } else if (stability==='stable') {
     phase = lifeStage.includes('kids') ? 3 : 2;
     stageLabel = lifeStage.includes('kids') ? 'Growth + Protection Phase' : 'Growth Phase';
     stageDesc = `Your base is solid, ${name}. You have ${fmt(state.currentSavings)} saved. Now it's about growing intentionally${lifeStage.includes('kids') ? ' and protecting the people who depend on you' : ''}.`;
     focuses = lifeStage.includes('kids') ? [
-      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `Saving ${c.actualSavingsRate.toFixed(1)}% — on track. Now optimize the allocation between protection and growth.` : `Add ${fmt(c.savingsGapMonthly)}/month across your 401k and automated transfers to reach 15%.`, amount: c.onTrack ? null : `${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority: c.onTrack ? 'med' : 'high',
-        begSub: c.onTrack ? 'You\'re hitting the target — now make sure the money is going to the right accounts (401k, Roth IRA, etc.).' : 'Even small increases add up. Try raising your 401k contribution by 1% and setting up a recurring transfer to savings.'},
+      {icon:'📈', title: c.onTrack ? 'Opportunity to save more' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — above the ${c.savTarget?.min}% minimum. ${c.opportunityMonthly > 0 ? `You have ${fmtSafe(c.opportunityMonthly)}/month unallocated you could route toward your ${c.savTarget?.max}% target.` : 'Optimize the allocation between protection and growth.'}` : `Add ${fmtSafe(c.savingsGapMonthly)}/month across your 401k and automated transfers to reach the ${c.savTarget?.label || '15%'} minimum.`, amount: c.onTrack ? (c.opportunityMonthly > 0 ? `Up to +${fmtSafe(c.opportunityMonthly)}/month available` : null) : `${fmtSafe(c.totalActualSavingsMonthly)}/mo now → target ${fmtSafe(c.retirementMonthly)}/mo`, priority: c.onTrack ? 'med' : 'high',
+        begSub: c.onTrack ? 'You\'re hitting the minimum — now make sure the money is going to the right accounts (401k, Roth IRA, etc.).' : 'Even small increases add up. Try raising your 401k contribution by 1% and setting up a recurring transfer to savings.'},
       {icon:'🛡️', title:'Get your life coverage right', sub:`With dependents, aim for ${fmtK(c.lifeInsuranceTarget)} in life insurance and ${fmt(c.disabilityMonthlyTarget)}/month disability cover.`, amount:`${fmtK(c.lifeInsuranceTarget)} life · ${fmt(c.disabilityMonthlyTarget)}/mo disability`, priority:'high',
         begSub:'Term life insurance replaces your income for your family if you die. A 20-year term policy typically costs less than a few dollars a day. Disability coverage protects that same income if you\'re injured or ill.'},
       {icon:'👶', title:'Name your beneficiaries', sub:'Check all retirement accounts and insurance policies reflect the right people.', amount:null, priority:'med',
         begSub:'Log in to each retirement account and insurance policy and add or confirm who should receive the money. This takes about 5 minutes per account and is one of the most important things you can do.'}
     ] : [
-      {icon:'📈', title: c.onTrack ? 'Maintain your savings rate' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — solid. Now focus on optimizing where those savings go.` : `You're saving ${c.actualSavingsRate.toFixed(1)}% of gross. Add ${fmt(c.savingsGapMonthly)}/month to hit the 15% target.`, amount: c.onTrack ? null : `+${fmt(c.savingsGapMonthly)}/month to reach ${c.recommendedSavingsRate}%`, priority: c.onTrack ? 'med' : 'high',
+      {icon:'📈', title: c.onTrack ? 'Opportunity to save more' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — above the ${c.savTarget?.min}% minimum. ${c.opportunityMonthly > 0 ? `You have ${fmtSafe(c.opportunityMonthly)}/month unallocated you could put to work toward your ${c.savTarget?.max}% target.` : 'Now focus on optimizing where those savings go.'}` : `You're saving ${c.actualSavingsRate.toFixed(1)}%. The ${c.savTarget?.label || '15%'} range is ${c.savTarget?.note || 'recommended'} — adding ${fmtSafe(c.savingsGapMonthly)}/month closes the gap.`, amount: c.onTrack ? (c.opportunityMonthly > 0 ? `Up to +${fmtSafe(c.opportunityMonthly)}/month available from surplus` : null) : `+${fmtSafe(c.savingsGapMonthly)}/month to reach ${c.savTarget?.label || '15%'}`, priority: c.onTrack ? 'med' : 'high',
         begSub: c.onTrack ? 'You\'re doing the right things — keep automating and let compounding work.' : 'Start with your 401k contribution. If your employer matches, increase until you capture the full match first.'},
       {icon:'🏦', title:'Automate long-term investing', sub:`Aim for ${fmt(c.retirementMonthly)}/month total across 401k and investment accounts. You're currently at ${fmt(c.totalActualSavingsMonthly)}/month.`, amount:`${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority:'high',
         begSub:'This means setting up regular, automatic transfers to your 401k or IRA so investing happens before you can spend the money. Consistent contributions compound dramatically over decades.'},
@@ -1569,7 +1590,7 @@ function computePlan() {
     phase=4; stageLabel='Optimization Phase';
     stageDesc=`You're in a strong position, ${name}. Monthly surplus of ${fmt(c.monthlySurplus)}. The focus now shifts from accumulating more to making what you have work harder.`;
     focuses=[
-      {icon:'🧩', title:'Clarify your asset mix', sub:'Map all accounts by tax treatment: pre-tax, Roth, and taxable. Efficiency lives in the gaps.', amount:`${fmt(c.annualIncome * 12)} annual income — tax diversification is now high leverage`, priority:'high',
+      {icon:'🧩', title:'Clarify your asset mix', sub:'Map all accounts by tax treatment: pre-tax, Roth, and taxable. Efficiency lives in the gaps.', amount:`${fmtSafe(c.annualIncome)}/yr income — tax diversification is now high leverage`, priority:'high',
         begSub:'List out every account you have (401k, IRA, brokerage, etc.) and what\'s in each. Knowing your full picture is the foundation for making smarter decisions.'},
       {icon:'📍', title:'Optimize asset location', sub:'Hold bonds and REITs in tax-deferred accounts; growth equities in taxable. Small shifts = big tax savings.', amount:null, priority:'high',
         begSub:'Where you hold investments matters as much as what you hold. Placing the right types of assets in the right accounts can meaningfully reduce your annual tax bill.'},
@@ -1608,9 +1629,10 @@ function computePlan() {
       ? `<div class="numbers-row"><span class="numbers-label">${t.stateCode} state income tax</span><span class="numbers-value pink">−${fmt(t.stateTax)}</span></div>`
       : t.stateCode ? `<div class="numbers-row"><span class="numbers-label">${t.stateCode} — no state income tax</span><span class="numbers-value" style="color:#2E7D32">$0</span></div>` : '';
 
+    const tgt = c2.savTarget || { min:15, max:20, label:'15–20%', note:'recommended' };
     const savingsStatusHtml = c2.onTrack
-      ? `<div class="bv-on-track-card"><div style="font-size:13px;color:#2E7D32;font-weight:600;margin-bottom:4px;">✓ On track — ${c2.actualSavingsRate.toFixed(1)}% savings rate</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">You're hitting the 15% target across your 401k and automated transfers. Your plan will focus on optimizing where it goes.</div></div>`
-      : `<div class="bv-savings-gap-card"><div style="font-size:13px;color:var(--pink);font-weight:600;margin-bottom:4px;">Savings gap: ${fmt(c2.savingsGapMonthly)}/month (${c2.savingsGapRate}% below target)</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">You're saving ${c2.actualSavingsRate.toFixed(1)}% of gross. The recommended rate is 15% — your plan will show exactly how to close this gap.</div></div>`;
+      ? `<div class="bv-on-track-card"><div style="font-size:13px;color:#2E7D32;font-weight:600;margin-bottom:4px;">✓ Above minimum — ${c2.actualSavingsRate.toFixed(1)}% savings rate</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">You're above the ${tgt.min}% minimum. ${c2.opportunityMonthly > 0 ? `You have ${fmtSafe(c2.opportunityMonthly)}/month unallocated — an opportunity to push toward your ${tgt.max}% target.` : `The ${tgt.label} range is ${tgt.note}.`}</div></div>`
+      : `<div class="bv-savings-gap-card"><div style="font-size:13px;color:var(--pink);font-weight:600;margin-bottom:4px;">Savings gap: ${fmtSafe(c2.savingsGapMonthly)}/month (${c2.savingsGapRate}% below minimum)</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">You're saving ${c2.actualSavingsRate.toFixed(1)}%. The ${tgt.label} range is ${tgt.note} — your plan will show exactly how to close this gap.</div></div>`;
 
     nc.innerHTML = `
       <div class="breakdown-visual">
@@ -1626,7 +1648,7 @@ function computePlan() {
           <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot taxes"></div><div class="bv-legend-label">Taxes (${pct(t.effectiveRate)} effective)</div></div><div class="bv-legend-val">${fmt(t.totalTax / 12)}/mo</div></div>
           <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot expenses"></div><div class="bv-legend-label">Living expenses</div></div><div class="bv-legend-val">${fmt(c2.expMonthly)}/mo</div></div>
           <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot saving"></div><div class="bv-legend-label">Intentional savings</div></div><div class="bv-legend-val saving">${fmt(c2.savingsMonthly)}/mo</div></div>
-          ${gapPct > 0 ? `<div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot gap"></div><div class="bv-legend-label">Savings gap (to reach 15%)</div></div><div class="bv-legend-val gap">−${fmt(c2.savingsGapMonthly)}/mo</div></div>` : ''}
+          ${gapPct > 0 ? `<div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot gap"></div><div class="bv-legend-label">Savings gap (to reach ${c2.savTarget?.label || '15%'} min)</div></div><div class="bv-legend-val gap">−${fmtSafe(c2.savingsGapMonthly)}/mo</div></div>` : ''}
           <div class="bv-legend-row"><div class="bv-legend-left"><div class="bv-dot unalloc"></div><div class="bv-legend-label">Unallocated surplus</div></div><div class="bv-legend-val">${fmt(c2.unallocMonthly)}/mo</div></div>
         </div>
       </div>
@@ -1696,7 +1718,7 @@ function getPhases() {
         ? 'Your balanced profile suggests a 60/40 stock-to-bond split as a solid starting point for long-term wealth building.'
         : null,
       actions:[
-        inc > 0 ? `Increase savings rate to ${c.recommendedSavingsRate}% (${fmt(c.monthlySavingsTarget)}/month)` : 'Increase savings rate by 1–2%',
+        inc > 0 ? `Increase savings rate to ${c.savTarget?.label || '15–20%'} — target ${fmtSafe(c.recommendedMonthly)}/month` : 'Increase savings rate by 1–2%',
         inc > 0 ? `Contribute ${fmt(c.retirementMonthly)}/month to retirement accounts` : 'Set consistent retirement contributions',
         'Understand your tax buckets: Roth, traditional, taxable',
         c.totalDebt > 0 ? `Eliminate remaining debt — ${fmt(c.totalDebt)} total tracked` : 'Eliminate high-interest debt',
@@ -1791,9 +1813,7 @@ function buildRoadmap(currentPhase, name) {
         const checked = state.checks[key].includes(ai);
         const textStyle = checked ? 'text-decoration:line-through;color:var(--muted)' : 'color:var(--navy)';
         const annotated = annotateTips(a);
-        const hint = state.literacyLevel === 'beginner' && phase.hints?.[ai]
-          ? `<div class="action-hint">${phase.hints[ai]}</div>` : '';
-        return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><div style="flex:1;min-width:0;"><span style="${textStyle}">${annotated}</span>${hint}</div></div>`;
+        return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><span style="${textStyle};flex:1;min-width:0;">${annotated}</span></div>`;
       }).join('') + `</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div>`;
     }
     const riskNoteHtml = phase.riskNote && state.riskTolerance
@@ -2018,7 +2038,7 @@ function openProfile() {
   if (state.monthlyIncome > 0) {
     const rows = [
       {icon:'🛡️', label:'Emergency Fund Target', value: fmt(c.emergencyTarget)},
-      {icon:'💰', label:'Monthly Savings Target', value: fmt(c.monthlySavingsTarget)+'/mo'},
+      {icon:'💰', label:'Monthly Savings Target', value: fmtSafe(c.recommendedMonthly)+'/mo'},
       {icon:'🏦', label:'Retirement Contribution', value: fmt(c.retirementMonthly)+'/mo'},
     ];
     if (state.lifeStage.includes('kids')||state.lifeStage.includes('partner')) {
