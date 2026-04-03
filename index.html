@@ -539,27 +539,22 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       <div class="ob-sublabel">Total before any taxes or deductions</div>
       <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="grossIncome" type="number" placeholder="85,000" min="0" oninput="ob4UpdateHouseholdPreview()"/></div>
     </div>
-    <div class="ob-input-group">
-      <div class="ob-label">How do you get paid?</div>
-      <div style="display:flex;gap:10px;">
-        <div class="ob-option" id="ob4-w2" style="flex:1;flex-direction:column;align-items:center;padding:14px 10px;" onclick="ob4SelectType('w2')">
-          <div class="ob-option-icon" style="margin:0 0 6px;">🏢</div>
-          <div class="ob-option-label" style="font-size:14px;">W-2</div>
-          <div class="ob-option-desc" style="font-size:11px;text-align:center;">Taxes withheld<br>by employer</div>
-        </div>
-        <div class="ob-option" id="ob4-1099" style="flex:1;flex-direction:column;align-items:center;padding:14px 10px;" onclick="ob4SelectType('1099')">
-          <div class="ob-option-icon" style="margin:0 0 6px;">💼</div>
-          <div class="ob-option-label" style="font-size:14px;">1099</div>
-          <div class="ob-option-desc" style="font-size:11px;text-align:center;">Self-employed<br>or contractor</div>
-        </div>
+    <div class="ob-input-row">
+      <div class="ob-input-group">
+        <div class="ob-label">How do you get paid?</div>
+        <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+          <option value="w2">🏢 W-2 — Employer withholds taxes</option>
+          <option value="1099">💼 1099 — Self-employed / contractor</option>
+          <option value="both">🔀 Both — W-2 job + 1099 income</option>
+        </select>
       </div>
-    </div>
-    <div class="ob-input-group">
-      <div class="ob-label">Filing Status</div>
-      <div style="display:flex;gap:8px;">
-        <div class="ob-option" id="ob4-single" style="flex:1;padding:12px 6px;justify-content:center;" onclick="ob4SelectFiling('single')"><div class="ob-option-label" style="font-size:13px;">Single</div></div>
-        <div class="ob-option" id="ob4-married" style="flex:1;padding:12px 6px;justify-content:center;" onclick="ob4SelectFiling('married')"><div class="ob-option-label" style="font-size:13px;">Married MFJ</div></div>
-        <div class="ob-option" id="ob4-hoh" style="flex:1;padding:12px 6px;justify-content:center;" onclick="ob4SelectFiling('hoh')"><div class="ob-option-label" style="font-size:13px;">Head of HH</div></div>
+      <div class="ob-input-group">
+        <div class="ob-label">Filing Status</div>
+        <select class="ob-input" id="ob4FilingSelect" onchange="ob4SelectFiling(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+          <option value="single">Single</option>
+          <option value="married">Married Filing Jointly</option>
+          <option value="hoh">Head of Household</option>
+        </select>
       </div>
     </div>
 
@@ -574,20 +569,12 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       </div>
       <div class="ob-input-group">
         <div class="ob-label">How does your partner get paid?</div>
-        <div style="display:flex;gap:10px;">
-          <div class="ob-option" id="sp4-w2" style="flex:1;flex-direction:column;align-items:center;padding:12px 10px;" onclick="sp4SelectType('w2')">
-            <div class="ob-option-icon" style="margin:0 0 4px;font-size:16px;">🏢</div>
-            <div class="ob-option-label" style="font-size:13px;">W-2</div>
-          </div>
-          <div class="ob-option" id="sp4-1099" style="flex:1;flex-direction:column;align-items:center;padding:12px 10px;" onclick="sp4SelectType('1099')">
-            <div class="ob-option-icon" style="margin:0 0 4px;font-size:16px;">💼</div>
-            <div class="ob-option-label" style="font-size:13px;">1099</div>
-          </div>
-          <div class="ob-option" id="sp4-none" style="flex:1;flex-direction:column;align-items:center;padding:12px 10px;" onclick="sp4SelectType('none')">
-            <div class="ob-option-icon" style="margin:0 0 4px;font-size:16px;">🏠</div>
-            <div class="ob-option-label" style="font-size:13px;">Not working</div>
-          </div>
-        </div>
+        <select class="ob-input" id="sp4TypeSelect" onchange="sp4SelectType(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+          <option value="w2">🏢 W-2 — Employer withholds taxes</option>
+          <option value="1099">💼 1099 — Self-employed / contractor</option>
+          <option value="both">🔀 Both — W-2 job + 1099 income</option>
+          <option value="none">🏠 Not working</option>
+        </select>
       </div>
 
       <!-- Household preview card -->
@@ -713,6 +700,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
         <div id="savingsRateBar" style="height:100%;border-radius:3px;background:var(--pink);transition:width 0.4s ease;width:0%;"></div>
       </div>
       <div style="font-size:12px;color:rgba(245,240,232,0.55);" id="savingsRateMsg">Add your contributions above to see your savings rate.</div>
+      <div id="savingsRothNote" style="display:none;font-size:11px;color:rgba(245,240,232,0.4);margin-top:8px;line-height:1.5;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;"></div>
     </div>
 
   </div>
@@ -973,7 +961,7 @@ const state = {
   // Spouse
   spouseName:'', spouseAge:null, spouseWorks:null, spouseIncome:0,
   // Intentional savings inputs
-  s401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
+  s401kMonthly:0, sRoth401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
   literacyLevel:'', quizQ1:null, quizQ2:null, quizQ3:null,
   riskTolerance:'', riskQ1:null, riskQ2:null, riskQ3:null,
   checks:{}, naItems:{}, currentPhase:1, lifeEvents:[], activity:[],
@@ -1348,32 +1336,64 @@ function nextOb(step) {
 }
 
 function skipSavings() {
-  state.s401kMonthly = 0; state.sIraMonthly = 0; state.sRothMonthly = 0;
-  state.sSepMonthly = 0; state.sAutoSavings = 0; state.sAutoInvest = 0;
+  state.s401kMonthly = 0; state.sRoth401kMonthly = 0; state.sIraMonthly = 0;
+  state.sRothMonthly = 0; state.sSepMonthly = 0; state.sAutoSavings = 0; state.sAutoInvest = 0;
   goTo('ob5');
 }
 
 // ── RETIREMENT ACCOUNT ROWS ──
-const RETIREMENT_TYPES = ['401k / 403b','Traditional IRA','Roth IRA','SEP IRA','HSA','Pension'];
+// 2024 Roth IRA MAGI limits: single/HOH $161k, married MFJ $240k
+function getAvailableRetirementTypes() {
+  const type   = state.incomeType || ob4Type || 'w2';
+  const gross  = state.grossIncome || 0;
+  const filing = state.filingStatus || ob4Filing || 'single';
+  const rothIraLimit = filing === 'married' ? 240000 : 161000;
+  const rothEligible = gross < rothIraLimit;
+  const types = [];
+  if (type === 'w2' || type === 'both') {
+    types.push({ value:'401k / 403b',  label:'401k / 403b',       tag:'pre-tax' });
+    types.push({ value:'Roth 401k',    label:'Roth 401k',          tag:'after-tax' });
+  }
+  if (type === '1099' || type === 'both') {
+    types.push({ value:'SEP IRA',      label:'SEP IRA',            tag:'pre-tax' });
+  }
+  types.push(  { value:'Traditional IRA', label:'Traditional IRA', tag:'pre-tax' });
+  if (rothEligible) {
+    types.push({ value:'Roth IRA',     label:'Roth IRA',           tag:'after-tax' });
+  }
+  types.push(  { value:'HSA',          label:'HSA',                tag:'pre-tax' });
+  types.push(  { value:'Pension',      label:'Pension',            tag:'pre-tax' });
+  return types;
+}
 let retirementRows = [];
 
 function addRetirementRow() {
   const id = Date.now();
-  retirementRows.push({id, type: RETIREMENT_TYPES[0], pct: 0, amt: 0});
+  const types = getAvailableRetirementTypes();
+  retirementRows.push({id, type: types[0]?.value || '401k / 403b', pct: 0, amt: 0});
   renderRetirementRows();
 }
 
 function renderRetirementRows() {
   const container = document.getElementById('retirementAccountRows');
   container.innerHTML = '';
+  const availTypes = getAvailableRetirementTypes();
   retirementRows.forEach((row, i) => {
+    // If current type no longer available (e.g. Roth IRA after income limit), keep it but mark
+    const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
+    const tagHtml = isRoth
+      ? `<span style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.12);color:var(--pink);border-radius:5px;padding:2px 6px;margin-left:6px;letter-spacing:0.04em;">AFTER-TAX</span>`
+      : `<span style="font-size:10px;font-weight:700;background:rgba(30,35,64,0.08);color:var(--muted);border-radius:5px;padding:2px 6px;margin-left:6px;letter-spacing:0.04em;">PRE-TAX</span>`;
     container.innerHTML += `
       <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <select style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:transparent;cursor:pointer;flex:1;" onchange="retirementRows[${i}].type=this.value">
-            ${RETIREMENT_TYPES.map(t => `<option value="${t}" ${t===row.type?'selected':''}>${t}</option>`).join('')}
-          </select>
-          <div onclick="removeRetirementRow(${i})" style="color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">×</div>
+          <div style="display:flex;align-items:center;flex:1;min-width:0;">
+            <select style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:transparent;cursor:pointer;min-width:0;flex:1;" onchange="retirementRows[${i}].type=this.value;renderRetirementRows()">
+              ${availTypes.map(t => `<option value="${t.value}" ${t.value===row.type?'selected':''}>${t.label}</option>`).join('')}
+            </select>
+            ${tagHtml}
+          </div>
+          <div onclick="removeRetirementRow(${i})" style="color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;">×</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">%</span><input class="ob-input" type="number" placeholder="6" min="0" max="100" style="padding-left:28px;" value="${row.pct||''}" oninput="syncRetRow(${i},'pct',this.value)"/></div>
@@ -1454,9 +1474,19 @@ function resolveMonthly(pctId, amtId) {
 }
 
 function collectSavingsInputs() {
-  // Sum all retirement account rows
-  state.s401kMonthly = retirementRows.reduce((s,r) => s + (r.amt||0), 0);
+  state.s401kMonthly = 0; state.sRoth401kMonthly = 0;
   state.sIraMonthly  = 0; state.sRothMonthly = 0; state.sSepMonthly = 0;
+  retirementRows.forEach(r => {
+    const amt = r.amt || 0;
+    switch (r.type) {
+      case '401k / 403b':    state.s401kMonthly    += amt; break;
+      case 'Roth 401k':      state.sRoth401kMonthly += amt; break;
+      case 'Traditional IRA': state.sIraMonthly    += amt; break;
+      case 'Roth IRA':       state.sRothMonthly    += amt; break;
+      case 'SEP IRA':        state.sSepMonthly     += amt; break;
+      default:               state.s401kMonthly    += amt; // HSA, Pension → pre-tax
+    }
+  });
   state.sAutoSavings = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
   state.sAutoInvest  = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
 }
@@ -1464,7 +1494,9 @@ function collectSavingsInputs() {
 function updateSavingsPreview() {
   const gross = state.grossIncome;
   if (gross <= 0) return;
-  const retTotal = retirementRows.reduce((s,r) => s + (r.amt||0), 0);
+  const preTaxMonthly  = retirementRows.filter(r => r.type !== 'Roth 401k' && r.type !== 'Roth IRA').reduce((s,r) => s + (r.amt||0), 0);
+  const rothMonthly    = retirementRows.filter(r => r.type === 'Roth 401k' || r.type === 'Roth IRA').reduce((s,r) => s + (r.amt||0), 0);
+  const retTotal = preTaxMonthly + rothMonthly;
   const autoSav  = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
   const autoInv  = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
   const totalMonthly = retTotal + autoSav + autoInv;
@@ -1490,6 +1522,15 @@ function updateSavingsPreview() {
   } else {
     msg.textContent = `Nothing saved yet — that's exactly what your plan will address.`;
     msg.style.color = 'rgba(245,240,232,0.45)';
+  }
+  // Show Roth vs pre-tax breakdown note
+  const noteEl = document.getElementById('savingsRothNote');
+  if (noteEl) {
+    const parts = [];
+    if (preTaxMonthly > 0) parts.push(`Pre-tax (${fmt(preTaxMonthly)}/mo) reduces your taxable income`);
+    if (rothMonthly > 0)   parts.push(`Roth (${fmt(rothMonthly)}/mo) is after-tax — no deduction now, tax-free in retirement`);
+    noteEl.textContent = parts.join(' · ');
+    noteEl.style.display = parts.length ? 'block' : 'none';
   }
 }
 
@@ -1531,16 +1572,12 @@ let sp4Type = 'w2';
 
 function ob4SelectType(type) {
   ob4Type = type;
-  document.getElementById('ob4-w2').classList.toggle('selected', type === 'w2');
-  document.getElementById('ob4-1099').classList.toggle('selected', type === '1099');
 }
 function ob4SelectFiling(filing) {
   ob4Filing = filing;
-  ['single','married','hoh'].forEach(f => document.getElementById('ob4-'+f).classList.toggle('selected', f === filing));
 }
 function sp4SelectType(type) {
   sp4Type = type;
-  ['w2','1099','none'].forEach(t => document.getElementById('sp4-'+t).classList.toggle('selected', t === type));
   ob4UpdateHouseholdPreview();
 }
 
@@ -1549,6 +1586,9 @@ function ob4Setup() {
   const hasPartner = state.lifeStage.includes('partner');
   const spouseSec = document.getElementById('spouseIncomeSection');
   spouseSec.style.display = hasPartner ? 'block' : 'none';
+  // Restore dropdown selections from module vars
+  document.getElementById('ob4TypeSelect').value = ob4Type;
+  document.getElementById('ob4FilingSelect').value = ob4Filing;
   if (hasPartner) {
     const spouseName = state.spouseName || 'Partner';
     document.getElementById('ob4Title').textContent = 'Tell us your household income.';
@@ -1556,8 +1596,8 @@ function ob4Setup() {
     document.getElementById('ob4SpouseLabel').textContent = `${spouseName}'s Income`;
     document.getElementById('hhYouLabel').textContent = state.name || 'You';
     document.getElementById('hhSpouseLabel').textContent = spouseName;
-    // Pre-select sp4-w2
-    sp4SelectType('w2');
+    sp4Type = 'w2';
+    document.getElementById('sp4TypeSelect').value = 'w2';
   }
 }
 
@@ -1634,16 +1674,20 @@ function computeFinancials() {
   const status = state.filingStatus || 'single';
   const stateCode = state.stateCode || '';
 
-  // Primary income tax
-  const fedTax   = calcFedTax(gross, status);
-  const stateTax = calcStateTax(gross, stateCode, status);
+  // Pre-tax retirement contributions reduce taxable income (401k, IRA, SEP IRA)
+  const preTaxAnnual = ((state.s401kMonthly || 0) + (state.sIraMonthly || 0) + (state.sSepMonthly || 0)) * 12;
+  const taxableGross = Math.max(0, gross - preTaxAnnual);
+
+  // Primary income tax (applied to income after pre-tax retirement deductions)
+  const fedTax   = calcFedTax(taxableGross, status);
+  const stateTax = calcStateTax(taxableGross, stateCode, status);
   const totalTax = fedTax + stateTax;
-  const takeHomeAnnual  = Math.max(0, gross - totalTax);
+  const takeHomeAnnual  = Math.max(0, gross - preTaxAnnual - totalTax);
   const takeHomeMonthly = takeHomeAnnual / 12;
   const effectiveRate   = gross > 0 ? totalTax / gross : 0;
-  const marginalRate    = getMarginalRate(gross, status);
+  const marginalRate    = getMarginalRate(taxableGross, status);
 
-  state.taxCalc = { gross, fedTax, stateTax, totalTax, takeHomeAnnual, takeHomeMonthly, effectiveRate, marginalRate, stateCode };
+  state.taxCalc = { gross, taxableGross, preTaxAnnual, fedTax, stateTax, totalTax, takeHomeAnnual, takeHomeMonthly, effectiveRate, marginalRate, stateCode };
 
   // Spouse income tax (calculated independently using single brackets if they work)
   const spouseGross = state.spouseIncome || 0;
@@ -1673,13 +1717,14 @@ function computeFinancials() {
   const emergencyGap = Math.max(0, emergencyTarget - sav);
 
   // Actual intentional savings
-  const actual401k    = state.s401kMonthly  || 0;
-  const actualIra     = state.sIraMonthly   || 0;
-  const actualRoth    = state.sRothMonthly  || 0;
-  const actualSep     = state.sSepMonthly   || 0;
-  const actualAutoSav = state.sAutoSavings  || 0;
-  const actualAutoInv = state.sAutoInvest   || 0;
-  const totalActualSavingsMonthly = actual401k + actualIra + actualRoth + actualSep + actualAutoSav + actualAutoInv;
+  const actual401k     = state.s401kMonthly     || 0;
+  const actualRoth401k = state.sRoth401kMonthly || 0;
+  const actualIra      = state.sIraMonthly      || 0;
+  const actualRoth     = state.sRothMonthly     || 0;
+  const actualSep      = state.sSepMonthly      || 0;
+  const actualAutoSav  = state.sAutoSavings     || 0;
+  const actualAutoInv  = state.sAutoInvest      || 0;
+  const totalActualSavingsMonthly = actual401k + actualRoth401k + actualIra + actualRoth + actualSep + actualAutoSav + actualAutoInv;
   const totalActualSavingsAnnual  = totalActualSavingsMonthly * 12;
   const actualSavingsRate = householdGross > 0 ? (totalActualSavingsAnnual / householdGross) * 100 : 0;
 
