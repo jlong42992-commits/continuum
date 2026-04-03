@@ -149,7 +149,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .phase-card.active { border-color:var(--pink); box-shadow:0 4px 20px rgba(232,24,109,0.12); }
 .phase-card.locked { opacity:0.5; }
 .phase-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-.phase-name { font-weight:700; font-size:15px; color:var(--navy); }
+.phase-name { font-weight:700; font-size:15px; color:var(--navy); display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.phase-info-btn { font-size:13px; cursor:pointer; opacity:0.6; line-height:1; flex-shrink:0; }
 .phase-badge { font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; }
 .phase-badge.active { background:rgba(232,24,109,0.1); color:var(--pink); }
 .phase-badge.done { background:rgba(30,35,64,0.1); color:var(--navy); }
@@ -161,6 +162,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .action-check { width:20px; height:20px; border-radius:6px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; background:white; margin-top:1px; }
 .action-check.checked { background:var(--navy); border-color:var(--navy); }
 .action-check.checked::after { content:'✓'; color:white; font-size:11px; font-weight:700; }
+.action-check.na { background:#f0f0f0; border-color:#ccc; }
+.action-check.na::after { content:'—'; color:#aaa; font-size:13px; font-weight:700; }
 .phase-progress-bar { height:4px; background:var(--border); border-radius:2px; margin-top:14px; }
 .phase-progress-fill { height:100%; border-radius:2px; background:var(--pink); transition:width 0.5s ease; }
 
@@ -894,7 +897,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- TOOLTIP POPUP -->
 <div id="tooltipBackdrop" onclick="hideTip()"></div>
 <div id="tooltipPopup">
-  <div class="tp-label">💡 Plain English</div>
+  <div class="tp-label" id="tipLabel">💡 Plain English</div>
   <div class="tp-term" id="tipTerm"></div>
   <div class="tp-body" id="tipBody"></div>
   <span class="tp-close" onclick="hideTip()">Got it</span>
@@ -928,7 +931,7 @@ const state = {
   s401kMonthly:0, sIraMonthly:0, sRothMonthly:0, sSepMonthly:0, sAutoSavings:0, sAutoInvest:0,
   literacyLevel:'', quizQ1:null, quizQ2:null, quizQ3:null,
   riskTolerance:'', riskQ1:null, riskQ2:null, riskQ3:null,
-  checks:{}, currentPhase:1, lifeEvents:[], activity:[],
+  checks:{}, naItems:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
 };
@@ -963,6 +966,13 @@ const GLOSSARY = {
   poa:             { term:'Power of Attorney (POA)', body:'A legal document authorizing someone to act on your behalf for financial or medical decisions if you\'re unable to. Every adult should have one — without it, even a spouse may face hurdles managing your affairs.' },
   estate_planning: { term:'Estate Planning', body:'Preparing what happens to your assets and dependents after you die or become incapacitated. Includes a will, beneficiary designations, and powers of attorney. It protects your family — not just your wealth.' },
   asset_mix:       { term:'Asset Mix', body:'How your investments are spread across different types — stocks, bonds, real estate, cash. Your mix should reflect how long until you need the money and how much risk you\'re comfortable with.' },
+};
+
+const PHASE_INFO = {
+  1: { title:'Foundation Phase', body:'This is where financial security begins. You\'re building the habits and buffers that prevent one bad month from derailing everything — an emergency fund, debt payoff, and your first retirement contributions. Most people skip these basics and pay for it later.' },
+  2: { title:'Growth Phase', body:'With your foundation solid, now you accelerate. You\'re maximizing tax-advantaged accounts, investing beyond retirement, and letting compounding do heavy lifting. Decisions here determine what retirement actually looks like.' },
+  3: { title:'Protection Phase', body:'As your assets grow, so does what you have to lose. This phase is about making sure a medical crisis, lawsuit, or death doesn\'t undo decades of work — with the right insurance, estate documents, and legal structure.' },
+  4: { title:'Optimization Phase', body:'Fine-tuning for people who\'ve done the big things right. You\'re reducing tax drag, positioning assets strategically, and building a plan that outlasts you. This is where good becomes exceptional.' },
 };
 
 const TERM_MAP = [
@@ -1005,6 +1015,7 @@ function annotateTips(text) {
 function showTip(key, e) {
   const g = GLOSSARY[key]; if (!g) return;
   if (e) e.stopPropagation();
+  document.getElementById('tipLabel').textContent = '💡 Plain English';
   document.getElementById('tipTerm').textContent = g.term;
   document.getElementById('tipBody').textContent = g.body;
   const popup = document.getElementById('tooltipPopup');
@@ -1025,6 +1036,24 @@ function showTip(key, e) {
 function hideTip() {
   document.getElementById('tooltipPopup').style.display = 'none';
   document.getElementById('tooltipBackdrop').style.display = 'none';
+}
+
+function showPhaseInfo(phaseNum, e) {
+  if (e) e.stopPropagation();
+  const info = PHASE_INFO[phaseNum]; if (!info) return;
+  document.getElementById('tipLabel').textContent = 'ℹ️ About This Phase';
+  document.getElementById('tipTerm').textContent = info.title;
+  document.getElementById('tipBody').textContent = info.body;
+  const popup = document.getElementById('tooltipPopup');
+  popup.style.display = 'block';
+  document.getElementById('tooltipBackdrop').style.display = 'block';
+  const phone = document.querySelector('.phone');
+  const phoneRect = phone.getBoundingClientRect();
+  const clickY = e ? (e.clientY - phoneRect.top + phone.scrollTop) : 200;
+  const phoneH = phone.offsetHeight;
+  const popH = popup.offsetHeight || 160;
+  const topPos = clickY > phoneH * 0.55 ? Math.max(8, clickY - popH - 12) : clickY + 20;
+  popup.style.top = Math.min(topPos, phoneH - popH - 8) + 'px';
 }
 
 // ── PEER BENCHMARKS ──
@@ -1803,22 +1832,26 @@ function buildRoadmap(currentPhase, name) {
   phases.forEach((phase,i) => {
     const status = phase.num < currentPhase ? 'done' : phase.num===currentPhase ? 'active' : 'locked';
     const isLast = i===phases.length-1;
-    const key=`p${phase.num}`; if (!state.checks[key]) state.checks[key]=[];
+    const key=`p${phase.num}`; if (!state.checks[key]) state.checks[key]=[]; if (!state.naItems[key]) state.naItems[key]=[];
+    const naArr=state.naItems[key];
     const completed=state.checks[key].length; const total=phase.actions.length;
-    const pct=Math.round((completed/total)*100);
+    const effective=total-naArr.length; const pct=effective>0?Math.round((completed/effective)*100):100;
     let actionsHTML='';
     if (status==='active'||status==='done') {
       const targetChip = phase.target ? `<div class="phase-target-chip">🎯 ${phase.target}</div>` : '';
       actionsHTML = targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
-        const checked = state.checks[key].includes(ai);
-        const textStyle = checked ? 'text-decoration:line-through;color:var(--muted)' : 'color:var(--navy)';
-        const annotated = annotateTips(a);
-        return `<div class="phase-action-item"><div class="action-check ${checked?'checked':''}" onclick="toggleCheck(${phase.num},${ai})"></div><span style="${textStyle};flex:1;min-width:0;">${annotated}</span></div>`;
+        const isNA = naArr.includes(ai);
+        const checked = !isNA && state.checks[key].includes(ai);
+        const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+        const checkClass = isNA ? 'na' : checked ? 'checked' : '';
+        const annotated = isNA ? a : annotateTips(a);
+        return `<div class="phase-action-item"><div class="action-check ${checkClass}" onclick="toggleCheck(${phase.num},${ai})"></div><span style="${textStyle}">${annotated}</span></div>`;
       }).join('') + `</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div>`;
     }
     const riskNoteHtml = phase.riskNote && state.riskTolerance
       ? `<div class="risk-note-chip"><span class="risk-note-icon">📊</span>${phase.riskNote}</div>` : '';
-    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div></div></div>`;
+    const phaseInfoBtn = PHASE_INFO[phase.num] ? `<span class="phase-info-btn" onclick="showPhaseInfo(${phase.num},event)">ℹ️</span>` : '';
+    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${status}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name} ${phaseInfoBtn}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div></div></div>`;
   });
 }
 
@@ -1854,17 +1887,28 @@ function skipRoadmapConfirm() {
 // ── CHECK / CELEBRATION ──
 let celebrationTimeout;
 function toggleCheck(phaseNum, actionIdx) {
-  const key=`p${phaseNum}`; const arr=state.checks[key]; const idx=arr.indexOf(actionIdx);
-  const adding = idx===-1;
-  if (idx>-1) arr.splice(idx,1); else arr.push(actionIdx);
-  buildRoadmap(state.currentPhase, state.name);
-  if (adding) {
+  const key=`p${phaseNum}`;
+  if (!state.checks[key]) state.checks[key]=[];
+  if (!state.naItems[key]) state.naItems[key]=[];
+  const arr=state.checks[key]; const naArr=state.naItems[key];
+  const isChecked=arr.includes(actionIdx); const isNA=naArr.includes(actionIdx);
+  // Cycle: unchecked → checked → N/A → unchecked
+  if (!isChecked && !isNA) {
+    arr.push(actionIdx);
+    buildRoadmap(state.currentPhase, state.name);
     const phases = getPhases();
     const phase = phases.find(p=>p.num===phaseNum);
     const action = phase ? phase.actions[actionIdx] : 'action';
     state.activity.unshift({text:`Completed: ${action}`, time:'Just now', phase:phase?phase.name:''});
     if (state.activity.length > 10) state.activity.pop();
     showCelebration(phaseNum, actionIdx, arr.length, phase);
+  } else if (isChecked) {
+    arr.splice(arr.indexOf(actionIdx),1);
+    naArr.push(actionIdx);
+    buildRoadmap(state.currentPhase, state.name);
+  } else {
+    naArr.splice(naArr.indexOf(actionIdx),1);
+    buildRoadmap(state.currentPhase, state.name);
   }
 }
 
