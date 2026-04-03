@@ -85,6 +85,25 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .add-debt-btn { background:transparent; border:2px dashed var(--border); border-radius:14px; padding:13px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--muted); cursor:pointer; width:100%; transition:all 0.2s; }
 .add-debt-btn:hover { border-color:var(--pink); color:var(--pink); }
 
+/* ASSETS & LIABILITIES */
+.al-section-label { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin:14px 0 8px; }
+.al-row { background:white; border:1px solid var(--border); border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+.al-row-top { display:flex; align-items:center; gap:8px; }
+.al-select { flex:1; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--navy); background:transparent; min-width:0; appearance:none; -webkit-appearance:none; cursor:pointer; }
+.al-select:invalid, .al-select option[value=""] { color:var(--muted); }
+.al-value-input { flex:1; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--navy); background:transparent; text-align:right; min-width:60px; max-width:110px; }
+.al-row-bottom { display:flex; gap:8px; }
+.al-link-select { border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--navy); background:transparent; width:100%; appearance:none; -webkit-appearance:none; }
+.plaid-card { background:var(--cream); border:1.5px dashed var(--border); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; opacity:0.65; }
+.plaid-icon { font-size:20px; flex-shrink:0; }
+.plaid-text { flex:1; min-width:0; }
+.plaid-title { font-size:13px; font-weight:700; color:var(--navy); }
+.plaid-sub { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.plaid-badge { font-size:10px; font-weight:700; background:var(--border); color:var(--muted); border-radius:6px; padding:3px 8px; letter-spacing:0.05em; flex-shrink:0; text-transform:uppercase; }
+.networth-card { background:var(--navy); border-radius:16px; padding:16px 20px; margin-top:16px; display:flex; justify-content:space-between; align-items:center; }
+.networth-label { font-size:11px; font-weight:700; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:0.07em; }
+.networth-value { font-size:22px; font-weight:700; color:var(--cream); font-variant-numeric:tabular-nums; }
+
 /* RESULT */
 #result { background:var(--navy); }
 .result-header { padding:56px 28px 28px; position:relative; }
@@ -326,7 +345,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .bv-on-track-card { background:rgba(46,125,50,0.06); border:1px solid rgba(46,125,50,0.2); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
 
 /* TOOLTIPS */
-.tip-icon { display:inline; font-size:14px; cursor:pointer; margin-left:3px; vertical-align:middle; touch-action:manipulation; user-select:none; -webkit-user-select:none; line-height:1; }
+.tip-icon { display:inline; font-size:13px; cursor:pointer; margin-left:4px; vertical-align:middle; touch-action:manipulation; user-select:none; -webkit-user-select:none; line-height:1; }
 #tooltipBackdrop { display:none; position:fixed; inset:0; z-index:199; }
 #tooltipPopup { display:none; position:absolute; left:20px; right:20px; background:white; border-radius:14px; padding:16px; box-shadow:0 8px 32px rgba(0,0,0,0.18); border:1px solid var(--border); z-index:200; }
 #tooltipPopup .tp-label { font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--pink); margin-bottom:6px; }
@@ -707,14 +726,39 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob5">
   <div class="ob-header">
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
-    <div class="ob-question">Any debts to factor in?</div>
-    <div class="ob-hint">Add your main debts — we'll prioritize them for you. Skip if none.</div>
+    <div class="ob-question">Assets & Liabilities</div>
+    <div class="ob-hint">Add what you own and what you owe — we'll calculate your net worth and factor it into your plan.</div>
   </div>
   <div class="ob-body">
-    <div id="debtRows"></div>
-    <button class="add-debt-btn" onclick="addDebtRow()">+ Add a debt (credit card, loan, etc.)</button>
-    <div style="height:8px;"></div>
-    <div class="ob-input-group">
+
+    <!-- Plaid placeholder -->
+    <div class="plaid-card">
+      <div class="plaid-icon">🔒</div>
+      <div class="plaid-text">
+        <div class="plaid-title">🔗 Connect your accounts</div>
+        <div class="plaid-sub">Coming soon — automatically import your accounts and balances</div>
+      </div>
+      <div class="plaid-badge">Soon</div>
+    </div>
+
+    <!-- ASSETS -->
+    <div class="al-section-label">Assets — what you own</div>
+    <div id="assetRows"></div>
+    <button class="add-debt-btn" onclick="addAssetRow()">+ Add an asset</button>
+
+    <!-- LIABILITIES -->
+    <div class="al-section-label" style="margin-top:20px;">Liabilities — what you owe</div>
+    <div id="liabilityRows"></div>
+    <button class="add-debt-btn" onclick="addLiabilityRow()">+ Add a liability</button>
+
+    <!-- Net worth -->
+    <div class="networth-card">
+      <div class="networth-label">Estimated Net Worth</div>
+      <div class="networth-value" id="netWorthValue">$0</div>
+    </div>
+
+    <!-- Biggest challenge -->
+    <div class="ob-input-group" style="margin-top:20px;">
       <div class="ob-label">Your Biggest Challenge</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <div class="ob-option" onclick="selectOption(this,'challenge','prioritize')"><div class="ob-option-icon">🎯</div><div><div class="ob-option-label">Not sure what to do first</div></div></div>
@@ -925,6 +969,7 @@ const state = {
   name:'', age:null, location:'', lifeStage:[], stability:null, challenge:null,
   grossIncome:0, incomeType:'w2', filingStatus:'single', stateCode:'',
   monthlyIncome:0, monthlyExpenses:0, currentSavings:0, debts:[],
+  assets:[], liabilities:[],
   // Spouse
   spouseName:'', spouseAge:null, spouseWorks:null, spouseIncome:0,
   // Intentional savings inputs
@@ -999,17 +1044,13 @@ const INTERMEDIATE_KEYS = new Set(['roth_trad','tax_buckets','asset_location','c
 
 function annotateTips(text) {
   if (state.literacyLevel === 'advanced' || !state.literacyLevel) return text;
-  let result = text;
-  const used = new Set();
   for (const [pattern, key] of TERM_MAP) {
-    if (used.has(key)) continue;
     if (state.literacyLevel === 'intermediate' && !INTERMEDIATE_KEYS.has(key)) continue;
-    if (pattern.test(result)) {
-      used.add(key);
-      result = result.replace(pattern, m => `${m}<span class="tip-icon" onclick="showTip('${key}',event)">💡</span>`);
+    if (pattern.test(text)) {
+      return `${text}<span class="tip-icon" onclick="showTip('${key}',event)">💡</span>`;
     }
   }
-  return result;
+  return text;
 }
 
 function showTip(key, e) {
@@ -1145,15 +1186,107 @@ function selectOption(el, group, val) {
   if (optionGroups[group]) optionGroups[group].classList.remove('selected');
   el.classList.add('selected'); optionGroups[group] = el; state[group] = val;
 }
-let debtCount = 0;
-function addDebtRow() {
-  debtCount++;
-  const id = `debt_${debtCount}`;
+let assetCount = 0, liabilityCount = 0;
+
+function getAssetOptions() {
+  return Array.from(document.querySelectorAll('#assetRows .al-row')).map((row, i) => {
+    const type = row.querySelector('.asset-type')?.value || 'Asset';
+    const val = row.querySelector('.al-value-input')?.value;
+    return `<option value="${i}">${type}${val ? ' ($' + Number(val).toLocaleString() + ')' : ''}</option>`;
+  }).join('');
+}
+
+function updateAssetLinks() {
+  const opts = getAssetOptions();
+  document.querySelectorAll('.al-link-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">None</option>${opts}`;
+    if (cur) sel.value = cur;
+  });
+}
+
+function updateNetWorth() {
+  const totalAssets = Array.from(document.querySelectorAll('#assetRows .al-value-input')).reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
+  const totalLiab   = Array.from(document.querySelectorAll('#liabilityRows .al-bal')).reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
+  const nw = totalAssets - totalLiab;
+  const el = document.getElementById('netWorthValue');
+  if (el) {
+    el.textContent = (nw < 0 ? '−$' : '$') + Math.abs(Math.round(nw)).toLocaleString();
+    el.style.color = nw < 0 ? '#ff7b7b' : 'var(--cream)';
+  }
+  updateAssetLinks();
+}
+
+function removeRow(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  updateNetWorth();
+}
+
+function addAssetRow() {
+  assetCount++;
+  const id = `asset_${assetCount}`;
   const row = document.createElement('div');
-  row.className = 'ob-debt-row';
+  row.className = 'al-row';
   row.id = id;
-  row.innerHTML = `<input type="text" placeholder="e.g. Credit card" style="flex:2;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--navy);background:transparent;" /><div class="ob-debt-divider"></div><input type="number" placeholder="Amount $" style="flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--navy);background:transparent;text-align:right;" /><div class="ob-debt-divider"></div><input type="number" placeholder="APR%" style="width:52px;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);background:transparent;text-align:right;" />`;
-  document.getElementById('debtRows').appendChild(row);
+  row.innerHTML = `
+    <div class="al-row-top">
+      <select class="al-select asset-type" onchange="updateNetWorth()">
+        <option value="" disabled selected>Select asset type…</option>
+        <option value="Home">Home</option>
+        <option value="Car">Car</option>
+        <option value="Savings Account">Savings Account</option>
+        <option value="Checking Account">Checking Account</option>
+        <option value="Brokerage Account">Brokerage Account</option>
+        <option value="Retirement Account - 401k">Retirement Account – 401k</option>
+        <option value="Retirement Account - IRA">Retirement Account – IRA</option>
+        <option value="Retirement Account - Roth IRA">Retirement Account – Roth IRA</option>
+        <option value="Crypto">Crypto</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="number" class="al-value-input" placeholder="Value $" oninput="updateNetWorth()" />
+      <button class="ob-debt-remove" onclick="removeRow('${id}')">×</button>
+    </div>`;
+  document.getElementById('assetRows').appendChild(row);
+  updateNetWorth();
+}
+
+function addLiabilityRow() {
+  liabilityCount++;
+  const id = `liability_${liabilityCount}`;
+  const row = document.createElement('div');
+  row.className = 'al-row';
+  row.id = id;
+  row.innerHTML = `
+    <div class="al-row-top">
+      <select class="al-select liability-type">
+        <option value="" disabled selected>Select liability type…</option>
+        <option value="Mortgage">Mortgage</option>
+        <option value="Car Loan">Car Loan</option>
+        <option value="Student Loan">Student Loan</option>
+        <option value="Credit Card">Credit Card</option>
+        <option value="Personal Loan">Personal Loan</option>
+        <option value="Medical Debt">Medical Debt</option>
+        <option value="Other">Other</option>
+      </select>
+      <button class="ob-debt-remove" onclick="removeRow('${id}')">×</button>
+    </div>
+    <div class="al-row-bottom">
+      <div class="ob-debt-field">
+        <div class="ob-debt-field-label">Balance $</div>
+        <input type="number" class="al-bal" placeholder="0" oninput="updateNetWorth()" />
+      </div>
+      <div class="ob-debt-field">
+        <div class="ob-debt-field-label">Interest %</div>
+        <input type="number" class="al-apr" placeholder="0.0" step="0.1" />
+      </div>
+      <div class="ob-debt-field" style="flex:1.5;">
+        <div class="ob-debt-field-label">Linked asset</div>
+        <select class="al-link-select"><option value="">None</option>${getAssetOptions()}</select>
+      </div>
+    </div>`;
+  document.getElementById('liabilityRows').appendChild(row);
+  updateNetWorth();
 }
 function nextOb(step) {
   if (step===1) { state.name = document.getElementById('firstName').value||'Friend'; state.age = parseInt(document.getElementById('userAge').value)||30; goTo('ob2'); }
@@ -1368,16 +1501,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 function buildPlan() {
-  // collect debts
-  state.debts = [];
-  document.querySelectorAll('#debtRows .ob-debt-row').forEach(row => {
-    const inputs = row.querySelectorAll('input');
-    const name = inputs[0].value||'Debt';
-    const amount = parseFloat(inputs[1].value)||0;
-    const apr = parseFloat(inputs[2].value)||0;
-    if (amount > 0) state.debts.push({name, amount, apr});
+  // collect assets
+  state.assets = [];
+  document.querySelectorAll('#assetRows .al-row').forEach(row => {
+    const type = row.querySelector('.asset-type')?.value || 'Asset';
+    const value = parseFloat(row.querySelector('.al-value-input')?.value) || 0;
+    state.assets.push({ type, value });
   });
-  state.debts.sort((a,b) => b.apr - a.apr); // highest APR first
+  // collect liabilities
+  state.liabilities = [];
+  document.querySelectorAll('#liabilityRows .al-row').forEach(row => {
+    const type = row.querySelector('.liability-type')?.value || 'Debt';
+    const amount = parseFloat(row.querySelector('.al-bal')?.value) || 0;
+    const apr = parseFloat(row.querySelector('.al-apr')?.value) || 0;
+    const linkedAsset = row.querySelector('.al-link-select')?.value || '';
+    if (amount > 0) state.liabilities.push({ type, name: type, amount, apr, linkedAsset });
+  });
+  state.liabilities.sort((a,b) => b.apr - a.apr);
+  // keep debts in sync for backward compat
+  state.debts = state.liabilities;
   goTo('checking');
   setTimeout(()=>{ computeFinancials(); computePlan(); goTo('result'); }, 2200);
 }
@@ -1552,8 +1694,9 @@ function computeFinancials() {
   const opportunityMonthly  = onTrack ? Math.max(0, Math.min(unallocatedSurplus, maxMonthly - totalActualSavingsMonthly)) : 0;
   const monthsToBuffer      = emergencyGap > 0 && unallocatedSurplus > 0 ? Math.ceil(emergencyGap / (unallocatedSurplus * 0.5)) : 0;
 
-  const totalDebt        = state.debts.reduce((s,d) => s + d.amount, 0);
-  const highInterestDebt = state.debts.filter(d => d.apr >= 7).reduce((s,d) => s + d.amount, 0);
+  const liabs            = state.liabilities.length ? state.liabilities : state.debts;
+  const totalDebt        = liabs.reduce((s,d) => s + d.amount, 0);
+  const highInterestDebt = liabs.filter(d => d.apr >= 7).reduce((s,d) => s + d.amount, 0);
   const lifeInsuranceTarget     = hasDeps ? householdGross * 10 : gross * 5;
   const disabilityMonthlyTarget = Math.round(takeHomeMonthly * 0.6);
   const retirementMonthly = recommendedMonthly;
