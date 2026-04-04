@@ -1493,8 +1493,8 @@ function irsLimitLabel(type, age) {
   return lim ? `Max: ${fmt(lim)}/yr` : '';
 }
 
-const fmt = n => '$' + Math.round(n).toLocaleString();
-const fmtK = n => n >= 1000000 ? '$' + (n/1000000).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
+const fmt = n => (n == null || isNaN(n) || !isFinite(n)) ? '$0' : '$' + Math.round(n).toLocaleString();
+const fmtK = n => (n == null || isNaN(n) || !isFinite(n)) ? '$0' : n >= 1000000 ? '$' + (n/1000000).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
 const fmtSafe = n => (!n && n !== 0) || isNaN(n) || !isFinite(n) ? '' : '$' + Math.round(n).toLocaleString();
 
 // ── DEBT CLASSIFICATION ──
