@@ -430,6 +430,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .home-goal-warning { background:rgba(232,24,109,0.08); border:1px solid rgba(232,24,109,0.2); border-radius:10px; padding:10px 12px; font-size:12px; color:var(--pink); line-height:1.5; margin-top:10px; font-weight:600; }
 .home-goal-ontrack { background:rgba(46,125,50,0.08); border:1px solid rgba(46,125,50,0.2); border-radius:10px; padding:10px 12px; font-size:12px; color:#2E7D32; line-height:1.5; margin-top:10px; font-weight:600; }
 .home-goal-compliance { font-size:10px; color:var(--muted); margin-top:12px; line-height:1.4; font-style:italic; }
+.goal-screen-tip { background:rgba(232,24,109,0.06); border:1px solid rgba(232,24,109,0.15); border-radius:12px; padding:12px 14px; font-size:12px; color:var(--slate); line-height:1.55; margin-top:-4px; }
 </style>
 </head>
 <body>
@@ -870,8 +871,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-option" onclick="selectOption(this,'challenge','future')"><div class="ob-option-icon">🔭</div><div><div class="ob-option-label">Planning for the future</div><div class="ob-option-desc">Not sure if I'm on track for retirement or big goals</div></div></div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="handleChallengeContinue()">Build My Plan →</button>
-    <button class="btn-secondary" onclick="handleChallengeContinue()">Skip — build my plan anyway</button>
+    <button class="btn-primary" onclick="processGoalQueue()">Build My Plan →</button>
+    <button class="btn-secondary" onclick="processGoalQueue()">Skip — build my plan anyway</button>
   </div>
 </div>
 
@@ -912,8 +913,249 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="buildPlan()">Build My Plan →</button>
-    <button class="btn-secondary" onclick="buildPlan()">Skip — fill this in later</button>
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip — fill this in later</button>
+  </div>
+</div>
+
+<!-- OB-GOAL-BABY: Having a child -->
+<div class="screen" id="ob-goal-baby">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Let's plan for your little one. 👶</div>
+    <div class="ob-hint">We'll estimate startup costs and ongoing expenses to factor into your plan.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">When are you expecting or planning?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div class="ob-option" onclick="selectBabyTimeline(this,'within-6mo')"><div class="ob-option-icon">🗓️</div><div><div class="ob-option-label">Within 6 months</div></div></div>
+        <div class="ob-option" onclick="selectBabyTimeline(this,'6-12mo')"><div class="ob-option-icon">📅</div><div><div class="ob-option-label">6–12 months</div></div></div>
+        <div class="ob-option" onclick="selectBabyTimeline(this,'1-2yr')"><div class="ob-option-icon">🌱</div><div><div class="ob-option-label">1–2 years</div></div></div>
+        <div class="ob-option" onclick="selectBabyTimeline(this,'planning')"><div class="ob-option-icon">💭</div><div><div class="ob-option-label">Just planning ahead</div></div></div>
+      </div>
+    </div>
+    <div class="ob-input-group" style="margin-top:8px;">
+      <div class="ob-label">Do you have health insurance covering pregnancy?</div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div class="ob-option" id="babyInsYes" style="flex:1;justify-content:center;padding:13px;" onclick="selectBabyInsurance('yes')"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
+        <div class="ob-option" id="babyInsNo" style="flex:1;justify-content:center;padding:13px;" onclick="selectBabyInsurance('no')"><div class="ob-option-label" style="font-size:14px;">No</div></div>
+        <div class="ob-option" id="babyInsUnsure" style="flex:1;justify-content:center;padding:13px;" onclick="selectBabyInsurance('unsure')"><div class="ob-option-label" style="font-size:14px;">Not sure</div></div>
+      </div>
+    </div>
+    <div class="ob-input-group" style="margin-top:8px;">
+      <div class="ob-label">Estimated monthly childcare cost?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div class="ob-option" id="babyCC_know" onclick="selectBabyChildcare('know')"><div class="ob-option-icon">✅</div><div style="flex:1;"><div class="ob-option-label">Yes, I know the amount</div>
+          <div id="babyChildcareCostWrap" style="display:none;margin-top:8px;">
+            <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="babyChildcareCost" type="number" placeholder="1500" min="0"/></div>
+          </div>
+        </div></div>
+        <div class="ob-option" id="babyCC_no" onclick="selectBabyChildcare('no')"><div class="ob-option-icon">❓</div><div><div class="ob-option-label">Not sure yet</div><div class="ob-option-desc">We'll use the $1,500/mo national average</div></div></div>
+        <div class="ob-option" id="babyCC_family" onclick="selectBabyChildcare('family')"><div class="ob-option-icon">❤️</div><div><div class="ob-option-label">Family will help</div><div class="ob-option-desc">Grandparents, relatives, or shared care</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
+  </div>
+</div>
+
+<!-- OB-GOAL-COLLEGE: College savings -->
+<div class="screen" id="ob-goal-college">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Let's plan for college. 🎓</div>
+    <div class="ob-hint">We'll project costs with inflation and calculate your monthly savings target.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">How many children are you saving for?</div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div class="ob-option" id="collegeNum1" style="flex:1;justify-content:center;padding:13px;" onclick="selectCollegeNum(1)"><div class="ob-option-label">1</div></div>
+        <div class="ob-option" id="collegeNum2" style="flex:1;justify-content:center;padding:13px;" onclick="selectCollegeNum(2)"><div class="ob-option-label">2</div></div>
+        <div class="ob-option" id="collegeNum3" style="flex:1;justify-content:center;padding:13px;" onclick="selectCollegeNum(3)"><div class="ob-option-label">3+</div></div>
+      </div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Age of your oldest child</div>
+      <input class="ob-input" id="collegeChildAge" type="number" placeholder="3" min="0" max="17"/>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Type of school you're planning for</div>
+      <select class="ob-input" id="collegeSchoolType" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+        <option value="public-instate">Public — In-State (~$28,000/yr)</option>
+        <option value="public-out">Public — Out-of-State (~$45,000/yr)</option>
+        <option value="private">Private (~$58,000/yr)</option>
+        <option value="unsure">Not sure yet (~$35,000/yr estimate)</option>
+      </select>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Do you already have a 529 account?</div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div class="ob-option" id="college529Yes" style="flex:1;justify-content:center;padding:13px;" onclick="selectCollege529('yes')"><div class="ob-option-label">Yes</div></div>
+        <div class="ob-option" id="college529No" style="flex:1;justify-content:center;padding:13px;" onclick="selectCollege529('no')"><div class="ob-option-label">No</div></div>
+      </div>
+    </div>
+    <div id="college529BalanceWrap" style="display:none;" class="ob-input-group">
+      <div class="ob-label">Current 529 balance</div>
+      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="college529Balance" type="number" placeholder="5000" min="0"/></div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
+  </div>
+</div>
+
+<!-- OB-GOAL-DEBT: Pay off debt -->
+<div class="screen" id="ob-goal-debt">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Let's tackle your debt. 💳</div>
+    <div class="ob-hint">We'll calculate exactly what it costs to pay this off and how much interest you'll save.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">Which debt do you most want to eliminate?</div>
+      <select class="ob-input" id="debtGoalSelect" style="appearance:none;-webkit-appearance:none;cursor:pointer;" onchange="onDebtGoalSelect()">
+        <option value="">Select a debt…</option>
+      </select>
+    </div>
+    <div class="ob-input-row">
+      <div class="ob-input-group">
+        <div class="ob-label">Balance</div>
+        <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="debtGoalBalance" type="number" placeholder="8000" min="0"/></div>
+      </div>
+      <div class="ob-input-group">
+        <div class="ob-label">Interest rate</div>
+        <div class="ob-input-prefix"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="debtGoalAPR" type="number" placeholder="18.9" step="0.1" min="0" style="padding-left:30px;"/></div>
+      </div>
+    </div>
+    <div class="ob-input-group" style="margin-top:8px;">
+      <div class="ob-label">Which payoff strategy?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div class="ob-option selected" id="debtStratAvalanche" onclick="selectDebtStrategy('avalanche')">
+          <div class="ob-option-icon">📉</div>
+          <div><div class="ob-option-label">Avalanche — highest interest first</div><div class="ob-option-desc">Saves the most money in interest</div></div>
+        </div>
+        <div class="ob-option" id="debtStratSnowball" onclick="selectDebtStrategy('snowball')">
+          <div class="ob-option-icon">⛄</div>
+          <div><div class="ob-option-label">Snowball — smallest balance first</div><div class="ob-option-desc">Feels more rewarding — quick wins</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
+  </div>
+</div>
+
+<!-- OB-GOAL-RETIRE: Retire early -->
+<div class="screen" id="ob-goal-retire">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Let's calculate your FIRE number. 🌅</div>
+    <div class="ob-hint">We'll use the 4% rule to estimate how much you need to retire — and how to get there.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">At what age would you like to retire?</div>
+      <input class="ob-input" id="retireTargetAge" type="number" placeholder="60" min="40" max="70"/>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Monthly income needed in retirement</div>
+      <div class="ob-sublabel">In today's dollars — we'll adjust for inflation</div>
+      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="retireMonthlyIncome" type="number" placeholder="5000" min="0"/></div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Do you expect Social Security income?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div class="ob-option" onclick="selectRetiireSS(this,'full')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Yes — full amount</div></div></div>
+        <div class="ob-option" onclick="selectRetiireSS(this,'reduced')"><div class="ob-option-icon">🔻</div><div><div class="ob-option-label">Yes — reduced (retiring early)</div></div></div>
+        <div class="ob-option" onclick="selectRetiireSS(this,'no')"><div class="ob-option-icon">🚫</div><div><div class="ob-option-label">No / Not planning on it</div></div></div>
+        <div class="ob-option" onclick="selectRetiireSS(this,'unsure')"><div class="ob-option-icon">🤔</div><div><div class="ob-option-label">Not sure</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
+  </div>
+</div>
+
+<!-- OB-GOAL-BUSINESS: Start a business -->
+<div class="screen" id="ob-goal-business">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Let's plan your business launch. 🚀</div>
+    <div class="ob-hint">We'll calculate the personal runway you need before you make the leap.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">What stage are you at?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div class="ob-option" onclick="selectBusinessStage(this,'idea')"><div class="ob-option-icon">💡</div><div><div class="ob-option-label">Just an idea</div></div></div>
+        <div class="ob-option" onclick="selectBusinessStage(this,'planning')"><div class="ob-option-icon">📋</div><div><div class="ob-option-label">Planning phase</div></div></div>
+        <div class="ob-option" onclick="selectBusinessStage(this,'ready')"><div class="ob-option-icon">🎯</div><div><div class="ob-option-label">Ready to launch</div></div></div>
+        <div class="ob-option" onclick="selectBusinessStage(this,'started')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Already started</div></div></div>
+      </div>
+    </div>
+    <div class="ob-input-group" style="margin-top:8px;">
+      <div class="ob-label">How much runway do you want before launching?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div class="ob-option" onclick="selectBusinessRunway(this,'3')"><div class="ob-option-icon">⚡</div><div><div class="ob-option-label">3 months</div><div class="ob-option-desc">Lean launch — side project to full time</div></div></div>
+        <div class="ob-option" onclick="selectBusinessRunway(this,'6')"><div class="ob-option-icon">🏃</div><div><div class="ob-option-label">6 months</div><div class="ob-option-desc">Standard recommendation for solopreneurs</div></div></div>
+        <div class="ob-option selected" onclick="selectBusinessRunway(this,'12')"><div class="ob-option-icon">🛡️</div><div><div class="ob-option-label">12 months</div><div class="ob-option-desc">Safe buffer for most business types</div></div></div>
+        <div class="ob-option" onclick="selectBusinessRunway(this,'18')"><div class="ob-option-icon">🏰</div><div><div class="ob-option-label">18+ months</div><div class="ob-option-desc">Maximum security before the leap</div></div></div>
+      </div>
+    </div>
+    <div class="ob-input-group" style="margin-top:8px;">
+      <div class="ob-label">Do you have a separate business emergency fund?</div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div class="ob-option" id="bizFundYes" style="flex:1;justify-content:center;padding:13px;" onclick="selectBizFund('yes')"><div class="ob-option-label">Yes</div></div>
+        <div class="ob-option" id="bizFundNo" style="flex:1;justify-content:center;padding:13px;" onclick="selectBizFund('no')"><div class="ob-option-label">No</div></div>
+        <div class="ob-option" id="bizFundWorking" style="flex:1;justify-content:center;padding:13px;" onclick="selectBizFund('working')"><div class="ob-option-label" style="font-size:13px;">Working on it</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
+  </div>
+</div>
+
+<!-- OB-GOAL-TRIP: Dream trip -->
+<div class="screen" id="ob-goal-trip">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">Tell us about your dream trip. ✈️</div>
+    <div class="ob-hint">We'll calculate a simple monthly savings target to make it happen.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-input-group">
+      <div class="ob-label">Where are you dreaming of going?</div>
+      <input class="ob-input" id="tripDestination" type="text" placeholder="e.g. Japan, Italy, Maldives…"/>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Estimated total cost</div>
+      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="tripCost" type="number" placeholder="5000" min="0"/></div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Who's going?</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <div class="ob-option" id="tripWhoMe" style="flex:1;min-width:120px;justify-content:center;padding:13px;" onclick="selectTripWho('solo')"><div class="ob-option-label" style="font-size:14px;">Just me</div></div>
+        <div class="ob-option" id="tripWhoPartner" style="flex:1;min-width:120px;justify-content:center;padding:13px;" onclick="selectTripWho('partner')"><div class="ob-option-label" style="font-size:14px;">Partner</div></div>
+        <div class="ob-option" id="tripWhoFamily" style="flex:1;min-width:120px;justify-content:center;padding:13px;" onclick="selectTripWho('family')"><div class="ob-option-label" style="font-size:14px;">Family</div></div>
+        <div class="ob-option" id="tripWhoGroup" style="flex:1;min-width:120px;justify-content:center;padding:13px;" onclick="selectTripWho('group')"><div class="ob-option-label" style="font-size:14px;">Group</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
 
@@ -939,6 +1181,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div id="peerBenchmarks"></div>
     <div class="result-section-title">Your Top Priorities</div>
     <div id="focusAreas"></div>
+    <div id="goalsSummary"></div>
     <br>
     <button class="btn-primary" onclick="showRoadmapConfirm()">See My Full Roadmap →</button>
     <p class="compliance-note">Continuum is for educational purposes only. Not financial advice. Consult a licensed advisor.</p>
@@ -1152,6 +1395,8 @@ const state = {
   literacyLevel:'', quizQ1:null, quizQ2:null, quizQ3:null,
   riskTolerance:'', riskQ1:null, riskQ2:null, riskQ3:null,
   goals:[], goalHome: null,
+  goalBaby: null, goalCollege: null, goalDebt: null, goalRetire: null, goalBusiness: null, goalTrip: null,
+  goalQueue: [], goalQueueIdx: 0,
   checks:{}, naItems:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
@@ -2144,6 +2389,474 @@ function toggleHomeCheck(actionIdx) {
   }
 }
 
+// ── GOAL QUEUE ROUTING ──
+function processGoalQueue() {
+  const screenIds = { home:'home', child:'baby', college:'college', debt:'debt', retire:'retire', business:'business', trip:'trip' };
+  const order = ['home','child','college','debt','retire','business','trip'];
+  state.goalQueue = [];
+  order.forEach(gid => {
+    const idx = GOAL_OPTIONS.findIndex(g => g.id === gid);
+    if (idx < 0) return;
+    const card = document.querySelector(`#goalsGrid .ob-option:nth-child(${idx+1})`);
+    if (card && card.classList.contains('selected') && screenIds[gid]) state.goalQueue.push(gid);
+  });
+  state.goalQueueIdx = 0;
+  advanceGoalQueue();
+}
+
+function advanceGoalQueue() {
+  const screenIds = { home:'home', child:'baby', college:'college', debt:'debt', retire:'retire', business:'business', trip:'trip' };
+  if (state.goalQueueIdx < state.goalQueue.length) {
+    const gid = state.goalQueue[state.goalQueueIdx++];
+    if (gid === 'home') updateHomeDownOptions();
+    if (gid === 'debt') setupDebtGoalScreen();
+    goTo(`ob-goal-${screenIds[gid]}`);
+  } else {
+    buildPlan();
+  }
+}
+
+// ── GENERIC GOAL CHECK TOGGLE ──
+function toggleGoalCheck(key, ai) {
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const arr = state.checks[key]; const naArr = state.naItems[key];
+  const isChecked = arr.includes(ai); const isNA = naArr.includes(ai);
+  if (!isChecked && !isNA) {
+    arr.push(ai);
+    buildRoadmap(state.currentPhase, state.name);
+    state.activity.unshift({ text: `Goal action completed`, time: 'Just now', phase: key });
+    if (state.activity.length > 10) state.activity.pop();
+  } else if (isChecked) {
+    arr.splice(arr.indexOf(ai), 1);
+    naArr.push(ai);
+    buildRoadmap(state.currentPhase, state.name);
+  } else {
+    naArr.splice(naArr.indexOf(ai), 1);
+    buildRoadmap(state.currentPhase, state.name);
+  }
+}
+
+// ── BABY GOAL ──
+let babyTimelineSel = null, babyInsuranceSel = null, babyChildcareSel = null;
+
+function selectBabyTimeline(el, val) {
+  el.closest('.ob-body').querySelectorAll('.ob-option[onclick*="selectBabyTimeline"]').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  babyTimelineSel = val;
+}
+function selectBabyInsurance(val) {
+  ['yes','no','unsure'].forEach(v => document.getElementById(`babyIns${v.charAt(0).toUpperCase()+v.slice(1)}`)?.classList.toggle('selected', v===val));
+  babyInsuranceSel = val;
+}
+function selectBabyChildcare(val) {
+  ['know','no','family'].forEach(v => document.getElementById(`babyCC_${v}`)?.classList.remove('selected'));
+  document.getElementById(`babyCC_${val}`)?.classList.add('selected');
+  babyChildcareSel = val;
+  document.getElementById('babyChildcareCostWrap').style.display = val==='know' ? 'block' : 'none';
+}
+function collectBabyGoal() {
+  const babyGoal = (state.goals||[]).find(g => g.type === 'Have a child');
+  if (!babyGoal && !babyTimelineSel) { state.goalBaby = null; return; }
+  const childcareCost = babyChildcareSel === 'know' ? (parseFloat(document.getElementById('babyChildcareCost')?.value)||1500) : babyChildcareSel === 'family' ? 0 : 1500;
+  state.goalBaby = { timeline: babyTimelineSel || 'planning', hasInsurance: babyInsuranceSel, childcareCost, calc: {} };
+  calcBabyGoal();
+}
+function calcBabyGoal() {
+  const b = state.goalBaby; if (!b) return;
+  const hospitalDelivery = b.hasInsurance === 'yes' ? 5000 : 15000;
+  const babyFirstYearCosts = 15000;
+  const monthlyChildcare = b.childcareCost;
+  const totalCashNeeded = hospitalDelivery + babyFirstYearCosts;
+  const tMap = { 'within-6mo':6, '6-12mo':9, '1-2yr':18, 'planning':24 };
+  const monthsToGoal = tMap[b.timeline] || 18;
+  const monthlyTarget = Math.ceil(totalCashNeeded / monthsToGoal);
+  b.calc = { hospitalDelivery, babyFirstYearCosts, monthlyChildcare, totalCashNeeded, monthsToGoal, monthlyTarget };
+}
+function renderBabyGoalCard() {
+  const b = state.goalBaby; if (!b || !b.calc.totalCashNeeded) return '';
+  const c = b.calc;
+  const key = 'pbaby';
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const naArr = state.naItems[key];
+  const actions = [
+    `Build a baby emergency fund of ${fmt(c.totalCashNeeded)} before arrival`,
+    ...(b.hasInsurance !== 'yes' ? ['Review and upgrade health insurance to cover pregnancy and delivery'] : []),
+    'Research parental leave policy at your employer',
+    'Open or update a will and name a guardian for your child',
+    'Add child to health insurance within 30 days of birth',
+    'Research childcare options and costs in your area',
+    'Consider opening a 529 college savings account early',
+  ];
+  const done = state.checks[key].length; const effective = actions.length - naArr.length;
+  const pct = effective > 0 ? Math.round((done / effective) * 100) : 100;
+  const actionsHTML = actions.map((a,ai) => {
+    const isNA = naArr.includes(ai), checked = !isNA && state.checks[key].includes(ai);
+    const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+    return `<div class="phase-action-item"><div class="action-check ${isNA?'na':checked?'checked':''}" onclick="toggleGoalCheck('${key}',${ai})"></div><span style="${textStyle}">${a}</span></div>`;
+  }).join('');
+  return `<div style="padding:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);">👶 Having a Child</div><div style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.1);color:var(--pink);border-radius:6px;padding:3px 8px;letter-spacing:0.05em;">GOAL</div></div>
+    <div class="home-goal-card">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.totalCashNeeded)} before baby arrives</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Hospital/delivery: ${fmt(c.hospitalDelivery)} · First year: ${fmt(c.babyFirstYearCosts)}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.monthlyTarget)}/month over the next ${c.monthsToGoal} months</div>
+      ${c.monthlyChildcare > 0 ? `<div class="home-goal-warning">Plan for ${fmt(c.monthlyChildcare)}/month increase in ongoing expenses after arrival</div>` : ''}
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
+      <div class="home-goal-compliance">Cost estimates are national averages. Actual costs vary by location and circumstances.</div>
+    </div></div>`;
+}
+
+// ── COLLEGE GOAL ──
+let collegeNumChildren = 1, college529Status = null;
+
+function selectCollegeNum(n) {
+  [1,2,3].forEach(v => document.getElementById(`collegeNum${v}`)?.classList.toggle('selected', v===n));
+  collegeNumChildren = n;
+}
+function selectCollege529(val) {
+  document.getElementById('college529Yes')?.classList.toggle('selected', val==='yes');
+  document.getElementById('college529No')?.classList.toggle('selected', val==='no');
+  college529Status = val;
+  document.getElementById('college529BalanceWrap').style.display = val==='yes' ? 'block' : 'none';
+}
+function collectCollegeGoal() {
+  const colGoal = (state.goals||[]).find(g => g.type === 'Save for college');
+  if (!colGoal && !college529Status) { state.goalCollege = null; return; }
+  const childAge = parseInt(document.getElementById('collegeChildAge')?.value) || 0;
+  const schoolType = document.getElementById('collegeSchoolType')?.value || 'unsure';
+  const balance529 = college529Status === 'yes' ? (parseFloat(document.getElementById('college529Balance')?.value)||0) : 0;
+  state.goalCollege = { numChildren: collegeNumChildren, childAge, schoolType, has529: college529Status === 'yes', balance529, calc: {} };
+  calcCollegeGoal();
+}
+function calcCollegeGoal() {
+  const col = state.goalCollege; if (!col) return;
+  const yearsToCollege = Math.max(1, 18 - col.childAge);
+  const annualCost = {'public-instate':28000,'public-out':45000,'private':58000,'unsure':35000}[col.schoolType]||35000;
+  const totalCost = annualCost * 4;
+  const inflationAdjusted = totalCost * Math.pow(1.05, yearsToCollege);
+  const alreadySaved = col.balance529 || 0;
+  const remaining = Math.max(0, inflationAdjusted - alreadySaved);
+  const monthlyTargetPerChild = Math.ceil(remaining / (yearsToCollege * 12));
+  const monthlyTarget = monthlyTargetPerChild * col.numChildren;
+  col.calc = { yearsToCollege, annualCost, totalCost, inflationAdjusted, alreadySaved, remaining, monthlyTargetPerChild, monthlyTarget };
+}
+function renderCollegeGoalCard() {
+  const col = state.goalCollege; if (!col || !col.calc.monthlyTarget) return '';
+  const c = col.calc;
+  const key = 'pcollege';
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const naArr = state.naItems[key];
+  const actions = [
+    col.has529 ? `Keep contributing to your 529 — target ${fmt(c.monthlyTargetPerChild)}/month per child` : 'Open a 529 college savings account',
+    `Automate ${fmt(c.monthlyTarget)}/month to your 529 (${col.numChildren} child${col.numChildren>1?'ren':''})`,
+    'Choose age-appropriate investment options inside the 529',
+    'Check if your state offers a tax deduction for 529 contributions',
+    'Review and update 529 beneficiary designation',
+  ];
+  const done = state.checks[key].length; const effective = actions.length - naArr.length;
+  const pct = effective > 0 ? Math.round((done / effective) * 100) : 100;
+  const actionsHTML = actions.map((a,ai) => {
+    const isNA = naArr.includes(ai), checked = !isNA && state.checks[key].includes(ai);
+    const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+    return `<div class="phase-action-item"><div class="action-check ${isNA?'na':checked?'checked':''}" onclick="toggleGoalCheck('${key}',${ai})"></div><span style="${textStyle}">${a}</span></div>`;
+  }).join('');
+  return `<div style="padding:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);">🎓 College Savings</div><div style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.1);color:var(--pink);border-radius:6px;padding:3px 8px;letter-spacing:0.05em;">GOAL</div></div>
+    <div class="home-goal-card">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">${fmt(c.inflationAdjusted)} total (inflation-adjusted, 4 years)</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${c.yearsToCollege} years until college · ${fmt(c.annualCost)}/yr base · ${col.numChildren} child${col.numChildren>1?'ren':''}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.monthlyTarget)}/month to stay on track</div>
+      ${c.alreadySaved > 0 ? `<div class="home-goal-ontrack">✓ ${fmt(c.alreadySaved)} already saved · ${fmt(c.remaining)} remaining</div>` : ''}
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
+      <div class="home-goal-compliance">Projections use 5% annual cost inflation. Actual costs will vary.</div>
+    </div></div>`;
+}
+
+// ── DEBT GOAL ──
+let debtGoalStrategy = 'avalanche';
+
+function setupDebtGoalScreen() {
+  const sel = document.getElementById('debtGoalSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Select a debt…</option>';
+  (state.liabilities || []).forEach((d, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${d.type}${d.apr > 0 ? ` — ${d.apr}% APR` : ''}`;
+    sel.appendChild(opt);
+  });
+}
+function onDebtGoalSelect() {
+  const idx = parseInt(document.getElementById('debtGoalSelect')?.value);
+  if (isNaN(idx)) return;
+  const d = (state.liabilities || [])[idx];
+  if (!d) return;
+  const balEl = document.getElementById('debtGoalBalance');
+  const aprEl = document.getElementById('debtGoalAPR');
+  if (balEl) balEl.value = d.amount || '';
+  if (aprEl) aprEl.value = d.apr || '';
+}
+function selectDebtStrategy(strategy) {
+  debtGoalStrategy = strategy;
+  document.getElementById('debtStratAvalanche')?.classList.toggle('selected', strategy==='avalanche');
+  document.getElementById('debtStratSnowball')?.classList.toggle('selected', strategy==='snowball');
+}
+function collectDebtGoal() {
+  const balance = parseFloat(document.getElementById('debtGoalBalance')?.value) || 0;
+  const apr = parseFloat(document.getElementById('debtGoalAPR')?.value) || 0;
+  const debtGoal = (state.goals||[]).find(g => g.type === 'Pay off debt');
+  if (!debtGoal && balance === 0) { state.goalDebt = null; return; }
+  state.goalDebt = { balance, apr, strategy: debtGoalStrategy, timeline: debtGoal?.timeline || '1–3 years', calc: {} };
+  calcDebtGoal();
+}
+function calcDebtGoal() {
+  const d = state.goalDebt; if (!d) return;
+  const tMap = { 'Within 1 year':12, '1–3 years':24, '3–5 years':48, '5+ years':72 };
+  const months = tMap[d.timeline] || 24;
+  const r = d.apr > 0 ? (d.apr / 100) / 12 : 0;
+  let monthlyPayment;
+  if (r > 0) {
+    monthlyPayment = Math.ceil(d.balance * (r * Math.pow(1+r, months)) / (Math.pow(1+r, months) - 1));
+  } else {
+    monthlyPayment = Math.ceil(d.balance / months);
+  }
+  const totalPaid = monthlyPayment * months;
+  const totalInterest = Math.max(0, totalPaid - d.balance);
+  d.calc = { months, monthlyPayment, totalPaid, totalInterest };
+}
+function renderDebtGoalCard() {
+  const d = state.goalDebt; if (!d || !d.calc.monthlyPayment) return '';
+  const c = d.calc;
+  const key = 'pdebt';
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const naArr = state.naItems[key];
+  const stratLabel = d.strategy === 'avalanche' ? 'Avalanche (highest rate first)' : 'Snowball (smallest balance first)';
+  const actions = [
+    `Pay ${fmt(c.monthlyPayment)}/month toward this debt — paid off in ${c.months} months`,
+    'Stop adding new charges to this account while paying it down',
+    d.apr > 15 ? 'Call your lender and ask for a rate reduction — it works more often than you think' : null,
+    d.apr > 18 ? 'Consider a 0% balance transfer to a new card to stop interest from accruing' : null,
+    `Use the ${stratLabel} strategy for any additional debts`,
+    'Once paid off, redirect this monthly payment toward savings or investing',
+  ].filter(Boolean);
+  const done = state.checks[key].length; const effective = actions.length - naArr.length;
+  const pct = effective > 0 ? Math.round((done / effective) * 100) : 100;
+  const actionsHTML = actions.map((a,ai) => {
+    const isNA = naArr.includes(ai), checked = !isNA && state.checks[key].includes(ai);
+    const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+    return `<div class="phase-action-item"><div class="action-check ${isNA?'na':checked?'checked':''}" onclick="toggleGoalCheck('${key}',${ai})"></div><span style="${textStyle}">${a}</span></div>`;
+  }).join('');
+  return `<div style="padding:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);">💳 Debt Payoff Goal</div><div style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.1);color:var(--pink);border-radius:6px;padding:3px 8px;letter-spacing:0.05em;">GOAL</div></div>
+    <div class="home-goal-card">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">${fmt(d.balance)} balance${d.apr > 0 ? ` at ${d.apr}% APR` : ''}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Pay off in ${c.months} months · ${fmt(c.totalInterest)} in interest saved vs. minimum payments</div>
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Pay ${fmt(c.monthlyPayment)}/month to be debt-free by ${d.timeline}</div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
+      <div class="home-goal-compliance">Payment calculations are estimates. Actual payoff depends on minimum payments, fees, and rate changes.</div>
+    </div></div>`;
+}
+
+// ── RETIRE GOAL ──
+let retireSSSel = null;
+
+function selectRetiireSS(el, val) {
+  el.closest('.ob-body').querySelectorAll('.ob-option[onclick*="selectRetiireSS"]').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  retireSSSel = val;
+}
+function collectRetireGoal() {
+  const retireAge = parseInt(document.getElementById('retireTargetAge')?.value) || 0;
+  const monthlyIncome = parseFloat(document.getElementById('retireMonthlyIncome')?.value) || 0;
+  const retireGoal = (state.goals||[]).find(g => g.type === 'Retire early');
+  if (!retireGoal && retireAge === 0) { state.goalRetire = null; return; }
+  state.goalRetire = { targetAge: retireAge || 60, monthlyIncome: monthlyIncome || 5000, ssExpectation: retireSSSel, calc: {} };
+  calcRetireGoal();
+}
+function calcRetireGoal() {
+  const r = state.goalRetire; if (!r) return;
+  const currentAge = state.age || 30;
+  const yearsToRetire = Math.max(1, r.targetAge - currentAge);
+  const ssMonthly = { full: 2000, reduced: 1200, no: 0, unsure: 0 }[r.ssExpectation] || 0;
+  const monthlyNeeded = Math.max(0, r.monthlyIncome - ssMonthly);
+  const annualNeeded = monthlyNeeded * 12;
+  const fireNumber = annualNeeded / 0.04; // 4% rule
+  const currentInvested = (state.currentSavings || 0);
+  const assumedReturn = 0.07;
+  const futureValue = currentInvested * Math.pow(1 + assumedReturn, yearsToRetire);
+  const remaining = Math.max(0, fireNumber - futureValue);
+  const monthlyTarget = remaining > 0 ? Math.ceil(remaining / ((Math.pow(1+assumedReturn/12, yearsToRetire*12) - 1) / (assumedReturn/12))) : 0;
+  const onTrack = remaining <= 0 || (state.calc?.retirementMonthly || 0) >= monthlyTarget;
+  r.calc = { yearsToRetire, ssMonthly, monthlyNeeded, annualNeeded, fireNumber, currentInvested, futureValue, remaining, monthlyTarget, onTrack };
+}
+function renderRetireGoalCard() {
+  const r = state.goalRetire; if (!r || !r.calc.fireNumber) return '';
+  const c = r.calc;
+  const key = 'pretire';
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const naArr = state.naItems[key];
+  const progressPct = c.fireNumber > 0 ? Math.min(100, (c.currentInvested / c.fireNumber) * 100) : 0;
+  const actions = [
+    `Max your 401k — ${fmt(23500)}/year limit for 2025`,
+    `Max your Roth IRA — ${fmt(7000)}/year (tax-free growth to retirement)`,
+    c.monthlyTarget > 0 ? `Invest ${fmt(c.monthlyTarget)}/month total to hit your FIRE number by age ${r.targetAge}` : 'You are on track to reach your FIRE number — keep investing consistently',
+    'Set investments to auto-rebalance once per year',
+    c.yearsToRetire > 10 ? 'Keep equity-heavy allocation while you have time on your side' : 'Shift gradually to more conservative allocation as retirement approaches',
+    'Estimate your healthcare costs for early retirement — biggest FIRE wildcard',
+  ];
+  const done = state.checks[key].length; const effective = actions.length - naArr.length;
+  const pct = effective > 0 ? Math.round((done / effective) * 100) : 100;
+  const actionsHTML = actions.map((a,ai) => {
+    const isNA = naArr.includes(ai), checked = !isNA && state.checks[key].includes(ai);
+    const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+    return `<div class="phase-action-item"><div class="action-check ${isNA?'na':checked?'checked':''}" onclick="toggleGoalCheck('${key}',${ai})"></div><span style="${textStyle}">${a}</span></div>`;
+  }).join('');
+  return `<div style="padding:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);">🌅 Early Retirement</div><div style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.1);color:var(--pink);border-radius:6px;padding:3px 8px;letter-spacing:0.05em;">GOAL</div></div>
+    <div class="home-goal-card">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px;">Your FIRE number: ${fmt(c.fireNumber)}</div>
+      <div class="home-goal-bar"><div class="home-goal-fill" style="width:${progressPct.toFixed(1)}%"></div></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${fmt(c.currentInvested)} invested · ${Math.round(progressPct)}% there · retire at ${r.targetAge} in ${c.yearsToRetire} years</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${fmt(r.monthlyIncome)}/mo needed${c.ssMonthly > 0 ? ` · ${fmt(c.ssMonthly)}/mo Social Security offset` : ''} · 4% withdrawal rule</div>
+      ${c.onTrack ? `<div class="home-goal-ontrack">✓ On track — your current contributions reach ${fmt(c.fireNumber)} by age ${r.targetAge}.</div>` : `<div class="home-goal-warning">⚠️ Invest ${fmt(c.monthlyTarget)}/month to hit your FIRE number by age ${r.targetAge}.</div>`}
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
+      <div class="home-goal-compliance">FIRE projections assume 7% average annual returns. Actual results will vary. Not financial advice.</div>
+    </div></div>`;
+}
+
+// ── BUSINESS GOAL ──
+let businessStageSel = null, businessRunwaySel = '12', bizFundSel = null;
+
+function selectBusinessStage(el, val) {
+  el.closest('.ob-body').querySelectorAll('.ob-option[onclick*="selectBusinessStage"]').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  businessStageSel = val;
+}
+function selectBusinessRunway(el, val) {
+  el.closest('.ob-body').querySelectorAll('.ob-option[onclick*="selectBusinessRunway"]').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  businessRunwaySel = val;
+}
+function selectBizFund(val) {
+  ['yes','no','working'].forEach(v => document.getElementById(`bizFund${v.charAt(0).toUpperCase()+v.slice(1)}`)?.classList.toggle('selected', v===val));
+  bizFundSel = val;
+}
+function collectBusinessGoal() {
+  const bizGoal = (state.goals||[]).find(g => g.type === 'Start a business');
+  if (!bizGoal && !businessStageSel) { state.goalBusiness = null; return; }
+  state.goalBusiness = { stage: businessStageSel || 'planning', runwayMonths: parseInt(businessRunwaySel) || 12, hasBizFund: bizFundSel, calc: {} };
+  calcBusinessGoal();
+}
+function calcBusinessGoal() {
+  const biz = state.goalBusiness; if (!biz) return;
+  const monthlyExpenses = state.monthlyExpenses || 3000;
+  const runwayTarget = monthlyExpenses * biz.runwayMonths;
+  const currentSavings = state.currentSavings || 0;
+  const remaining = Math.max(0, runwayTarget - currentSavings);
+  const monthsToSave = 18;
+  const monthlyTarget = remaining > 0 ? Math.ceil(remaining / monthsToSave) : 0;
+  biz.calc = { runwayTarget, currentSavings, remaining, monthlyTarget, monthlyExpenses };
+}
+function renderBusinessGoalCard() {
+  const biz = state.goalBusiness; if (!biz || !biz.calc.runwayTarget) return '';
+  const c = biz.calc;
+  const key = 'pbusiness';
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const naArr = state.naItems[key];
+  const progressPct = c.runwayTarget > 0 ? Math.min(100, (c.currentSavings / c.runwayTarget) * 100) : 0;
+  const actions = [
+    `Build ${biz.runwayMonths}-month personal runway: ${fmt(c.runwayTarget)}`,
+    c.monthlyTarget > 0 ? `Save ${fmt(c.monthlyTarget)}/month toward your runway fund` : 'Personal runway funded — you can focus on growth',
+    'Separate your personal and business finances — open a business checking account',
+    'Research your business structure: LLC vs. sole prop vs. S-Corp',
+    'Set up quarterly estimated tax payments if going self-employed',
+    biz.hasBizFund !== 'yes' ? 'Build a separate business emergency fund (3 months operating expenses)' : null,
+    'Set up a SEP-IRA or Solo 401k for self-employment retirement savings',
+  ].filter(Boolean);
+  const done = state.checks[key].length; const effective = actions.length - naArr.length;
+  const pct = effective > 0 ? Math.round((done / effective) * 100) : 100;
+  const actionsHTML = actions.map((a,ai) => {
+    const isNA = naArr.includes(ai), checked = !isNA && state.checks[key].includes(ai);
+    const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+    return `<div class="phase-action-item"><div class="action-check ${isNA?'na':checked?'checked':''}" onclick="toggleGoalCheck('${key}',${ai})"></div><span style="${textStyle}">${a}</span></div>`;
+  }).join('');
+  return `<div style="padding:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);">🚀 Start a Business</div><div style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.1);color:var(--pink);border-radius:6px;padding:3px 8px;letter-spacing:0.05em;">GOAL</div></div>
+    <div class="home-goal-card">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px;">Personal runway target: ${fmt(c.runwayTarget)}</div>
+      <div class="home-goal-bar"><div class="home-goal-fill" style="width:${progressPct.toFixed(1)}%"></div></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${biz.runwayMonths} months × ${fmt(c.monthlyExpenses)}/mo expenses · ${Math.round(progressPct)}% saved</div>
+      ${c.remaining <= 0 ? `<div class="home-goal-ontrack">✓ Runway funded — you have the financial cushion to launch.</div>` : `<div class="home-goal-warning">⚠️ ${fmt(c.remaining)} more to reach your runway target.</div>`}
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
+      <div class="home-goal-compliance">Business runway is a financial buffer only. Business outcomes depend on many factors beyond personal savings.</div>
+    </div></div>`;
+}
+
+// ── TRIP GOAL ──
+let tripWhoSel = null;
+
+function selectTripWho(val) {
+  ['solo','partner','family','group'].forEach(v => {
+    const idMap = { solo:'tripWhoMe', partner:'tripWhoPartner', family:'tripWhoFamily', group:'tripWhoGroup' };
+    document.getElementById(idMap[v])?.classList.toggle('selected', v===val);
+  });
+  tripWhoSel = val;
+}
+function collectTripGoal() {
+  const cost = parseFloat(document.getElementById('tripCost')?.value) || 0;
+  const tripGoal = (state.goals||[]).find(g => g.type === 'Take a dream trip');
+  if (!tripGoal && cost === 0) { state.goalTrip = null; return; }
+  const destination = document.getElementById('tripDestination')?.value || '';
+  state.goalTrip = { destination, cost, who: tripWhoSel, timeline: tripGoal?.timeline || '1–3 years', calc: {} };
+  calcTripGoal();
+}
+function calcTripGoal() {
+  const t = state.goalTrip; if (!t) return;
+  const tMap = { 'Within 1 year':12, '1–3 years':24, '3–5 years':36, '5+ years':60 };
+  const months = tMap[t.timeline] || 24;
+  const monthlyTarget = t.cost > 0 ? Math.ceil(t.cost / months) : 0;
+  t.calc = { months, monthlyTarget };
+}
+function renderTripGoalCard() {
+  const t = state.goalTrip; if (!t || !t.calc.monthlyTarget) return '';
+  const c = t.calc;
+  const key = 'ptrip';
+  if (!state.checks[key]) state.checks[key] = [];
+  if (!state.naItems[key]) state.naItems[key] = [];
+  const naArr = state.naItems[key];
+  const actions = [
+    `Open a dedicated savings account for your trip fund`,
+    `Automate ${fmt(c.monthlyTarget)}/month to your trip fund`,
+    'Set a target travel window and book time off work',
+    'Research travel rewards cards for flights and hotels',
+    'Book flights early — prices typically rise 3–6 months before departure',
+    'Get travel insurance, especially for international trips',
+  ];
+  const done = state.checks[key].length; const effective = actions.length - naArr.length;
+  const pct = effective > 0 ? Math.round((done / effective) * 100) : 100;
+  const actionsHTML = actions.map((a,ai) => {
+    const isNA = naArr.includes(ai), checked = !isNA && state.checks[key].includes(ai);
+    const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
+    return `<div class="phase-action-item"><div class="action-check ${isNA?'na':checked?'checked':''}" onclick="toggleGoalCheck('${key}',${ai})"></div><span style="${textStyle}">${a}</span></div>`;
+  }).join('');
+  const destLabel = t.destination ? ` to ${t.destination}` : '';
+  return `<div style="padding:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);">✈️ Dream Trip${destLabel}</div><div style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.1);color:var(--pink);border-radius:6px;padding:3px 8px;letter-spacing:0.05em;">GOAL</div></div>
+    <div class="home-goal-card">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">${fmt(t.cost)} total budget${destLabel}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${c.months} months to save · ${t.timeline}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.monthlyTarget)}/month and you're there</div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
+      <div class="home-goal-compliance">Cost estimates are illustrative. Research specific prices for your destination and travel dates.</div>
+    </div></div>`;
+}
+
 // ── GOALS SCREEN ──
 const GOAL_OPTIONS = [
   { id:'home',      icon:'🏡', label:'Buy a home' },
@@ -2224,6 +2937,12 @@ function buildPlan() {
   state.liabilities.sort((a,b) => b.apr - a.apr);
   state.debts = state.liabilities;
   collectHomeGoal();
+  collectBabyGoal();
+  collectCollegeGoal();
+  collectDebtGoal();
+  collectRetireGoal();
+  collectBusinessGoal();
+  collectTripGoal();
   goTo('checking');
   setTimeout(()=>{ computeFinancials(); computePlan(); goTo('result'); }, 2200);
 }
@@ -2746,6 +3465,7 @@ function buildRoadmap(currentPhase, name) {
   const body = document.getElementById('roadmapBody'); body.innerHTML='';
   const phases = getPhases();
   const homeGoalActive = state.goalHome && state.goalHome.targetPrice > 0;
+  const anyGoalActive = homeGoalActive || (state.goalBaby?.calc?.totalCashNeeded > 0) || (state.goalCollege?.calc?.monthlyTarget > 0) || (state.goalDebt?.calc?.monthlyPayment > 0) || (state.goalRetire?.calc?.fireNumber > 0) || (state.goalBusiness?.calc?.runwayTarget > 0) || (state.goalTrip?.calc?.monthlyTarget > 0);
   phases.forEach((phase,i) => {
     const status = phase.num < currentPhase ? 'done' : phase.num===currentPhase ? 'active' : 'locked';
     const isLast = i===phases.length-1;
@@ -2770,7 +3490,7 @@ function buildRoadmap(currentPhase, name) {
     const phaseInfoBtn = PHASE_INFO[phase.num] ? `<span class="phase-info-btn" onclick="showPhaseInfo(${phase.num},event)">ℹ️</span>` : '';
     // The spine line after Foundation needs to account for the home goal card spacer
     const lineClass = (phase.num === 1 && homeGoalActive) ? status : status;
-    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${lineClass}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name} ${phaseInfoBtn}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div>${phase.num===1 && homeGoalActive ? `<div style="padding-top:16px;">${renderHomeGoalCard()}</div>` : ''}</div></div>`;
+    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${lineClass}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name} ${phaseInfoBtn}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div>${phase.num===1 && anyGoalActive ? `<div style="padding-top:16px;">${[homeGoalActive?renderHomeGoalCard():'', state.goalBaby?.calc?.totalCashNeeded>0?renderBabyGoalCard():'', state.goalCollege?.calc?.monthlyTarget>0?renderCollegeGoalCard():'', state.goalDebt?.calc?.monthlyPayment>0?renderDebtGoalCard():'', state.goalRetire?.calc?.fireNumber>0?renderRetireGoalCard():'', state.goalBusiness?.calc?.runwayTarget>0?renderBusinessGoalCard():'', state.goalTrip?.calc?.monthlyTarget>0?renderTripGoalCard():''].filter(Boolean).join('<div style="height:16px;"></div>')}</div>` : ''}</div></div>`;
   });
 }
 
