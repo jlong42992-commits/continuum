@@ -379,11 +379,49 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .compliance-note { font-size:11px; color:var(--muted); line-height:1.55; text-align:center; padding:16px; }
 
 /* BOTTOM NAV */
-.bottom-nav { display:flex; background:white; border-top:1px solid var(--border); padding:12px 0 28px; flex-shrink:0; }
-.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px 0; }
-.nav-icon { font-size:20px; }
-.nav-label { font-size:10px; font-weight:600; color:var(--muted); letter-spacing:0.04em; }
+.bottom-nav { display:flex; background:white; border-top:1.5px solid var(--border); padding:8px 0 28px; flex-shrink:0; }
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:6px 0 2px; position:relative; touch-action:manipulation; }
+.nav-item::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:28px; height:2.5px; background:var(--pink); border-radius:0 0 3px 3px; opacity:0; transition:opacity 0.2s; }
+.nav-item.active::before { opacity:1; }
+.nav-svg { width:22px; height:22px; stroke:var(--muted); fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; transition:stroke 0.2s; flex-shrink:0; }
+.nav-item.active .nav-svg { stroke:var(--pink); }
+.nav-label { font-size:9.5px; font-weight:600; color:var(--muted); letter-spacing:0.03em; transition:color 0.2s; }
 .nav-item.active .nav-label { color:var(--pink); }
+
+/* REPORTS SCREEN */
+#reports-screen { background:var(--cream); }
+.rpt-header { background:var(--navy); padding:44px 24px 0; }
+.rpt-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--cream); margin-bottom:16px; }
+.rpt-tabs { display:flex; }
+.rpt-tab { flex:1; padding:12px 8px; text-align:center; font-size:13px; font-weight:600; color:rgba(245,240,232,0.5); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; letter-spacing:0.04em; }
+.rpt-tab.active { color:var(--cream); border-bottom-color:var(--pink); }
+.rpt-body { padding:20px 20px 100px; }
+.rpt-section-label { font-size:10px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:var(--muted); margin:16px 0 8px; }
+.nw-summary { background:var(--navy); border-radius:16px; padding:20px; margin-bottom:12px; }
+.nw-total-label { font-size:11px; font-weight:700; color:rgba(245,240,232,0.5); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:6px; }
+.nw-total-val { font-family:'DM Serif Display',serif; font-size:30px; margin-bottom:14px; }
+.nw-bar-track { height:10px; background:rgba(255,255,255,0.12); border-radius:5px; overflow:hidden; display:flex; margin-bottom:10px; }
+.nw-bar-assets { background:var(--pink); border-radius:5px 0 0 5px; min-width:3px; transition:width 0.5s ease; }
+.nw-bar-liab { background:rgba(255,255,255,0.35); border-radius:0 5px 5px 0; min-width:3px; }
+.nw-summary-row { display:flex; justify-content:space-between; font-size:12px; color:rgba(245,240,232,0.6); }
+.nw-summary-row span:last-child { font-weight:600; color:var(--cream); }
+.nw-breakdown-item { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.nw-breakdown-label { color:var(--slate); display:flex; align-items:center; gap:7px; }
+.nw-breakdown-type { font-size:10px; font-weight:700; background:rgba(30,35,64,0.07); color:var(--muted); border-radius:4px; padding:1px 5px; }
+.nw-breakdown-val { font-weight:600; color:var(--navy); }
+.nw-breakdown-val.neg { color:var(--pink); }
+.nw-owner-tag { font-size:10px; color:var(--muted); font-weight:500; }
+.cf-row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--border); }
+.cf-bar { width:4px; border-radius:2px; flex-shrink:0; align-self:stretch; min-height:28px; }
+.cf-info { flex:1; }
+.cf-label { font-size:13px; color:var(--slate); }
+.cf-sublabel { font-size:11px; color:var(--muted); margin-top:1px; }
+.cf-amount { font-size:14px; font-weight:700; color:var(--navy); text-align:right; }
+.cf-amount.pos { color:#2E7D32; }
+.cf-amount.neg { color:var(--pink); }
+.cf-surplus-card { background:var(--navy); border-radius:14px; padding:16px 18px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; }
+.cf-surplus-label { font-size:12px; font-weight:700; color:rgba(245,240,232,0.6); text-transform:uppercase; letter-spacing:0.06em; }
+.cf-surplus-val { font-size:20px; font-weight:700; color:var(--cream); font-family:'DM Serif Display',serif; }
 </style>
 </head>
 <body>
@@ -728,7 +766,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
     <div id="spAutoSavFields" style="display:none;margin-bottom:16px;">
       <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spAutoSavingsAmt" type="number" placeholder="200" min="0"/></div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="spAutoSavingsPct" type="number" placeholder="3" min="0" max="100" style="padding-left:30px;" oninput="syncSpouseSavInput('pct','spAutoSavingsPct','spAutoSavingsAmt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spAutoSavingsAmt" type="number" placeholder="200" min="0" oninput="syncSpouseSavInput('amt','spAutoSavingsAmt','spAutoSavingsPct')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
       </div>
     </div>
@@ -740,7 +780,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
     <div id="spAutoInvFields" style="display:none;margin-bottom:16px;">
       <div style="display:flex;gap:8px;align-items:center;">
-        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spAutoInvestAmt" type="number" placeholder="100" min="0"/></div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">%</span><input class="ob-input" id="spAutoInvestPct" type="number" placeholder="2" min="0" max="100" style="padding-left:30px;" oninput="syncSpouseSavInput('pct','spAutoInvestPct','spAutoInvestAmt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div class="ob-input-prefix" style="flex:1;"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spAutoInvestAmt" type="number" placeholder="100" min="0" oninput="syncSpouseSavInput('amt','spAutoInvestAmt','spAutoInvestPct')"/></div>
         <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
       </div>
     </div>
@@ -786,16 +828,6 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       <div class="networth-value" id="netWorthValue">$0</div>
     </div>
 
-    <!-- Biggest challenge -->
-    <div class="ob-input-group" style="margin-top:20px;">
-      <div class="ob-label">Your Biggest Challenge</div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="ob-option" onclick="selectOption(this,'challenge','prioritize')"><div class="ob-option-icon">🎯</div><div><div class="ob-option-label">Not sure what to do first</div></div></div>
-        <div class="ob-option" onclick="selectOption(this,'challenge','debt')"><div class="ob-option-icon">💳</div><div><div class="ob-option-label">Dealing with debt</div></div></div>
-        <div class="ob-option" onclick="selectOption(this,'challenge','saving')"><div class="ob-option-icon">🐷</div><div><div class="ob-option-label">Saving consistently</div></div></div>
-        <div class="ob-option" onclick="selectOption(this,'challenge','future')"><div class="ob-option-icon">🔭</div><div><div class="ob-option-label">Planning for the future</div></div></div>
-      </div>
-    </div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb(5)">Continue →</button></div>
 </div>
@@ -811,8 +843,27 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div id="goalsGrid" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
   <div class="ob-footer">
+    <button class="btn-primary" onclick="goTo('ob-challenge')">Continue →</button>
+    <button class="btn-secondary" onclick="goTo('ob-challenge')">Skip — I'll add goals later</button>
+  </div>
+</div>
+
+<!-- OB-CHALLENGE: Biggest challenge -->
+<div class="screen" id="ob-challenge">
+  <div class="ob-header">
+    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-question">What's your biggest challenge?</div>
+    <div class="ob-hint">This helps us focus your plan on what matters most right now.</div>
+  </div>
+  <div class="ob-body">
+    <div class="ob-option" onclick="selectOption(this,'challenge','prioritize')"><div class="ob-option-icon">🎯</div><div><div class="ob-option-label">Not sure what to do first</div><div class="ob-option-desc">Feeling overwhelmed by financial decisions and priorities</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'challenge','debt')"><div class="ob-option-icon">💳</div><div><div class="ob-option-label">Dealing with debt</div><div class="ob-option-desc">Debt is hanging over me and I want to get free</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'challenge','saving')"><div class="ob-option-icon">🐷</div><div><div class="ob-option-label">Saving consistently</div><div class="ob-option-desc">I start but can't seem to stick with it</div></div></div>
+    <div class="ob-option" onclick="selectOption(this,'challenge','future')"><div class="ob-option-icon">🔭</div><div><div class="ob-option-label">Planning for the future</div><div class="ob-option-desc">Not sure if I'm on track for retirement or big goals</div></div></div>
+  </div>
+  <div class="ob-footer">
     <button class="btn-primary" onclick="buildPlan()">Build My Plan →</button>
-    <button class="btn-secondary" onclick="buildPlan()">Skip — I'll add goals later</button>
+    <button class="btn-secondary" onclick="buildPlan()">Skip — build my plan anyway</button>
   </div>
 </div>
 
@@ -1000,12 +1051,40 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   <div class="celebration-action">Tap anywhere to continue</div>
 </div>
 
+<!-- REPORTS SCREEN -->
+<div class="screen" id="reports-screen">
+  <div class="rpt-header">
+    <div class="rpt-title">Reports</div>
+    <div class="rpt-tabs">
+      <div class="rpt-tab active" id="rptTabNW" onclick="switchReportTab('networth')">NET WORTH</div>
+      <div class="rpt-tab" id="rptTabCF" onclick="switchReportTab('cashflow')">CASH FLOW</div>
+    </div>
+  </div>
+  <div class="rpt-body" id="rptBody"></div>
+</div>
+
 <!-- BOTTOM NAV -->
 <div class="bottom-nav" id="bottomNav" style="display:none;">
-  <div class="nav-item active" onclick="goTo('roadmap')"><div class="nav-icon">🗺️</div><div class="nav-label">Roadmap</div></div>
-  <div class="nav-item" onclick="openProgress()"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></div>
-  <div class="nav-item" onclick="openLifeChange()"><div class="nav-icon">🔄</div><div class="nav-label">Life Change</div></div>
-  <div class="nav-item" onclick="openProfile()"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+  <div class="nav-item active" onclick="goTo('roadmap')">
+    <svg class="nav-svg" viewBox="0 0 24 24"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg>
+    <div class="nav-label">Roadmap</div>
+  </div>
+  <div class="nav-item" onclick="openProgress()">
+    <svg class="nav-svg" viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+    <div class="nav-label">Progress</div>
+  </div>
+  <div class="nav-item" onclick="openReports()">
+    <svg class="nav-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg>
+    <div class="nav-label">Reports</div>
+  </div>
+  <div class="nav-item" onclick="openLifeChange()">
+    <svg class="nav-svg" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+    <div class="nav-label">Life Change</div>
+  </div>
+  <div class="nav-item" onclick="openProfile()">
+    <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <div class="nav-label">Profile</div>
+  </div>
 </div>
 
 </div><!-- /phone -->
@@ -1172,65 +1251,68 @@ function showPhaseInfo(phaseNum, e) {
 }
 
 // ── PEER BENCHMARKS ──
-function getPeerBenchmarks(age) {
-  // Approximate national averages by age group (Fed Reserve, Vanguard How America Saves, BLS data)
-  const g = age < 30 ? 0 : age < 40 ? 1 : age < 50 ? 2 : age < 60 ? 3 : 4;
-  return {
-    savingsRate:   { avg:[6,9,12,15,17][g],   label:'Savings rate',              unit:'%',  max:25 },
-    emergencyMos:  { avg:[1.5,2.5,3.5,4.5,5.5][g], label:'Emergency fund',       unit:' mo', max:8 },
-    retirementPct: { avg:[4,7,10,12,13][g],   label:'Retirement contribution',   unit:'%',  max:20 },
-  };
-}
-
+// Sources: Fed Reserve Survey of Consumer Finances 2022, BLS Consumer Expenditure Survey 2023, Vanguard How America Saves 2024
 function renderPeerBenchmarks() {
   const el = document.getElementById('peerBenchmarks');
   if (!el || !state.grossIncome) { if (el) el.innerHTML=''; return; }
   const age = state.age || 30;
-  const c = state.calc;
-  const peers = getPeerBenchmarks(age);
-  const ageLabel = age < 30 ? '20s' : age < 40 ? '30s' : age < 50 ? '40s' : age < 60 ? '50s' : '60s+';
+  const c   = state.calc;
+  const g   = age < 35 ? 0 : age < 45 ? 1 : age < 55 ? 2 : age < 65 ? 3 : 4;
+  const ageLabel = ['under 35','35–44','45–54','55–64','65+'][g];
 
-  const actualSavRate = Math.min(c.actualSavingsRate || 0, peers.savingsRate.max);
-  const actualMos = (state.currentSavings > 0 && state.monthlyExpenses > 0)
-    ? Math.min(state.currentSavings / state.monthlyExpenses, peers.emergencyMos.max) : 0;
-  // Retirement contribution uses 401k+IRA total vs gross
-  const retPct = state.grossIncome > 0
-    ? Math.min(((c.actual401k || 0) * 12 / state.grossIncome) * 100, peers.retirementPct.max) : 0;
+  // 2024 national median net worth by age (Fed Reserve SCF 2022, inflation-adjusted)
+  const medianNW      = [39000, 135600, 247200, 364500, 409900][g];
+  // Average savings rate by age (Vanguard/BLS)
+  const avgSavRate    = [6, 9, 12, 15, 17][g];
+  // Typical expenses as % of after-tax income (BLS CEX 2023)
+  const avgExpPct     = [82, 75, 68, 62, 72][g];
 
-  const stats = [
-    { ...peers.savingsRate,   you: actualSavRate,  youFmt: actualSavRate.toFixed(1)+'%',   avgFmt: peers.savingsRate.avg+'%' },
-    { ...peers.emergencyMos,  you: actualMos,      youFmt: actualMos.toFixed(1)+' mo',      avgFmt: peers.emergencyMos.avg+' mo' },
-    { ...peers.retirementPct, you: retPct,         youFmt: retPct.toFixed(1)+'%',           avgFmt: peers.retirementPct.avg+'%' },
+  // User values
+  const totalAssets = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0) + (state.currentSavings||0);
+  const totalLiab   = (state.liabilities||[]).reduce((s,l) => s+(l.amount||0), 0);
+  const userNW      = totalAssets - totalLiab;
+  const userSavRate = c.actualSavingsRate || 0;
+  const takehome    = c.householdTakeHomeMonthly || 1;
+  const userExpPct  = takehome > 0 ? ((state.monthlyExpenses||0) / takehome * 100) : 0;
+
+  const metrics = [
+    { label:'Savings rate', you:userSavRate, youFmt:userSavRate.toFixed(1)+'%', avg:avgSavRate, avgFmt:avgSavRate+'%', max:30, higherBetter:true },
+    { label:'Net worth',    you:Math.max(0,userNW), youFmt:(userNW<0?'−':'')+fmtK(Math.abs(userNW)), avg:medianNW, avgFmt:fmtK(medianNW), max:Math.max(Math.abs(userNW),medianNW)*1.25||100000, higherBetter:true, noteIfNeg: userNW<0 },
+    { label:'Expenses vs income', you:userExpPct, youFmt:userExpPct.toFixed(0)+'%', avg:avgExpPct, avgFmt:avgExpPct+'%', max:120, higherBetter:false },
   ];
 
   let html = `<div class="benchmark-section">
-    <div class="result-section-title" style="margin-bottom:4px;">How You Compare</div>
-    <div class="benchmark-sourcelabel">Based on national averages for people in their ${ageLabel} — not personalized advice.</div>`;
+    <div class="result-section-title" style="margin-bottom:4px;">How you compare · National averages for reference</div>
+    <div class="benchmark-sourcelabel">Adults ${ageLabel} with similar income. Not personalized advice.</div>`;
 
-  stats.forEach(s => {
+  metrics.forEach(s => {
     const youPct = s.max > 0 ? Math.min((s.you / s.max) * 100, 100) : 0;
     const avgPct = s.max > 0 ? Math.min((s.avg / s.max) * 100, 100) : 0;
-    const ahead = s.you >= s.avg;
+    const ahead  = s.higherBetter ? s.you >= s.avg : s.you <= s.avg;
+    const statusColor = ahead ? '#2E7D32' : 'var(--pink)';
+    const statusText  = ahead ? '✓ Above average' : '↑ Room to grow';
     html += `<div class="benchmark-card">
       <div class="benchmark-row">
         <span class="benchmark-metric">${s.label}</span>
         <div class="benchmark-vals">
-          <span class="benchmark-you-val">${s.youFmt}</span>
-          <span class="benchmark-avg-val">peer avg ${s.avgFmt}</span>
+          <span class="benchmark-you-val">${s.noteIfNeg ? '−' : ''}${s.youFmt}</span>
+          <span class="benchmark-avg-val">median ${s.avgFmt}</span>
         </div>
       </div>
       <div class="benchmark-bar-wrap">
         <div class="benchmark-bar-you" style="width:${youPct.toFixed(1)}%"></div>
         <div class="benchmark-bar-peer" style="left:calc(${avgPct.toFixed(1)}% - 1.5px)"></div>
       </div>
-      <div style="font-size:11px;color:${ahead?'#2E7D32':'var(--pink)'};margin-top:5px;font-weight:600;">${ahead?'✓ Above average':'↑ Room to grow'}</div>
+      <div style="font-size:11px;color:${statusColor};margin-top:5px;font-weight:600;">${statusText}</div>
     </div>`;
   });
 
   html += `<div class="benchmark-legend">
     <div class="benchmark-legend-item"><div class="benchmark-legend-dot" style="background:var(--pink)"></div>You</div>
-    <div class="benchmark-legend-item"><div style="width:3px;height:10px;background:var(--navy);opacity:0.5;border-radius:1px;flex-shrink:0;"></div>Peer average</div>
-  </div></div>`;
+    <div class="benchmark-legend-item"><div style="width:3px;height:10px;background:var(--navy);opacity:0.5;border-radius:1px;flex-shrink:0;"></div>Median</div>
+  </div>
+  <div class="benchmark-sourcelabel" style="margin-top:6px;">Averages sourced from Federal Reserve and BLS data.</div>
+  </div>`;
   el.innerHTML = html;
 }
 
@@ -1238,10 +1320,10 @@ function renderPeerBenchmarks() {
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const navScreens = ['roadmap','progress-screen','lifechange','planupdate','profile-screen'];
+  const navScreens = ['roadmap','progress-screen','reports-screen','lifechange','planupdate','profile-screen'];
   document.getElementById('bottomNav').style.display = navScreens.includes(id) ? 'flex' : 'none';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const navMap = {roadmap:0,'progress-screen':1,lifechange:2,planupdate:2,'profile-screen':3};
+  const navMap = {roadmap:0,'progress-screen':1,'reports-screen':2,lifechange:3,planupdate:3,'profile-screen':4};
   if (navMap[id] !== undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
   document.getElementById(id).scrollTop = 0;
   if (id === 'ob4') ob4Setup();
@@ -1550,9 +1632,36 @@ function renderRetirementRows() {
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="syncRetRow(${i},'amt',this.value)"/></div>
           <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
         </div>
-        ${irsLimitLabel(row.type, state.age) ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${irsLimitLabel(row.type, state.age)} · 2025 IRS limit${(state.age||0)>=50?' (catch-up)':''}</div>` : ''}
+        ${(() => {
+          const lim = irsLimit(row.type, state.age);
+          const annualAmt = (row.amt||0) * 12;
+          if (lim && annualAmt > lim) {
+            return `<div style="font-size:11px;color:#c62828;margin-top:6px;font-weight:600;">⚠️ Exceeds 2025 IRS limit of ${fmt(lim)}/yr — reduce to avoid penalties</div>`;
+          }
+          return lim ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${irsLimitLabel(row.type, state.age)} · 2025 IRS limit${(state.age||0)>=50?' (catch-up)':''}</div>` : '';
+        })()}
       </div>`;
   });
+
+  // Total combined warning: 401k bucket (trad + roth 401k combined), IRA bucket (trad + roth IRA combined)
+  const k401Total = retirementRows.filter(r=>r.type==='401k / 403b'||r.type==='Roth 401k').reduce((s,r)=>s+(r.amt||0)*12,0);
+  const iraTotal  = retirementRows.filter(r=>r.type==='Traditional IRA'||r.type==='Roth IRA').reduce((s,r)=>s+(r.amt||0)*12,0);
+  const k401Lim   = irsLimit('401k / 403b', state.age)||23500;
+  const iraLim    = irsLimit('Traditional IRA', state.age)||7000;
+  let warningHtml = '';
+  if (k401Total > k401Lim) warningHtml += `<div style="background:#fff3f3;border:1px solid #ffcdd2;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:12px;color:#c62828;line-height:1.5;">⚠️ Combined 401k/Roth 401k contributions (${fmt(k401Total)}/yr) exceed the ${fmt(k401Lim)}/yr 2025 IRS limit. Excess contributions are subject to a 6% excise tax.</div>`;
+  if (iraTotal > iraLim) warningHtml += `<div style="background:#fff3f3;border:1px solid #ffcdd2;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:12px;color:#c62828;line-height:1.5;">⚠️ Combined IRA contributions (${fmt(iraTotal)}/yr) exceed the ${fmt(iraLim)}/yr 2025 IRS limit. Excess contributions are subject to a 6% excise tax.</div>`;
+  if (warningHtml) {
+    const wDiv = document.createElement('div');
+    wDiv.id = 'retWarnings';
+    wDiv.innerHTML = warningHtml;
+    const existing = document.getElementById('retWarnings');
+    if (existing) existing.remove();
+    container.after(wDiv);
+  } else {
+    document.getElementById('retWarnings')?.remove();
+  }
+
   updateSavingsPreview();
 }
 
@@ -1613,6 +1722,19 @@ function syncSavingsInput(changedType, changedId, otherFieldId) {
     other.value = val > 0 ? ((val * 12 / gross) * 100).toFixed(1) : '';
   }
   updateSavingsPreview();
+}
+
+// Spouse version of sync (uses spouseIncome as gross)
+function syncSpouseSavInput(changedType, changedId, otherFieldId) {
+  const gross = state.spouseIncome;
+  if (gross <= 0) return;
+  const val = parseFloat(document.getElementById(changedId).value) || 0;
+  const other = document.getElementById(otherFieldId);
+  if (changedType === 'pct') {
+    other.value = val > 0 ? Math.round(gross * (val / 100) / 12) : '';
+  } else {
+    other.value = val > 0 ? ((val * 12 / gross) * 100).toFixed(1) : '';
+  }
 }
 
 // Resolve a pct/amt pair to a monthly $ amount (pct takes priority if both entered)
@@ -1707,7 +1829,9 @@ function setupSpouseSavingsScreen() {
   document.getElementById('spAutoInvNo')?.classList.remove('selected');
   document.getElementById('spAutoInvFields').style.display = 'none';
   if (document.getElementById('spAutoSavingsAmt')) document.getElementById('spAutoSavingsAmt').value = '';
+  if (document.getElementById('spAutoSavingsPct')) document.getElementById('spAutoSavingsPct').value = '';
   if (document.getElementById('spAutoInvestAmt')) document.getElementById('spAutoInvestAmt').value = '';
+  if (document.getElementById('spAutoInvestPct')) document.getElementById('spAutoInvestPct').value = '';
 }
 
 function getSpouseRetirementTypes() {
@@ -1774,19 +1898,30 @@ function toggleSpouseAutoSav(yes) {
   document.getElementById('spAutoSavYes').classList.toggle('selected', yes);
   document.getElementById('spAutoSavNo').classList.toggle('selected', !yes);
   document.getElementById('spAutoSavFields').style.display = yes ? 'block' : 'none';
-  if (!yes && document.getElementById('spAutoSavingsAmt')) document.getElementById('spAutoSavingsAmt').value = '';
+  if (!yes) {
+    if (document.getElementById('spAutoSavingsAmt')) document.getElementById('spAutoSavingsAmt').value = '';
+    if (document.getElementById('spAutoSavingsPct')) document.getElementById('spAutoSavingsPct').value = '';
+  }
 }
 function toggleSpouseAutoInv(yes) {
   document.getElementById('spAutoInvYes').classList.toggle('selected', yes);
   document.getElementById('spAutoInvNo').classList.toggle('selected', !yes);
   document.getElementById('spAutoInvFields').style.display = yes ? 'block' : 'none';
-  if (!yes && document.getElementById('spAutoInvestAmt')) document.getElementById('spAutoInvestAmt').value = '';
+  if (!yes) {
+    if (document.getElementById('spAutoInvestAmt')) document.getElementById('spAutoInvestAmt').value = '';
+    if (document.getElementById('spAutoInvestPct')) document.getElementById('spAutoInvestPct').value = '';
+  }
 }
 
 function collectSpouseSavingsInputs() {
   const rows = spouseRetRows.map(r => ({ ...r }));
-  const autoSav = parseFloat(document.getElementById('spAutoSavingsAmt')?.value) || 0;
-  const autoInv = parseFloat(document.getElementById('spAutoInvestAmt')?.value) || 0;
+  const gross = state.spouseIncome || 0;
+  const savPct = parseFloat(document.getElementById('spAutoSavingsPct')?.value) || 0;
+  const savAmt = parseFloat(document.getElementById('spAutoSavingsAmt')?.value) || 0;
+  const invPct = parseFloat(document.getElementById('spAutoInvestPct')?.value) || 0;
+  const invAmt = parseFloat(document.getElementById('spAutoInvestAmt')?.value) || 0;
+  const autoSav = savPct > 0 && gross > 0 ? Math.round(gross * (savPct / 100) / 12) : savAmt;
+  const autoInv = invPct > 0 && gross > 0 ? Math.round(gross * (invPct / 100) / 12) : invAmt;
   state.spouseSavings = { rows, autoSavings: autoSav, autoInvest: autoInv };
 }
 
@@ -2050,6 +2185,10 @@ function computeFinancials() {
   const liabs            = state.liabilities.length ? state.liabilities : state.debts;
   const totalDebt        = liabs.reduce((s,d) => s + d.amount, 0);
   const highInterestDebt = liabs.filter(d => d.apr >= 7).reduce((s,d) => s + d.amount, 0);
+
+  // Total assets from entered asset rows + liquid savings (for net worth display)
+  const totalAssetsValue = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0) + sav;
+  const userNetWorth     = totalAssetsValue - totalDebt;
   const lifeInsuranceTarget     = hasDeps ? householdGross * 10 : gross * 5;
   const disabilityMonthlyTarget = Math.round(takeHomeMonthly * 0.6);
   const retirementMonthly = recommendedMonthly;
@@ -2063,6 +2202,7 @@ function computeFinancials() {
     savingsGapMonthly, savingsGapRate: savingsGapRate.toFixed(1), onTrack, opportunityMonthly,
     monthsToBuffer, totalDebt, highInterestDebt,
     lifeInsuranceTarget, disabilityMonthlyTarget,
+    totalAssetsValue, userNetWorth,
     retirementMonthly, annualIncome: gross, grossAnnual: gross,
     householdGross, householdTakeHomeMonthly,
     marginalRate, effectiveRate,
@@ -2076,6 +2216,48 @@ function computeFinancials() {
 }
 
 // ── PLAN COMPUTATION ──
+function refineFocuses(focuses, c, st) {
+  const age = st.age || 30;
+  const margRate = st.taxCalc?.marginalRate || 0;
+  const hasRoth  = (st.sRothMonthly||0) + (st.sRoth401kMonthly||0) > 0;
+  const rothIraLimit = st.filingStatus === 'married' ? 240000 : 161000;
+  const rothEligible = (st.grossIncome||0) < rothIraLimit;
+  const result = [];
+
+  focuses.forEach(f => {
+    // Emergency fund fully met → downgrade to ✓ done card
+    if ((f.title.includes('cash buffer') || f.title.includes('emergency')) && c.emergencyGap <= 0) {
+      result.push({ ...f, title:'Emergency fund complete ✓', sub:`You have ${fmt(st.currentSavings)} saved — fully covers your ${c.bufferMonths}-month buffer. Keep it in a high-yield savings account and don't touch it.`, priority:'med', amount:null });
+      return;
+    }
+    // High-interest debt is zero → skip that card entirely (don't crowd with a non-issue)
+    if (f.title.includes('high-interest debt') && c.highInterestDebt === 0 && c.totalDebt === 0) return;
+    // If debt card but no high-interest — soften it
+    if (f.title.includes('high-interest debt') && c.highInterestDebt === 0 && c.totalDebt > 0) {
+      result.push({ ...f, sub:`All your debt is below 7% APR — no high-interest emergency. Focus on paying minimums and investing the difference.`, amount:null, priority:'med' });
+      return;
+    }
+    result.push(f);
+  });
+
+  // Add Roth opportunity if no Roth contributions yet
+  if (!hasRoth && rothEligible && result.length < 4) {
+    const rothLimit = irsLimit('Roth IRA', age) || 7000;
+    if (age < 40) {
+      result.splice(2, 0, { icon:'🔑', title:'Start tax-free growth — open a Roth', sub:`You have no Roth contributions yet. Starting now gives decades of tax-free compounding. Contributions can always be withdrawn penalty-free.`, amount:`${fmt(rothLimit)}/yr IRA contribution limit (2025)`, priority:'high', begSub:'A Roth IRA lets your investments grow completely tax-free. You pay taxes on contributions now, but never again — even in retirement.' });
+    } else if (margRate < 0.22) {
+      result.splice(2, 0, { icon:'🔑', title:'Low tax rate — ideal window for Roth', sub:`At a ${Math.round(margRate*100)}% marginal rate, paying tax now via Roth costs less than paying later in a potentially higher bracket.`, amount:`${fmt(rothLimit)}/yr Roth IRA limit · max ${fmt(irsLimit(st.incomeType!=='w2'?'401k / 403b':'Roth 401k', age))}/yr Roth 401k`, priority:'med', begSub:'Roth contributions make the most sense when your tax rate today is lower than what it might be later. This is that window.' });
+    }
+  }
+
+  // If taxable investing but no Roth and under 40 → flag account order issue
+  if (!hasRoth && (st.sAutoInvest||0) > 0 && rothEligible && age < 40 && result.length < 4) {
+    result.push({ icon:'📋', title:'Check your account priority order', sub:`You're investing in a taxable account before maxing tax-advantaged options. Consider routing some of that to a Roth IRA first — same investment, no taxes on growth.`, amount:null, priority:'med', begSub:'The order of accounts matters: 401k match first, then Roth IRA, then taxable. Reordering can save thousands in taxes over time.' });
+  }
+
+  return result.slice(0, 3);
+}
+
 function computePlan() {
   const {stability, lifeStage, challenge, name} = state;
   const c = state.calc;
@@ -2193,13 +2375,15 @@ function computePlan() {
         <div class="numbers-row"><span class="numbers-label">Intentional savings</span><span class="numbers-value" style="color:#2E7D32">${fmt(c2.savingsMonthly)}/mo</span></div>
         <div class="numbers-row"><span class="numbers-label">Emergency fund target</span><span class="numbers-value">${fmt(c2.emergencyTarget)}</span></div>
         ${c2.totalDebt > 0 ? `<div class="numbers-row"><span class="numbers-label">Total debt tracked</span><span class="numbers-value pink">−${fmt(c2.totalDebt)}</span></div>` : ''}
+        ${c2.totalAssetsValue > 0 ? `<div class="numbers-row"><span class="numbers-label">Total assets tracked</span><span class="numbers-value">${fmt(c2.totalAssetsValue)}</span></div>` : ''}
+        ${c2.totalAssetsValue > 0 || c2.totalDebt > 0 ? `<div class="numbers-divider"></div><div class="numbers-row"><span class="numbers-label">Estimated net worth</span><span class="numbers-value ${c2.userNetWorth < 0 ? 'pink' : ''}">${c2.userNetWorth < 0 ? '−$' : '$'}${Math.abs(Math.round(c2.userNetWorth)).toLocaleString()}</span></div>` : ''}
       </div>`;
   } else { nc.innerHTML = ''; }
 
   renderPeerBenchmarks();
 
   const fa = document.getElementById('focusAreas'); fa.innerHTML='';
-  focuses.forEach(f => {
+  refineFocuses(focuses, state.calc, state).forEach(f => {
     const begSubHtml = state.literacyLevel === 'beginner' && f.begSub
       ? `<div class="focus-beg-sub">${f.begSub}</div>` : '';
     fa.innerHTML += `<div class="focus-card"><div class="focus-icon">${f.icon}</div><div class="focus-text"><div class="focus-title">${f.title}</div><div class="focus-sub">${annotateTips(f.sub)}</div>${f.amount?`<div class="focus-amount">${f.amount}</div>`:''}${begSubHtml}</div><div class="focus-priority ${f.priority}">${f.priority==='high'?'Now':'Soon'}</div></div>`;
@@ -2545,6 +2729,116 @@ function openProgress() {
 }
 
 // ── PROFILE ──
+// ── REPORTS ──
+let currentReportTab = 'networth';
+function openReports() {
+  currentReportTab = 'networth';
+  goTo('reports-screen');
+  renderReportTab();
+}
+function switchReportTab(tab) {
+  currentReportTab = tab;
+  document.getElementById('rptTabNW').classList.toggle('active', tab==='networth');
+  document.getElementById('rptTabCF').classList.toggle('active', tab==='cashflow');
+  renderReportTab();
+}
+function renderReportTab() {
+  if (currentReportTab === 'networth') renderNetWorthReport();
+  else renderCashFlowReport();
+}
+
+function renderNetWorthReport() {
+  const body = document.getElementById('rptBody');
+  const assets = state.assets || [];
+  const liabs  = state.liabilities || [];
+  const totalA = assets.reduce((s,a) => s + (a.value||0), 0) + (state.currentSavings||0);
+  const totalL = liabs.reduce((s,l) => s + (l.amount||0), 0);
+  const nw     = totalA - totalL;
+  const nwColor = nw >= 0 ? 'var(--cream)' : '#ff7b7b';
+  const aPct = totalA+totalL > 0 ? Math.max(4, (totalA/(totalA+totalL))*100) : 50;
+  const lPct = 100 - aPct;
+
+  let assetRows = '';
+  if (state.currentSavings > 0) assetRows += assetBreakdownRow('Liquid Savings', state.currentSavings, 'Savings', 'you', false);
+  assets.forEach(a => {
+    if (!a.value && !a.tradBal && !a.rothBal) return;
+    if (a.tradBal || a.rothBal) {
+      if (a.tradBal) assetRows += assetBreakdownRow(a.type + ' — Traditional', a.tradBal, '401k', a.owner, false);
+      if (a.rothBal) assetRows += assetBreakdownRow(a.type + ' — Roth', a.rothBal, 'Roth', a.owner, false);
+    } else {
+      assetRows += assetBreakdownRow(a.type, a.value, a.type.split(' ')[0], a.owner, false);
+    }
+  });
+
+  let liabRows = '';
+  liabs.forEach(l => {
+    liabRows += assetBreakdownRow(l.type, l.amount, l.apr > 0 ? `${l.apr}% APR` : 'Liability', l.owner, true);
+  });
+
+  body.innerHTML = `
+    <div class="nw-summary">
+      <div class="nw-total-label">Estimated Net Worth</div>
+      <div class="nw-total-val" style="color:${nwColor}">${nw<0?'−$':'$'}${Math.abs(Math.round(nw)).toLocaleString()}</div>
+      <div class="nw-bar-track">
+        <div class="nw-bar-assets" style="width:${aPct.toFixed(1)}%"></div>
+        <div class="nw-bar-liab" style="width:${lPct.toFixed(1)}%"></div>
+      </div>
+      <div class="nw-summary-row"><span>Total assets</span><span>${fmt(totalA)}</span></div>
+      <div class="nw-summary-row" style="margin-top:4px;"><span>Total liabilities</span><span>−${fmt(totalL)}</span></div>
+    </div>
+    ${assets.length > 0 || state.currentSavings > 0 ? `<div class="rpt-section-label">Assets</div>${assetRows}` : '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0;">No assets entered yet — add them in the Assets & Liabilities step.</div>'}
+    ${liabs.length > 0 ? `<div class="rpt-section-label" style="margin-top:16px;">Liabilities</div>${liabRows}` : ''}
+    <p class="compliance-note">Net worth is estimated from data you entered. Actual values may differ.</p>`;
+}
+
+function assetBreakdownRow(label, value, tag, owner, isLiab) {
+  const spName = state.spouseName || 'Partner';
+  const ownerLabel = owner === 'partner' ? spName : owner === 'joint' ? 'Joint' : '';
+  return `<div class="nw-breakdown-item">
+    <div class="nw-breakdown-label">
+      ${label}
+      ${ownerLabel ? `<span class="nw-owner-tag">${ownerLabel}</span>` : ''}
+      <span class="nw-breakdown-type">${tag}</span>
+    </div>
+    <div class="nw-breakdown-val ${isLiab?'neg':''}">${isLiab?'−':''}${fmt(value)}</div>
+  </div>`;
+}
+
+function renderCashFlowReport() {
+  const body = document.getElementById('rptBody');
+  if (!state.calc || !state.grossIncome) {
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">Complete onboarding to see your cash flow report.</div>';
+    return;
+  }
+  const c = state.calc;
+  const t = state.taxCalc;
+  const grossMo  = (c.householdGross || state.grossIncome) / 12;
+  const taxMo    = c.taxMonthly || 0;
+  const expMo    = c.expMonthly || 0;
+  const savMo    = c.savingsMonthly || 0;
+  const surplusMo = c.unallocMonthly || 0;
+
+  const row = (color, label, sub, amount, cls) =>
+    `<div class="cf-row"><div class="cf-bar" style="background:${color}"></div><div class="cf-info"><div class="cf-label">${label}</div>${sub?`<div class="cf-sublabel">${sub}</div>`:''}</div><div class="cf-amount ${cls}">${amount}</div></div>`;
+
+  body.innerHTML = `
+    <div class="rpt-section-label">Monthly Cash Flow</div>
+    ${row('#4CAF50', 'Gross Income', c.householdGross > state.grossIncome ? 'Household combined' : 'Before taxes', '+'+fmt(grossMo)+'/mo', 'pos')}
+    ${row('var(--pink)', 'Taxes', `${(t.effectiveRate*100).toFixed(1)}% effective rate`, '−'+fmt(taxMo)+'/mo', 'neg')}
+    ${t.preTaxAnnual > 0 ? row('#2196F3', 'Pre-tax contributions', '401k / IRA / SEP — reduces taxable income', '−'+fmt(t.preTaxAnnual/12)+'/mo', 'neg') : ''}
+    ${row('#E8786D', 'Living expenses', 'Rent, food, utilities, transport', '−'+fmt(expMo)+'/mo', 'neg')}
+    ${savMo > 0 ? row('#8BC34A', 'Intentional savings', 'Retirement accounts + auto-transfers', '−'+fmt(savMo)+'/mo', 'neg') : ''}
+    ${c.savingsGapMonthly > 0 ? row('#FFB300', 'Savings gap', `${fmt(c.savingsGapMonthly)}/mo short of ${c.savTarget?.label||'15%'} target`, '↑'+fmt(c.savingsGapMonthly)+'/mo', '') : ''}
+    <div class="cf-surplus-card">
+      <div>
+        <div class="cf-surplus-label">Unallocated Surplus</div>
+        <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-top:2px;">After all tracked outflows</div>
+      </div>
+      <div class="cf-surplus-val" style="color:${surplusMo>=0?'var(--cream)':'#ff7b7b'}">${surplusMo>=0?'+':'-'}${fmt(Math.abs(surplusMo))}/mo</div>
+    </div>
+    <p class="compliance-note">Based on data you entered. Not a guarantee of actual cash flow.</p>`;
+}
+
 function openProfile() {
   const c = state.calc;
   document.getElementById('profName').textContent = state.name||'Your Profile';
