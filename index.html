@@ -3838,7 +3838,7 @@ function renderNetWorthReport() {
   const body = document.getElementById('rptBody');
   const assets = state.assets || [];
   const liabs  = state.liabilities || [];
-  const totalA = assets.reduce((s,a) => s + (a.value||0), 0) + (state.currentSavings||0);
+  const totalA = assets.reduce((s,a) => s + (a.value||0), 0);
   const totalL = liabs.reduce((s,l) => s + (l.amount||0), 0);
   const nw     = totalA - totalL;
   const nwColor = nw >= 0 ? 'var(--cream)' : '#ff7b7b';
@@ -3846,7 +3846,6 @@ function renderNetWorthReport() {
   const lPct = 100 - aPct;
 
   let assetRows = '';
-  if (state.currentSavings > 0) assetRows += assetBreakdownRow('Liquid Savings', state.currentSavings, 'Savings', 'you', false);
   assets.forEach(a => {
     if (!a.value && !a.tradBal && !a.rothBal) return;
     if (a.tradBal || a.rothBal) {
