@@ -2655,22 +2655,29 @@ function setupDebtGoalScreen() {
   const sel = document.getElementById('debtGoalSelect');
   if (!sel) return;
   sel.innerHTML = '<option value="">Select a debt…</option>';
-  (state.liabilities || []).forEach((d, i) => {
+  // Read directly from DOM — state.liabilities not yet collected at this point in the flow
+  const rows = document.querySelectorAll('#liabilityRows .al-row');
+  rows.forEach((row, i) => {
+    const type = row.querySelector('.liability-type')?.value || 'Debt';
+    const apr  = parseFloat(row.querySelector('.al-apr')?.value) || 0;
+    const amount = parseFloat(row.querySelector('.al-bal')?.value) || 0;
+    if (amount <= 0) return;
     const opt = document.createElement('option');
     opt.value = i;
-    opt.textContent = `${d.type}${d.apr > 0 ? ` — ${d.apr}% APR` : ''}`;
+    opt.dataset.amount = amount;
+    opt.dataset.apr = apr;
+    opt.textContent = `${type}${apr > 0 ? ` — ${apr}% APR` : ''}`;
     sel.appendChild(opt);
   });
 }
 function onDebtGoalSelect() {
-  const idx = parseInt(document.getElementById('debtGoalSelect')?.value);
-  if (isNaN(idx)) return;
-  const d = (state.liabilities || [])[idx];
-  if (!d) return;
+  const sel = document.getElementById('debtGoalSelect');
+  const selected = sel?.options[sel.selectedIndex];
+  if (!selected || !selected.value) return;
   const balEl = document.getElementById('debtGoalBalance');
   const aprEl = document.getElementById('debtGoalAPR');
-  if (balEl) balEl.value = d.amount || '';
-  if (aprEl) aprEl.value = d.apr || '';
+  if (balEl) balEl.value = selected.dataset.amount || '';
+  if (aprEl) aprEl.value = selected.dataset.apr || '';
 }
 function selectDebtStrategy(strategy) {
   debtGoalStrategy = strategy;
@@ -2758,7 +2765,7 @@ function calcRetireGoal() {
   const monthlyNeeded = Math.max(0, r.monthlyIncome - ssMonthly);
   const annualNeeded = monthlyNeeded * 12;
   const fireNumber = annualNeeded / 0.04; // 4% rule
-  const currentInvested = (state.currentSavings || 0);
+  const currentInvested = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0);
   const assumedReturn = 0.07;
   const futureValue = currentInvested * Math.pow(1 + assumedReturn, yearsToRetire);
   const remaining = Math.max(0, fireNumber - futureValue);
