@@ -423,6 +423,50 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .cf-surplus-label { font-size:12px; font-weight:700; color:rgba(245,240,232,0.6); text-transform:uppercase; letter-spacing:0.06em; }
 .cf-surplus-val { font-size:20px; font-weight:700; color:var(--cream); font-family:'DM Serif Display',serif; }
 
+/* GOALS SCREEN */
+#goals-screen { background:var(--cream); }
+.goals-header { background:var(--navy); padding:44px 24px 20px; }
+.goals-title { font-family:'DM Serif Display',serif; font-size:26px; color:var(--cream); margin-bottom:4px; }
+.goals-sub { font-size:13px; color:rgba(245,240,232,0.6); }
+.goals-summary-card { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:14px 16px; margin-top:16px; }
+.goals-summary-label { font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:rgba(245,240,232,0.5); margin-bottom:4px; }
+.goals-summary-total { font-family:'DM Serif Display',serif; font-size:28px; color:var(--cream); }
+.goals-summary-breakdown { margin-top:10px; display:flex; flex-direction:column; gap:4px; }
+.goals-summary-line { display:flex; justify-content:space-between; font-size:12px; color:rgba(245,240,232,0.65); }
+.goals-body { padding:20px 20px 100px; }
+.goal-card { background:white; border-radius:16px; border:1.5px solid var(--border); margin-bottom:12px; overflow:hidden; transition:border-color 0.2s; }
+.goal-card.expanded { border-color:var(--pink); }
+.goal-card-header { padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer; touch-action:manipulation; }
+.goal-card-icon { width:40px; height:40px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.goal-card-info { flex:1; min-width:0; }
+.goal-card-name { font-size:15px; font-weight:700; color:var(--navy); }
+.goal-card-meta { display:flex; align-items:center; gap:6px; margin-top:4px; flex-wrap:wrap; }
+.goal-timeline-chip { font-size:10px; font-weight:700; background:var(--cream); color:var(--slate); border-radius:6px; padding:2px 7px; letter-spacing:0.03em; }
+.goal-status-pill { font-size:10px; font-weight:700; border-radius:6px; padding:2px 8px; }
+.goal-status-pill.on-track { background:rgba(46,125,50,0.1); color:#2E7D32; }
+.goal-status-pill.behind { background:rgba(232,24,109,0.1); color:var(--pink); }
+.goal-status-pill.ahead { background:rgba(30,35,64,0.1); color:var(--navy); }
+.goal-monthly { font-size:14px; font-weight:700; color:var(--navy); }
+.goal-card-chevron { color:var(--muted); transition:transform 0.2s; flex-shrink:0; }
+.goal-card.expanded .goal-card-chevron { transform:rotate(180deg); }
+.goal-card-progress { padding:0 16px 14px; }
+.goal-prog-bar { height:6px; background:var(--border); border-radius:3px; overflow:hidden; margin:4px 0; }
+.goal-prog-fill { height:100%; border-radius:3px; background:var(--pink); transition:width 0.5s ease; }
+.goal-prog-text { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); }
+.goal-card-actions { border-top:1px solid var(--border); padding:14px 16px; display:none; }
+.goal-card.expanded .goal-card-actions { display:block; }
+.goals-empty { text-align:center; padding:56px 24px; }
+.goals-empty-icon { font-size:52px; margin-bottom:16px; }
+.goals-empty-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--navy); margin-bottom:8px; }
+.goals-empty-sub { font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:28px; }
+/* LIFE CHANGE CARD (in profile) */
+.lc-trigger-card { background:white; border:1.5px solid var(--border); border-radius:16px; padding:18px; display:flex; align-items:center; gap:14px; cursor:pointer; touch-action:manipulation; transition:border-color 0.2s; }
+.lc-trigger-card:active { border-color:var(--pink); }
+.lc-trigger-icon { width:44px; height:44px; border-radius:14px; background:rgba(30,35,64,0.06); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.lc-trigger-info { flex:1; min-width:0; }
+.lc-trigger-title { font-size:15px; font-weight:700; color:var(--navy); }
+.lc-trigger-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
 /* HOME GOAL CARD */
 .home-goal-card { background:white; border-radius:18px; border:2px solid var(--pink); padding:18px; position:relative; }
 .home-goal-bar { height:8px; background:var(--border); border-radius:4px; overflow:hidden; margin:6px 0 4px; }
@@ -1215,7 +1259,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- LIFE CHANGE -->
 <div class="screen" id="lifechange">
   <div class="lc-header">
-    <div class="lc-back" onclick="goTo('roadmap')">← Back to Roadmap</div>
+    <div class="lc-back" onclick="openProfile()">← Back to Profile</div>
     <div class="lc-title">Something changed?</div>
     <div class="lc-sub">Tell us what happened and we'll recalibrate your plan — keeping all your progress intact.</div>
   </div>
@@ -1321,10 +1365,35 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       </div>
     </div>
     <div class="prof-section">
+      <div class="prof-section-title">Recalibrate</div>
+      <div class="lc-trigger-card" onclick="openLifeChange()">
+        <div class="lc-trigger-icon">🔄</div>
+        <div class="lc-trigger-info">
+          <div class="lc-trigger-title">Something changed in your life?</div>
+          <div class="lc-trigger-sub">Recalibrate your plan for a new chapter</div>
+        </div>
+        <svg style="width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+    <div class="prof-section">
       <button class="prof-btn ghost" onclick="goTo('roadmap')">← Back to My Plan</button>
       <button class="prof-btn danger" onclick="if(confirm('Reset your plan? This cannot be undone.'))location.reload()">Reset & Start Over</button>
     </div>
   </div>
+</div>
+
+<!-- GOALS SCREEN -->
+<div class="screen" id="goals-screen">
+  <div class="goals-header">
+    <div class="goals-title" id="goalsScreenTitle">My Goals</div>
+    <div class="goals-sub">Track progress toward each goal</div>
+    <div class="goals-summary-card" id="goalsSummaryCard" style="display:none;">
+      <div class="goals-summary-label">Total committed monthly</div>
+      <div class="goals-summary-total" id="goalsSummaryTotal">$0/mo</div>
+      <div class="goals-summary-breakdown" id="goalsSummaryBreakdown"></div>
+    </div>
+  </div>
+  <div class="goals-body" id="goalsScreenBody"></div>
 </div>
 
 <!-- TOOLTIP POPUP -->
@@ -1370,9 +1439,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <svg class="nav-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg>
     <div class="nav-label">Reports</div>
   </div>
-  <div class="nav-item" onclick="openLifeChange()">
-    <svg class="nav-svg" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-    <div class="nav-label">Life Change</div>
+  <div class="nav-item" onclick="openGoals()">
+    <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    <div class="nav-label">Goals</div>
   </div>
   <div class="nav-item" onclick="openProfile()">
     <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -1615,10 +1684,10 @@ function renderPeerBenchmarks() {
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const navScreens = ['roadmap','progress-screen','reports-screen','lifechange','planupdate','profile-screen'];
+  const navScreens = ['roadmap','progress-screen','reports-screen','goals-screen','profile-screen','planupdate'];
   document.getElementById('bottomNav').style.display = navScreens.includes(id) ? 'flex' : 'none';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const navMap = {roadmap:0,'progress-screen':1,'reports-screen':2,lifechange:3,planupdate:3,'profile-screen':4};
+  const navMap = {roadmap:0,'progress-screen':1,'reports-screen':2,'goals-screen':3,planupdate:0,'profile-screen':4};
   if (navMap[id] !== undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
   document.getElementById(id).scrollTop = 0;
   if (id === 'ob4') ob4Setup();
@@ -3852,6 +3921,114 @@ function openProfile() {
     chipsEl.innerHTML = state.lifeEvents.map(e=>`<div class="life-event-chip">${e.icon} ${e.label}</div>`).join('');
   }
   goTo('profile-screen');
+}
+
+// ── GOALS SCREEN ──
+function openGoals() {
+  document.getElementById('goalsScreenTitle').textContent = `${state.name ? state.name + "'s " : ''}Goals`;
+
+  // Build list of active goal objects
+  const activeGoals = [];
+  const autoSavings = (state.sAutoSavings || 0) + (state.sAutoInvest || 0);
+
+  if (state.goalHome?.targetPrice > 0 && state.goalHome.calc?.totalCashNeeded > 0) {
+    const h = state.goalHome; const c = h.calc;
+    const pct = c.progressPct || 0;
+    const onTrack = c.onTrack;
+    activeGoals.push({ key:'phome', icon:'🏡', name:'Buy a Home', timeline:h.timeline||'3–5 years', progressPct:pct, saved:c.alreadySaved, total:c.totalCashNeeded, monthly:c.monthlyTarget, onTrack, renderFn: renderHomeGoalCard });
+  }
+  if (state.goalBaby?.calc?.totalCashNeeded > 0) {
+    const b = state.goalBaby; const c = b.calc;
+    activeGoals.push({ key:'pbaby', icon:'👶', name:'Have a Child', timeline:b.timeline||'Planning', progressPct:0, saved:0, total:c.totalCashNeeded, monthly:c.monthlyTarget, onTrack: autoSavings >= c.monthlyTarget, renderFn: renderBabyGoalCard });
+  }
+  if (state.goalCollege?.calc?.monthlyTarget > 0) {
+    const col = state.goalCollege; const c = col.calc;
+    const pct = c.inflationAdjusted > 0 ? Math.min(100, (c.alreadySaved / c.inflationAdjusted) * 100) : 0;
+    activeGoals.push({ key:'pcollege', icon:'🎓', name:'Save for College', timeline:`${c.yearsToCollege} yrs to college`, progressPct:pct, saved:c.alreadySaved, total:c.inflationAdjusted, monthly:c.monthlyTarget, onTrack: autoSavings >= c.monthlyTarget, renderFn: renderCollegeGoalCard });
+  }
+  if (state.goalDebt?.calc?.monthlyPayment > 0) {
+    const d = state.goalDebt; const c = d.calc;
+    activeGoals.push({ key:'pdebt', icon:'💳', name:'Pay Off Debt', timeline:d.timeline||'1–3 years', progressPct:0, saved:0, total:d.balance, monthly:c.monthlyPayment, onTrack: autoSavings >= c.monthlyPayment, renderFn: renderDebtGoalCard });
+  }
+  if (state.goalRetire?.calc?.fireNumber > 0) {
+    const r = state.goalRetire; const c = r.calc;
+    const pct = c.fireNumber > 0 ? Math.min(100, (c.currentInvested / c.fireNumber) * 100) : 0;
+    activeGoals.push({ key:'pretire', icon:'🌅', name:'Retire Early', timeline:`Age ${r.targetAge}`, progressPct:pct, saved:c.currentInvested, total:c.fireNumber, monthly:c.monthlyTarget, onTrack: c.onTrack, renderFn: renderRetireGoalCard });
+  }
+  if (state.goalBusiness?.calc?.runwayTarget > 0) {
+    const biz = state.goalBusiness; const c = biz.calc;
+    const pct = c.runwayTarget > 0 ? Math.min(100, (c.currentSavings / c.runwayTarget) * 100) : 0;
+    activeGoals.push({ key:'pbusiness', icon:'🚀', name:'Start a Business', timeline:`${biz.runwayMonths}-month runway`, progressPct:pct, saved:c.currentSavings, total:c.runwayTarget, monthly:c.monthlyTarget, onTrack: c.remaining <= 0 || autoSavings >= c.monthlyTarget, renderFn: renderBusinessGoalCard });
+  }
+  if (state.goalTrip?.calc?.monthlyTarget > 0) {
+    const t = state.goalTrip; const c = t.calc;
+    activeGoals.push({ key:'ptrip', icon:'✈️', name: t.destination ? `Trip to ${t.destination}` : 'Dream Trip', timeline:t.timeline||'1–3 years', progressPct:0, saved:0, total:t.cost, monthly:c.monthlyTarget, onTrack: autoSavings >= c.monthlyTarget, renderFn: renderTripGoalCard });
+  }
+
+  const body = document.getElementById('goalsScreenBody');
+  body.innerHTML = '';
+
+  if (activeGoals.length === 0) {
+    body.innerHTML = `<div class="goals-empty">
+      <div class="goals-empty-icon">🎯</div>
+      <div class="goals-empty-title">No goals set yet</div>
+      <div class="goals-empty-sub">Add financial goals and we'll track your progress and calculate exactly what you need to save each month.</div>
+      <button class="btn-primary" onclick="goTo('ob-goals')" style="max-width:280px;margin:0 auto;">Add a Goal →</button>
+    </div>`;
+    document.getElementById('goalsSummaryCard').style.display = 'none';
+    goTo('goals-screen');
+    return;
+  }
+
+  // Summary card
+  const totalMonthly = activeGoals.reduce((s, g) => s + (g.monthly || 0), 0);
+  document.getElementById('goalsSummaryCard').style.display = 'block';
+  document.getElementById('goalsSummaryTotal').textContent = fmt(totalMonthly) + '/mo';
+  document.getElementById('goalsSummaryBreakdown').innerHTML = activeGoals.map(g =>
+    `<div class="goals-summary-line"><span>${g.icon} ${g.name}</span><span>${fmt(g.monthly)}/mo</span></div>`
+  ).join('');
+
+  // Goal cards
+  activeGoals.forEach(g => {
+    const statusLabel = g.onTrack ? 'On Track' : 'Behind';
+    const statusClass = g.onTrack ? 'on-track' : 'behind';
+    const hasSaved = g.saved > 0 || g.total > 0;
+    const progPct = g.progressPct.toFixed(1);
+
+    const card = document.createElement('div');
+    card.className = 'goal-card';
+    card.innerHTML = `
+      <div class="goal-card-header" onclick="toggleGoalCard(this.closest('.goal-card'), '${g.key}')">
+        <div class="goal-card-icon">${g.icon}</div>
+        <div class="goal-card-info">
+          <div class="goal-card-name">${g.name}</div>
+          <div class="goal-card-meta">
+            <span class="goal-timeline-chip">${g.timeline}</span>
+            <span class="goal-status-pill ${statusClass}">${statusLabel}</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div class="goal-monthly">${fmt(g.monthly)}/mo</div>
+          <svg class="goal-card-chevron" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:4px;" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      ${hasSaved ? `<div class="goal-card-progress">
+        <div class="goal-prog-bar"><div class="goal-prog-fill" style="width:${progPct}%"></div></div>
+        <div class="goal-prog-text"><span>${fmt(g.saved)} saved</span><span>${Math.round(g.progressPct)}% of ${fmt(g.total)}</span></div>
+      </div>` : ''}
+      <div class="goal-card-actions" id="goalActions_${g.key}">
+        ${g.renderFn().replace(/^[\s\S]*?<div class="home-goal-card">/, '<div class="home-goal-card" style="border:none;padding:0;">').replace(/<div class="home-goal-compliance">[\s\S]*?<\/div>/, '')}
+      </div>`;
+    body.appendChild(card);
+  });
+
+  goTo('goals-screen');
+}
+
+function toggleGoalCard(card, key) {
+  const wasExpanded = card.classList.contains('expanded');
+  document.querySelectorAll('.goal-card.expanded').forEach(c => c.classList.remove('expanded'));
+  if (!wasExpanded) card.classList.add('expanded');
 }
 </script>
 </body>
