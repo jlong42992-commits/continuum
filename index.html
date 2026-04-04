@@ -724,11 +724,6 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       <div class="ob-sublabel">Combined household — rent, food, utilities, transport, etc.</div>
       <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="monthlyExpenses" type="number" placeholder="3,500" min="0"/></div>
     </div>
-    <div class="ob-input-group">
-      <div class="ob-label">Current Savings</div>
-      <div class="ob-sublabel">Cash your household could access in an emergency</div>
-      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="currentSavings" type="number" placeholder="2,000" min="0"/></div>
-    </div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb(4)">Continue →</button></div>
 </div>
@@ -737,7 +732,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob45">
   <div class="ob-header">
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">What are you saving today?</div>
+    <div class="ob-question" id="ob45Question">What are you saving today?</div>
     <div class="ob-hint">Only include what's automated — money you intentionally set aside.</div>
   </div>
   <div class="ob-body">
@@ -1489,7 +1484,7 @@ function irsLimit(type, age) {
     case 'Traditional IRA':
     case 'Roth IRA':   return catchup ? IRS_2025.ira_catchup : IRS_2025.ira;
     case 'SEP IRA':    return IRS_2025.sep;
-    case 'HSA':        return IRS_2025.hsa_family; // show family limit as upper bound
+    case 'HSA':        return (state.filingStatus === 'married' || (state.lifeStage||[]).includes('partner')) ? IRS_2025.hsa_family : IRS_2025.hsa_single;
     default:           return null;
   }
 }
@@ -1499,8 +1494,15 @@ function irsLimitLabel(type, age) {
 }
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
-const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
+const fmtK = n => n >= 1000000 ? '$' + (n/1000000).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
 const fmtSafe = n => (!n && n !== 0) || isNaN(n) || !isFinite(n) ? '' : '$' + Math.round(n).toLocaleString();
+
+// ── DEBT CLASSIFICATION ──
+function isGoodDebt(liability) {
+  const type = (liability.type || '').toLowerCase();
+  if (type.includes('mortgage')) return true;
+  return (liability.apr || 0) <= 4;
+}
 
 function getSavingsTarget(age) {
   const a = age || 35;
@@ -1632,7 +1634,7 @@ function renderPeerBenchmarks() {
   const avgExpPct     = [82, 75, 68, 62, 72][g];
 
   // User values
-  const totalAssets = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0) + (state.currentSavings||0);
+  const totalAssets = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0);
   const totalLiab   = (state.liabilities||[]).reduce((s,l) => s+(l.amount||0), 0);
   const userNW      = totalAssets - totalLiab;
   const userSavRate = c.actualSavingsRate || 0;
@@ -1898,12 +1900,14 @@ function nextOb(step) {
     state.filingStatus  = ob4Filing;
     state.stateCode     = document.getElementById('stateSelect').value || '';
     state.monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
-    state.currentSavings  = parseFloat(document.getElementById('currentSavings').value) || 0;
     // Spouse income
     if (state.lifeStage.includes('partner')) {
       state.spouseIncome     = parseFloat(document.getElementById('spouseGrossIncome').value) || 0;
       state.spouseIncomeType = sp4Type;
     }
+    // Personalize savings screen headers
+    const q45 = document.getElementById('ob45Question');
+    if (q45) q45.textContent = state.name ? `What are you saving today, ${state.name}?` : 'What are you saving today?';
     goTo('ob45');
   }
   else if (step===45) {
@@ -3161,7 +3165,10 @@ function computeFinancials() {
 
   const inc = householdTakeHomeMonthly;
   const exp = state.monthlyExpenses;
-  const sav = state.currentSavings;
+  // Derive liquid savings from entered assets (savings/checking/HYSA accounts)
+  const liquidAssets = (state.assets||[]).filter(a => /savings|checking|hysa/i.test(a.type||'')).reduce((s,a) => s+(a.value||0), 0);
+  const sav = liquidAssets; // used as emergency fund baseline
+  state.currentSavings = sav; // keep in sync for backward compat
   const hasDeps = state.lifeStage.includes('kids') || state.lifeStage.includes('partner');
   const bufferMonths = hasDeps ? 6 : 3;
   const emergencyTarget = exp * bufferMonths;
@@ -3192,10 +3199,13 @@ function computeFinancials() {
 
   const liabs            = state.liabilities.length ? state.liabilities : state.debts;
   const totalDebt        = liabs.reduce((s,d) => s + d.amount, 0);
-  const highInterestDebt = liabs.filter(d => d.apr >= 7).reduce((s,d) => s + d.amount, 0);
+  const badDebt          = liabs.filter(d => !isGoodDebt(d));
+  const goodDebtTotal    = liabs.filter(d => isGoodDebt(d)).reduce((s,d) => s + d.amount, 0);
+  const badDebtTotal     = badDebt.reduce((s,d) => s + d.amount, 0);
+  const highInterestDebt = liabs.filter(d => d.apr >= 7 && !isGoodDebt(d)).reduce((s,d) => s + d.amount, 0);
 
-  // Total assets from entered asset rows + liquid savings (for net worth display)
-  const totalAssetsValue = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0) + sav;
+  // Total assets from entered asset rows (liquid savings already included via assets)
+  const totalAssetsValue = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0);
   const userNetWorth     = totalAssetsValue - totalDebt;
   const lifeInsuranceTarget     = hasDeps ? householdGross * 10 : gross * 5;
   const disabilityMonthlyTarget = Math.round(takeHomeMonthly * 0.6);
@@ -3235,7 +3245,7 @@ function refineFocuses(focuses, c, st) {
   focuses.forEach(f => {
     // Emergency fund fully met → downgrade to ✓ done card
     if ((f.title.includes('cash buffer') || f.title.includes('emergency')) && c.emergencyGap <= 0) {
-      result.push({ ...f, title:'Emergency fund complete ✓', sub:`You have ${fmt(st.currentSavings)} saved — fully covers your ${c.bufferMonths}-month buffer. Keep it in a high-yield savings account and don't touch it.`, priority:'med', amount:null });
+      result.push({ ...f, title:'Emergency fund complete ✓', sub:`You have ${fmt(st.currentSavings || 0)} saved — fully covers your ${c.bufferMonths}-month buffer. Keep it in a high-yield savings account and don't touch it.`, priority:'med', amount:null });
       return;
     }
     // High-interest debt is zero → skip that card entirely (don't crowd with a non-issue)
@@ -3301,7 +3311,7 @@ function computePlan() {
   } else if (stability==='stable') {
     phase = lifeStage.includes('kids') ? 3 : 2;
     stageLabel = lifeStage.includes('kids') ? 'Growth + Protection Phase' : 'Growth Phase';
-    stageDesc = `Your base is solid, ${name}. You have ${fmt(state.currentSavings)} saved. Now it's about growing intentionally${lifeStage.includes('kids') ? ' and protecting the people who depend on you' : ''}.`;
+    stageDesc = `Your base is solid, ${name}. ${c.totalAssetsValue > 0 ? `You have ${fmt(c.totalAssetsValue)} in tracked assets.` : ''} Now it's about growing intentionally${lifeStage.includes('kids') ? ' and protecting the people who depend on you' : ''}.`;
     focuses = lifeStage.includes('kids') ? [
       {icon:'📈', title: c.onTrack ? 'Opportunity to save more' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — above the ${c.savTarget?.min}% minimum. ${c.opportunityMonthly > 0 ? `You have ${fmtSafe(c.opportunityMonthly)}/month unallocated you could route toward your ${c.savTarget?.max}% target.` : 'Optimize the allocation between protection and growth.'}` : `Add ${fmtSafe(c.savingsGapMonthly)}/month across your 401k and automated transfers to reach the ${c.savTarget?.label || '15%'} minimum.`, amount: c.onTrack ? (c.opportunityMonthly > 0 ? `Up to +${fmtSafe(c.opportunityMonthly)}/month available` : null) : `${fmtSafe(c.totalActualSavingsMonthly)}/mo now → target ${fmtSafe(c.retirementMonthly)}/mo`, priority: c.onTrack ? 'med' : 'high',
         begSub: c.onTrack ? 'You\'re hitting the minimum — now make sure the money is going to the right accounts (401k, Roth IRA, etc.).' : 'Even small increases add up. Try raising your 401k contribution by 1% and setting up a recurring transfer to savings.'},
@@ -3312,8 +3322,9 @@ function computePlan() {
     ] : [
       {icon:'📈', title: c.onTrack ? 'Opportunity to save more' : 'Close your savings gap', sub: c.onTrack ? `You're at ${c.actualSavingsRate.toFixed(1)}% — above the ${c.savTarget?.min}% minimum. ${c.opportunityMonthly > 0 ? `You have ${fmtSafe(c.opportunityMonthly)}/month unallocated you could put to work toward your ${c.savTarget?.max}% target.` : 'Now focus on optimizing where those savings go.'}` : `You're saving ${c.actualSavingsRate.toFixed(1)}%. The ${c.savTarget?.label || '15%'} range is ${c.savTarget?.note || 'recommended'} — adding ${fmtSafe(c.savingsGapMonthly)}/month closes the gap.`, amount: c.onTrack ? (c.opportunityMonthly > 0 ? `Up to +${fmtSafe(c.opportunityMonthly)}/month available from surplus` : null) : `+${fmtSafe(c.savingsGapMonthly)}/month to reach ${c.savTarget?.label || '15%'}`, priority: c.onTrack ? 'med' : 'high',
         begSub: c.onTrack ? 'You\'re doing the right things — keep automating and let compounding work.' : 'Start with your 401k contribution. If your employer matches, increase until you capture the full match first.'},
-      {icon:'🏦', title:'Automate long-term investing', sub:`Aim for ${fmt(c.retirementMonthly)}/month total across 401k and investment accounts. You're currently at ${fmt(c.totalActualSavingsMonthly)}/month.`, amount:`${fmt(c.totalActualSavingsMonthly)}/mo now → target ${fmt(c.retirementMonthly)}/mo`, priority:'high',
-        begSub:'This means setting up regular, automatic transfers to your 401k or IRA so investing happens before you can spend the money. Consistent contributions compound dramatically over decades.'},
+      c.totalActualSavingsMonthly >= c.retirementMonthly
+        ? {icon:'🏦', title:'Optimize where your savings go', sub:`You're saving ${fmt(c.totalActualSavingsMonthly)}/month — at or above target. Make sure it's split across tax-efficient accounts: 401k match first, then Roth IRA, then taxable.`, amount:null, priority:'med', begSub:'The amount is right — now the account type matters. Roth vs. traditional vs. taxable each have different tax implications that compound over decades.'}
+        : {icon:'🏦', title:'Automate long-term investing', sub:`Aim for ${fmt(c.retirementMonthly)}/month total across 401k and investment accounts. You're currently at ${fmt(c.totalActualSavingsMonthly)}/month.`, amount:`+${fmt(c.retirementMonthly - c.totalActualSavingsMonthly)}/month gap to close`, priority:'high', begSub:'Set up automatic transfers so investing happens before you can spend the money. Consistent contributions compound dramatically over decades.'},
       {icon:'🪣', title:'Learn your tax buckets', sub:'Understand Roth vs. traditional vs. taxable — the right mix for your income bracket matters.', amount:null, priority:'med',
         begSub:'There are three main ways money gets invested and taxed. Roth accounts grow tax-free. Traditional accounts give you a tax break now. Taxable accounts have no special rules but are flexible. A mix of all three is usually optimal.'}
     ];
@@ -3454,14 +3465,22 @@ function getPhases() {
         inc > 0 ? `Increase savings rate to ${c.savTarget?.label || '15–20%'} — target ${fmtSafe(c.recommendedMonthly)}/month` : 'Increase savings rate by 1–2%',
         inc > 0 ? `Contribute ${fmt(c.retirementMonthly)}/month to retirement accounts` : 'Set consistent retirement contributions',
         'Understand your tax buckets: Roth, traditional, taxable',
-        c.totalDebt > 0 ? `Eliminate remaining debt — ${fmt(c.totalDebt)} total tracked` : 'Eliminate high-interest debt',
+        (() => {
+          const liabs = state.liabilities.length ? state.liabilities : state.debts;
+          const badD = liabs.filter(d => !isGoodDebt(d));
+          const onlyMortgage = liabs.length > 0 && badD.length === 0;
+          const badTotal = badD.reduce((s,d)=>s+d.amount,0);
+          if (onlyMortgage && (state.age||0) < 35) return '💡 Understand good debt vs bad debt — your mortgage is building equity';
+          if (onlyMortgage) return 'Your debt is a mortgage — focus on investing the difference vs. accelerating payoff';
+          return badTotal > 0 ? `Eliminate high-interest debt — ${fmt(badTotal)} in bad debt (APR > 4%)` : 'No high-interest debt — stay disciplined and invest the difference';
+        })(),
         'Open or fully fund taxable investment account'
       ],
       hints:[
         'Even increasing by 1% of income per year adds up significantly over a career.',
         'Small, consistent contributions compound dramatically over decades — the amount matters less than the habit.',
         'The right account type for your income bracket can save you thousands in taxes over time.',
-        'Paying off debt is a guaranteed return equal to its interest rate — often better than investing.',
+        'A mortgage builds equity — credit cards and personal loans at high rates do not. Focus only on bad debt.',
         'Unlike a 401k, there are no annual contribution limits or withdrawal rules on a brokerage account.'
       ]
     },
@@ -3568,10 +3587,50 @@ function showRoadmapConfirm() {
   const phases = getPhases().filter(p => p.num <= 3);
   const body = document.getElementById('rcBody');
   body.innerHTML = '';
+  const c = state.calc;
+  const liabs = state.liabilities.length ? state.liabilities : state.debts;
+  const hasAny401k = (state.s401kMonthly||0)+(state.sRoth401kMonthly||0)+(state.sSepMonthly||0) > 0;
+  const hasAnyRetirement = (state.s401kMonthly||0)+(state.sRoth401kMonthly||0)+(state.sIraMonthly||0)+(state.sRothMonthly||0)+(state.sSepMonthly||0) > 0;
+  const noHighInterest = liabs.every(d => d.apr <= 7 || isGoodDebt(d));
+  const bufferMonths = c.bufferMonths || 3;
+  const bufferLabel = `${bufferMonths} months`;
+
+  function isAutoChecked(phaseNum, actionText) {
+    const t = actionText.toLowerCase();
+    if (phaseNum === 1) {
+      // Consolidate first two items (savings account + cash buffer) into one check
+      if (t.includes('dedicated savings account') || t.includes('cash buffer')) {
+        return (c.emergencyGap <= 0);
+      }
+      if (t.includes('automat')) return (c.totalActualSavingsMonthly || 0) > 0;
+      if (t.includes('401k match') || t.includes('employer')) return hasAny401k;
+      if (t.includes('debts') || t.includes('list')) return liabs.length > 0;
+    }
+    if (phaseNum === 2) {
+      if (t.includes('savings rate') || t.includes('15')) return (c.actualSavingsRate||0) >= 15;
+      if (t.includes('retirement account') || t.includes('contribute')) return hasAnyRetirement;
+      if (t.includes('debt') && t.includes('eliminat')) return noHighInterest && liabs.filter(d=>!isGoodDebt(d)).length === 0;
+    }
+    return false;
+  }
+
   phases.forEach(phase => {
-    const items = phase.actions.map((a, ai) =>
-      `<div class="rc-item" data-phase="${phase.num}" data-idx="${ai}" onclick="this.classList.toggle('selected')"><div class="rc-checkbox"></div><div class="rc-item-text">${a}</div></div>`
-    ).join('');
+    // For Phase 1: deduplicate the first two actions (dedicated savings account + build cash buffer) → one item
+    let actions = phase.actions;
+    if (phase.num === 1) {
+      const hasSavAcct = actions.findIndex(a => /dedicated savings account/i.test(a));
+      const hasCashBuf = actions.findIndex(a => /cash buffer/i.test(a));
+      if (hasSavAcct >= 0 && hasCashBuf >= 0) {
+        const consolidated = c.emergencyGap <= 0
+          ? `I have ${bufferLabel} of expenses saved as a cash buffer ✓`
+          : `I have ${bufferLabel} of expenses saved as a cash buffer (${fmt(c.emergencyTarget)} target)`;
+        actions = [consolidated, ...actions.filter((_, i) => i !== hasSavAcct && i !== hasCashBuf)];
+      }
+    }
+    const items = actions.map((a, ai) => {
+      const preChecked = isAutoChecked(phase.num, a);
+      return `<div class="rc-item${preChecked?' selected':''}" data-phase="${phase.num}" data-idx="${ai}" onclick="this.classList.toggle('selected')"><div class="rc-checkbox"></div><div class="rc-item-text">${a}</div></div>`;
+    }).join('');
     body.innerHTML += `<div class="rc-phase-group"><div class="rc-phase-label">${phase.emoji} ${phase.name}</div>${items}</div>`;
   });
   goTo('roadmap-confirm');
