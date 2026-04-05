@@ -1816,7 +1816,7 @@ function loadSavedPlan() {
 
 // ── 2025 IRS CONTRIBUTION LIMITS ──
 const IRS_2025 = {
-  k401: 23500,          // 401k/403b/Roth 401k employee contribution
+  k401: 23500,          // 401k/403b/Roth 401k/403b employee contribution
   k401_catchup: 31000,  // 401k catchup (age 50+; SECURE 2.0: age 60-63 get $34,750 but use 31k as base)
   ira: 7000,            // Traditional IRA / Roth IRA
   ira_catchup: 8000,    // IRA catchup (age 50+)
@@ -1828,7 +1828,7 @@ function irsLimit(type, age) {
   const catchup = (age || 0) >= 50;
   switch (type) {
     case '401k / 403b':
-    case 'Roth 401k':  return catchup ? IRS_2025.k401_catchup : IRS_2025.k401;
+    case 'Roth 401k / 403b':  return catchup ? IRS_2025.k401_catchup : IRS_2025.k401;
     case 'Traditional IRA':
     case 'Roth IRA':   return catchup ? IRS_2025.ira_catchup : IRS_2025.ira;
     case 'SEP IRA':    return IRS_2025.sep;
@@ -2393,7 +2393,7 @@ function getAvailableRetirementTypes() {
   const types = [];
   if (type === 'w2' || type === 'both') {
     types.push({ value:'401k / 403b',  label:'401k / 403b',       tag:'pre-tax' });
-    types.push({ value:'Roth 401k',    label:'Roth 401k',          tag:'after-tax' });
+    types.push({ value:'Roth 401k / 403b',    label:'Roth 401k / 403b',          tag:'after-tax' });
   }
   if (type === '1099' || type === 'both') {
     types.push({ value:'SEP IRA',      label:'SEP IRA',            tag:'pre-tax' });
@@ -2419,12 +2419,12 @@ function renderRetirementRows() {
   const container = document.getElementById('retirementAccountRows');
   container.innerHTML = '';
   const availTypes = getAvailableRetirementTypes();
-  const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
-  const acctHorizons = {'401k / 403b':'🕐 Long-term','Roth 401k':'🕐 Long-term','Traditional IRA':'🕐 Long-term','Roth IRA':'🕐 Long-term','SEP IRA':'🕐 Long-term','HSA':'🕐 Long-term','Pension':'🕐 Long-term'};
+  const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k / 403b':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
+  const acctHorizons = {'401k / 403b':'🕐 Long-term','Roth 401k / 403b':'🕐 Long-term','Traditional IRA':'🕐 Long-term','Roth IRA':'🕐 Long-term','SEP IRA':'🕐 Long-term','HSA':'🕐 Long-term','Pension':'🕐 Long-term'};
   const horizonColors = {'🕐 Long-term':'#059669','📅 Flexible':'var(--navy)','⚡ Short-term':'#B45309','⚡ Immediate':'#B45309'};
   retirementRows.forEach((row, i) => {
     // If current type no longer available (e.g. Roth IRA after income limit), keep it but mark
-    const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
+    const isRoth = row.type === 'Roth 401k / 403b' || row.type === 'Roth IRA';
     const tagHtml = isRoth
       ? `<span style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.12);color:var(--pink);border-radius:5px;padding:2px 6px;margin-left:6px;letter-spacing:0.04em;">AFTER-TAX</span>`
       : `<span style="font-size:10px;font-weight:700;background:rgba(30,35,64,0.08);color:var(--muted);border-radius:5px;padding:2px 6px;margin-left:6px;letter-spacing:0.04em;">PRE-TAX</span>`;
@@ -2458,12 +2458,12 @@ function renderRetirementRows() {
   });
 
   // Total combined warning: 401k bucket (trad + roth 401k combined), IRA bucket (trad + roth IRA combined)
-  const k401Total = retirementRows.filter(r=>r.type==='401k / 403b'||r.type==='Roth 401k').reduce((s,r)=>s+(r.amt||0)*12,0);
+  const k401Total = retirementRows.filter(r=>r.type==='401k / 403b'||r.type==='Roth 401k / 403b').reduce((s,r)=>s+(r.amt||0)*12,0);
   const iraTotal  = retirementRows.filter(r=>r.type==='Traditional IRA'||r.type==='Roth IRA').reduce((s,r)=>s+(r.amt||0)*12,0);
   const k401Lim   = irsLimit('401k / 403b', state.age)||23500;
   const iraLim    = irsLimit('Traditional IRA', state.age)||7000;
   let warningHtml = '';
-  if (k401Total > k401Lim) warningHtml += `<div style="background:#fff3f3;border:1px solid #ffcdd2;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:12px;color:#c62828;line-height:1.5;">⚠️ Combined 401k/Roth 401k contributions (${fmt(k401Total)}/yr) exceed the ${fmt(k401Lim)}/yr 2025 IRS limit. Excess contributions are subject to a 6% excise tax.</div>`;
+  if (k401Total > k401Lim) warningHtml += `<div style="background:#fff3f3;border:1px solid #ffcdd2;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:12px;color:#c62828;line-height:1.5;">⚠️ Combined 401k/Roth 401k/403b contributions (${fmt(k401Total)}/yr) exceed the ${fmt(k401Lim)}/yr 2025 IRS limit. Excess contributions are subject to a 6% excise tax.</div>`;
   if (iraTotal > iraLim) warningHtml += `<div style="background:#fff3f3;border:1px solid #ffcdd2;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:12px;color:#c62828;line-height:1.5;">⚠️ Combined IRA contributions (${fmt(iraTotal)}/yr) exceed the ${fmt(iraLim)}/yr 2025 IRS limit. Excess contributions are subject to a 6% excise tax.</div>`;
   if (warningHtml) {
     const wDiv = document.createElement('div');
@@ -2566,7 +2566,7 @@ function collectSavingsInputs() {
     const amt = r.amt || 0;
     switch (r.type) {
       case '401k / 403b':    state.s401kMonthly    += amt; break;
-      case 'Roth 401k':      state.sRoth401kMonthly += amt; break;
+      case 'Roth 401k / 403b':      state.sRoth401kMonthly += amt; break;
       case 'Traditional IRA': state.sIraMonthly    += amt; break;
       case 'Roth IRA':       state.sRothMonthly    += amt; break;
       case 'SEP IRA':        state.sSepMonthly     += amt; break;
@@ -2580,8 +2580,8 @@ function collectSavingsInputs() {
 function updateSavingsPreview() {
   const gross = state.grossIncome;
   if (gross <= 0) return;
-  const preTaxMonthly  = retirementRows.filter(r => r.type !== 'Roth 401k' && r.type !== 'Roth IRA').reduce((s,r) => s + (r.amt||0), 0);
-  const rothMonthly    = retirementRows.filter(r => r.type === 'Roth 401k' || r.type === 'Roth IRA').reduce((s,r) => s + (r.amt||0), 0);
+  const preTaxMonthly  = retirementRows.filter(r => r.type !== 'Roth 401k / 403b' && r.type !== 'Roth IRA').reduce((s,r) => s + (r.amt||0), 0);
+  const rothMonthly    = retirementRows.filter(r => r.type === 'Roth 401k / 403b' || r.type === 'Roth IRA').reduce((s,r) => s + (r.amt||0), 0);
   const retTotal = preTaxMonthly + rothMonthly;
   const autoSav  = resolveMonthly('sAutoSavingsPct', 'sAutoSavingsAmt');
   const autoInv  = resolveMonthly('sAutoInvestPct',  'sAutoInvestAmt');
@@ -2657,7 +2657,7 @@ function getSpouseRetirementTypes() {
   const types = [];
   if (type === 'w2' || type === 'both') {
     types.push({ value:'401k / 403b',  label:'401k / 403b',     tag:'pre-tax' });
-    types.push({ value:'Roth 401k',    label:'Roth 401k',        tag:'after-tax' });
+    types.push({ value:'Roth 401k / 403b',    label:'Roth 401k / 403b',        tag:'after-tax' });
   }
   if (type === '1099' || type === 'both') {
     types.push({ value:'SEP IRA',      label:'SEP IRA',          tag:'pre-tax' });
@@ -2680,11 +2680,11 @@ function renderSpouseRetRows() {
   if (!container) return;
   container.innerHTML = '';
   const availTypes = getSpouseRetirementTypes();
-  const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
-  const acctHorizons = {'401k / 403b':'🕐 Long-term','Roth 401k':'🕐 Long-term','Traditional IRA':'🕐 Long-term','Roth IRA':'🕐 Long-term','SEP IRA':'🕐 Long-term','HSA':'🕐 Long-term','Pension':'🕐 Long-term'};
+  const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k / 403b':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
+  const acctHorizons = {'401k / 403b':'🕐 Long-term','Roth 401k / 403b':'🕐 Long-term','Traditional IRA':'🕐 Long-term','Roth IRA':'🕐 Long-term','SEP IRA':'🕐 Long-term','HSA':'🕐 Long-term','Pension':'🕐 Long-term'};
   const spAge = state.spouseAge || 35;
   spouseRetRows.forEach((row, i) => {
-    const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
+    const isRoth = row.type === 'Roth 401k / 403b' || row.type === 'Roth IRA';
     const tag = isRoth
       ? `<span style="font-size:10px;font-weight:700;background:rgba(232,24,109,0.12);color:var(--pink);border-radius:5px;padding:2px 6px;margin-left:6px;">AFTER-TAX</span>`
       : `<span style="font-size:10px;font-weight:700;background:rgba(30,35,64,0.08);color:var(--muted);border-radius:5px;padding:2px 6px;margin-left:6px;">PRE-TAX</span>`;
@@ -3767,7 +3767,7 @@ function refineFocuses(focuses, c, st) {
     if (age < 40) {
       result.splice(2, 0, { icon:'🔑', title:'Start tax-free growth — open a Roth', sub:`You have no Roth contributions yet. Starting now gives decades of tax-free compounding. Contributions can always be withdrawn penalty-free.`, amount:`${fmt(rothLimit)}/yr IRA contribution limit (2025)`, priority:'high', begSub:'A Roth IRA lets your investments grow completely tax-free. You pay taxes on contributions now, but never again — even in retirement.' });
     } else if (margRate < 0.22) {
-      result.splice(2, 0, { icon:'🔑', title:'Low tax rate — ideal window for Roth', sub:`At a ${Math.round(margRate*100)}% marginal rate, paying tax now via Roth costs less than paying later in a potentially higher bracket.`, amount:`${fmt(rothLimit)}/yr Roth IRA limit · max ${fmt(irsLimit(st.incomeType!=='w2'?'401k / 403b':'Roth 401k', age))}/yr Roth 401k`, priority:'med', begSub:'Roth contributions make the most sense when your tax rate today is lower than what it might be later. This is that window.' });
+      result.splice(2, 0, { icon:'🔑', title:'Low tax rate — ideal window for Roth', sub:`At a ${Math.round(margRate*100)}% marginal rate, paying tax now via Roth costs less than paying later in a potentially higher bracket.`, amount:`${fmt(rothLimit)}/yr Roth IRA limit · max ${fmt(irsLimit(st.incomeType!=='w2'?'401k / 403b':'Roth 401k / 403b', age))}/yr Roth 401k / 403b`, priority:'med', begSub:'Roth contributions make the most sense when your tax rate today is lower than what it might be later. This is that window.' });
     }
   }
 
@@ -5338,7 +5338,7 @@ let savSheetTarget = 'primary'; // 'primary' or 'spouse'
 let pendingSavType = '';
 const SAV_TYPES_GRID = [
   {type:'401k / 403b',icon:'🏢',color:'var(--navy)',desc:'Pre-tax workplace retirement account'},
-  {type:'Roth 401k',icon:'🟢',color:'#10B981',desc:'After-tax workplace account — tax-free withdrawals'},
+  {type:'Roth 401k / 403b',icon:'🟢',color:'#10B981',desc:'After-tax workplace account — tax-free withdrawals'},
   {type:'Roth IRA',icon:'📈',color:'#10B981',desc:'After-tax — withdrawals in retirement are tax-free'},
   {type:'Traditional IRA',icon:'📉',color:'#3B82F6',desc:'Pre-tax or after-tax depending on your income'},
   {type:'SEP IRA',icon:'🌿',color:'#8B5CF6',desc:'For self-employed — up to 25% of net earnings'},
