@@ -542,7 +542,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
   <div class="ob-footer">
     <button class="btn-primary" onclick="nextOb(25)">Continue →</button>
-    <button class="btn-secondary" onclick="goTo('ob25-literacy')">Skip for now</button>
+    <button class="btn-secondary" onclick="goTo('ob3')">Skip for now</button>
   </div>
 </div>
 
@@ -891,8 +891,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div id="goalsGrid" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="goTo('ob-challenge')">Continue →</button>
-    <button class="btn-secondary" onclick="goTo('ob-challenge')">Skip — I'll add goals later</button>
+    <button class="btn-primary" onclick="processGoalQueue()">Continue →</button>
+    <button class="btn-secondary" onclick="processGoalQueue()">Skip — I'll add goals later</button>
   </div>
 </div>
 
@@ -910,8 +910,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-option" onclick="selectOption(this,'challenge','future')"><div class="ob-option-icon">🔭</div><div><div class="ob-option-label">Planning for the future</div><div class="ob-option-desc">Not sure if I'm on track for retirement or big goals</div></div></div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="processGoalQueue()">Build My Plan →</button>
-    <button class="btn-secondary" onclick="processGoalQueue()">Skip — build my plan anyway</button>
+    <button class="btn-primary" onclick="buildPlan()">Build My Plan →</button>
+    <button class="btn-secondary" onclick="buildPlan()">Skip — build my plan anyway</button>
   </div>
 </div>
 
@@ -1858,14 +1858,12 @@ function addLiabilityRow() {
 function nextOb(step) {
   if (step===1) { state.name = document.getElementById('firstName').value||'Friend'; state.age = parseInt(document.getElementById('userAge').value)||30; goTo('ob2'); }
   else if (step===2) {
-    // Route to spouse screen only if partner selected
-    if (state.lifeStage.includes('partner')) goTo('ob25');
-    else goTo('ob25-literacy');
+    goTo('ob25-literacy');
   }
   else if (step===25) {
     state.spouseName = document.getElementById('spouseName').value || '';
     state.spouseAge  = parseInt(document.getElementById('spouseAge').value) || null;
-    goTo('ob25-literacy');
+    goTo('ob3');
   }
   else if (step==='literacy') {
     const scores = {
@@ -1891,7 +1889,7 @@ function nextOb(step) {
       if (state[q] && scores[q][state[q]] !== undefined) total += scores[q][state[q]];
     });
     state.riskTolerance = total <= 2 ? 'conservative' : total <= 4 ? 'moderate' : 'aggressive';
-    goTo('ob3');
+    if (state.lifeStage.includes('partner')) goTo('ob25'); else goTo('ob3');
   }
   else if (step===3) goTo('ob4');
   else if (step===4) {
@@ -2485,7 +2483,7 @@ function advanceGoalQueue() {
     if (gid === 'debt') setupDebtGoalScreen();
     goTo(`ob-goal-${screenIds[gid]}`);
   } else {
-    buildPlan();
+    goTo('ob-challenge');
   }
 }
 
