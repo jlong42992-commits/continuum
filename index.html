@@ -1547,6 +1547,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="prog-section"><div class="prog-section-title">Phase Completion</div><div id="progPhases"></div></div>
     <div class="prog-section"><div class="prog-section-title">Up Next</div><div id="progNextAction"></div></div>
     <div class="prog-section"><div class="prog-section-title">Recent Activity</div><div id="progActivity"></div></div>
+    <div class="prog-section" id="progTimelineSection" style="display:none;"><div class="prog-section-title">Your Money Timeline</div><div id="progTimeline"></div></div>
     <div class="prog-section"><div class="prog-section-title">Planning Insight</div><div class="insight-strip"><div class="insight-strip-icon">✨</div><div class="insight-strip-text" id="progInsightText">Complete your first action to start building momentum.</div></div></div>
   </div>
 </div>
@@ -1853,6 +1854,14 @@ const GLOSSARY = {
   stay_the_course: { term:'Staying the Course', body:'The average investor earns 3-4% less per year than the market because they buy high (greed) and sell low (fear). Having a written plan and rebalancing mechanically — not emotionally — is the single biggest edge individual investors have.' },
   stocks_long_term:{ term:'Why Stocks Outperform Long-Term', body:'Over any 30-year period in history, stocks have outperformed bonds, gold, and cash. The S&P 500 has returned ~10% annually since 1928. The trade-off is short-term volatility — but with 15+ years, the odds overwhelmingly favor stocks.' },
   when_shift_conservative: { term:'When to Shift Conservative', body:'As you approach a financial goal (within 5-10 years), gradually move that money to bonds and cash. This protects gains from a poorly-timed market crash. Money you won\'t need for 15+ years can stay aggressive — time heals volatility.' },
+  time_helps:      { term:'Why Does Time Help?', body:'A $10,000 investment growing at 7% annually becomes $76,000 in 30 years but only $14,000 in 5 years. Compound growth accelerates — the last 10 years of a 30-year investment produce more gains than the first 20 combined. Time is the most powerful force in investing.' },
+  volatility:      { term:'What is Volatility?', body:'How much an investment\'s value swings up and down. Stocks are volatile short-term (can drop 30%+) but historically trend up long-term. Bonds are less volatile but grow slower. The longer you hold, the more volatility smooths out — the S&P 500 has never lost money over any 20-year period.' },
+  glide_path:      { term:'What is a Glide Path?', body:'Gradually shifting from aggressive to conservative investments as you approach a goal. Target date retirement funds do this automatically — they start at 90% stocks and slowly shift to 40% stocks by your target date. You can do this manually with any goal by rebalancing annually.' },
+  why_not_savings: { term:'Why Not Just Keep Everything in Savings?', body:'Inflation erodes cash over time. At 3% annual inflation, $100,000 today buys only about $55,000 worth of goods in 20 years. High-yield savings accounts earn 4-5% now, but historically average around 2%. Investing historically returns 7-10%, which outpaces inflation and actually grows your purchasing power.' },
+  diversification: { term:'What is Diversification?', body:'Spreading money across many investments so one bad one doesn\'t hurt your whole portfolio. A single stock can drop 50%+, but a diversified index fund rarely drops more than 30% — and recovers faster. Index funds give you instant diversification across hundreds or thousands of companies.' },
+  long_term_smooth:{ term:'Time Smooths Volatility', body:'The stock market has never had a negative 20-year return in history. Over 1-year periods, stocks lose money about 25% of the time. Over 10-year periods, about 5% of the time. Over 20-year periods, 0% of the time. Time is your protection against short-term swings.' },
+  short_term_risk: { term:'Short-Term Investment Risk', body:'If the market drops 30% right before you need the money, you don\'t have time to recover. Money needed within 5 years should stay in high-yield savings, CDs, or short-term bonds — even though returns are lower, you won\'t risk losing principal when you need it most.' },
+  medium_term_mix: { term:'Medium-Term Investing', body:'For goals 5-15 years away, a 60/40 stock/bond mix has historically provided good growth with less volatility than 100% stocks. This gives you enough time to recover from a downturn while still capturing meaningful growth.' },
 };
 
 const PHASE_INFO = {
@@ -1892,6 +1901,10 @@ const TERM_MAP = [
   [/stay\s+the\s+course|chasing\s+performance/i,                             'stay_the_course'],
   [/stocks\s+outperform|why\s+stocks/i,                                      'stocks_long_term'],
   [/shift.*conservative|within\s+10\s+years/i,                               'when_shift_conservative'],
+  [/time\s+smooths|never.*negative.*20-year/i,                               'long_term_smooth'],
+  [/you.*need.*this.*money.*soon|short-term.*conservative/i,                 'short_term_risk'],
+  [/balanced\s+approach|5-15\s+years.*warrant/i,                             'medium_term_mix'],
+  [/glide\s+path/i,                                                          'glide_path'],
 ];
 
 // Terms shown even to intermediate users (higher-complexity only)
@@ -2340,6 +2353,8 @@ function renderRetirementRows() {
   container.innerHTML = '';
   const availTypes = getAvailableRetirementTypes();
   const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
+  const acctHorizons = {'401k / 403b':'🕐 Long-term','Roth 401k':'🕐 Long-term','Traditional IRA':'🕐 Long-term','Roth IRA':'🕐 Long-term','SEP IRA':'🕐 Long-term','HSA':'🕐 Long-term','Pension':'🕐 Long-term'};
+  const horizonColors = {'🕐 Long-term':'#059669','📅 Flexible':'var(--navy)','⚡ Short-term':'#B45309','⚡ Immediate':'#B45309'};
   retirementRows.forEach((row, i) => {
     // If current type no longer available (e.g. Roth IRA after income limit), keep it but mark
     const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
@@ -2363,7 +2378,7 @@ function renderRetirementRows() {
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="syncRetRow(${i},'amt',this.value)"/></div>
           <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
         </div>
-        <div style="font-size:11px;font-style:italic;color:var(--muted);margin-top:4px;">${acctDescs[row.type]||''}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span style="font-size:11px;font-style:italic;color:var(--muted);">${acctDescs[row.type]||''}</span>${acctHorizons[row.type] ? `<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(5,150,105,0.1);color:#059669;white-space:nowrap;">${acctHorizons[row.type]}</span>` : ''}</div>
         ${(() => {
           const lim = irsLimit(row.type, state.age);
           const annualAmt = (row.amt||0) * 12;
@@ -2599,6 +2614,7 @@ function renderSpouseRetRows() {
   container.innerHTML = '';
   const availTypes = getSpouseRetirementTypes();
   const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
+  const acctHorizons = {'401k / 403b':'🕐 Long-term','Roth 401k':'🕐 Long-term','Traditional IRA':'🕐 Long-term','Roth IRA':'🕐 Long-term','SEP IRA':'🕐 Long-term','HSA':'🕐 Long-term','Pension':'🕐 Long-term'};
   const spAge = state.spouseAge || 35;
   spouseRetRows.forEach((row, i) => {
     const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
@@ -2622,7 +2638,7 @@ function renderSpouseRetRows() {
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="spouseRetRows[${i}].amt=parseFloat(this.value)||0"/></div>
           <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
         </div>
-        <div style="font-size:11px;font-style:italic;color:var(--muted);margin-top:4px;">${acctDescs[row.type]||''}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span style="font-size:11px;font-style:italic;color:var(--muted);">${acctDescs[row.type]||''}</span>${acctHorizons[row.type] ? `<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(5,150,105,0.1);color:#059669;white-space:nowrap;">${acctHorizons[row.type]}</span>` : ''}</div>
         ${limLabel ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${limLabel} · 2025 IRS limit${spAge>=50?' (catch-up)':''}</div>` : ''}
       </div>`;
   });
@@ -2795,6 +2811,7 @@ function renderHomeGoalCard() {
           <div style="font-size:11px;color:var(--muted);margin-top:4px;">Down (${Math.round(h.downPaymentPct*100)}%): ${fmt(c.downPaymentNeeded)} · Closing costs est. (3%): ${fmt(c.closingCosts)}</div>
         </div>
         <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;">Save ${fmt(c.monthlyTarget)}/month to reach your goal by ${h.timeline}</div>
+        ${getGoalTimeHorizonChip(h.timeline)}
         ${statusHtml}
         <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
           <div class="phase-actions">${actionsHTML}</div>
@@ -2976,6 +2993,7 @@ function renderBabyGoalCard() {
       <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.totalCashNeeded)} before baby arrives</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Hospital/delivery: ${fmt(c.hospitalDelivery)} · First year: ${fmt(c.babyFirstYearCosts)}</div>
       <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.monthlyTarget)}/month over the next ${c.monthsToGoal} months</div>
+      ${getGoalTimeHorizonChip(b.timeline)}
       ${c.monthlyChildcare > 0 ? `<div class="home-goal-warning">Plan for ${fmt(c.monthlyChildcare)}/month increase in ongoing expenses after arrival</div>` : ''}
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
       <div class="home-goal-compliance">Cost estimates are national averages. Actual costs vary by location and circumstances.</div>
@@ -3043,6 +3061,7 @@ function renderCollegeGoalCard() {
       <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">${fmt(c.inflationAdjusted)} total (inflation-adjusted, 4 years)</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${c.yearsToCollege} years until college · ${fmt(c.annualCost)}/yr base · ${col.numChildren} child${col.numChildren>1?'ren':''}</div>
       <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.monthlyTarget)}/month to stay on track</div>
+      ${getGoalTimeHorizonChip(c.yearsToCollege + ' years')}
       ${c.alreadySaved > 0 ? `<div class="home-goal-ontrack">✓ ${fmt(c.alreadySaved)} already saved · ${fmt(c.remaining)} remaining</div>` : ''}
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
       <div class="home-goal-compliance">Projections use 5% annual cost inflation. Actual costs will vary.</div>
@@ -3137,6 +3156,7 @@ function renderDebtGoalCard() {
       <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">${fmt(d.balance)} balance${d.apr > 0 ? ` at ${d.apr}% APR` : ''}</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Pay off in ${c.months} months · ${fmt(c.totalInterest)} in interest saved vs. minimum payments</div>
       <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Pay ${fmt(c.monthlyPayment)}/month to be debt-free by ${d.timeline}</div>
+      ${getGoalTimeHorizonChip(d.timeline)}
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
       <div class="home-goal-compliance">Payment calculations are estimates. Actual payoff depends on minimum payments, fees, and rate changes.</div>
     </div></div>`;
@@ -3205,6 +3225,7 @@ function renderRetireGoalCard() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${fmt(c.currentInvested)} invested · ${Math.round(progressPct)}% there · retire at ${r.targetAge} in ${c.yearsToRetire} years</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${fmt(r.monthlyIncome)}/mo needed${c.ssMonthly > 0 ? ` · ${fmt(c.ssMonthly)}/mo Social Security offset` : ''} · 4% withdrawal rule</div>
       ${c.onTrack ? `<div class="home-goal-ontrack">✓ On track — your current contributions reach ${fmt(c.fireNumber)} by age ${r.targetAge}.</div>` : `<div class="home-goal-warning">⚠️ Invest ${fmt(c.monthlyTarget)}/month to hit your FIRE number by age ${r.targetAge}.</div>`}
+      ${getGoalTimeHorizonChip(c.yearsToRetire + ' years')}
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
       <div class="home-goal-compliance">FIRE projections assume 7% average annual returns. Actual results will vary. Not financial advice.</div>
     </div></div>`;
@@ -3274,6 +3295,7 @@ function renderBusinessGoalCard() {
       <div class="home-goal-bar"><div class="home-goal-fill" style="width:${progressPct.toFixed(1)}%"></div></div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${biz.runwayMonths} months × ${fmt(c.monthlyExpenses)}/mo expenses · ${Math.round(progressPct)}% saved</div>
       ${c.remaining <= 0 ? `<div class="home-goal-ontrack">✓ Runway funded — you have the financial cushion to launch.</div>` : `<div class="home-goal-warning">⚠️ ${fmt(c.remaining)} more to reach your runway target.</div>`}
+      ${getGoalTimeHorizonChip('1–3 years')}
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
       <div class="home-goal-compliance">Business runway is a financial buffer only. Business outcomes depend on many factors beyond personal savings.</div>
     </div></div>`;
@@ -3333,6 +3355,7 @@ function renderTripGoalCard() {
       <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">${fmt(t.cost)} total budget${destLabel}</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${c.months} months to save · ${t.timeline}</div>
       <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Save ${fmt(c.monthlyTarget)}/month and you're there</div>
+      ${getGoalTimeHorizonChip(t.timeline)}
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;"><div class="phase-actions">${actionsHTML}</div><div class="phase-progress-bar"><div class="phase-progress-fill" style="width:${pct}%"></div></div></div>
       <div class="home-goal-compliance">Cost estimates are illustrative. Research specific prices for your destination and travel dates.</div>
     </div></div>`;
@@ -3702,7 +3725,24 @@ function refineFocuses(focuses, c, st) {
     return result.slice(0, 4); // allow 4 focus cards when home goal is active
   }
 
-  return result.slice(0, 3);
+  // Add time horizon + risk tolerance combined insight
+  if (st.riskTolerance && result.length < 4) {
+    const age = st.age || 30;
+    const retireAge = st.goalRetire?.targetAge || 65;
+    const yearsToRetire = retireAge - age;
+    const hasShortGoal = (st.goalHome?.timeline||'').includes('1') || (st.goalTrip?.timeline||'').includes('1') || (st.goalBaby?.timeline||'').includes('6mo');
+    if (st.riskTolerance === 'aggressive' && age < 45) {
+      result.push({ icon:'⏳', title:'Time horizon matches your profile', sub:`Your aggressive risk tolerance matches your ${yearsToRetire}-year time horizon perfectly. Stay the course — time smooths out volatility.${hasShortGoal ? ' But keep your near-term goal funds in a HYSA.' : ''}`, amount:null, priority:'med' });
+    } else if (st.riskTolerance === 'conservative' && age < 45) {
+      result.push({ icon:'⏳', title:'Consider your long time horizon', sub:`Your conservative preference is safe, but with ${yearsToRetire} years to retirement you may be leaving significant growth on the table. Consider a slightly more aggressive allocation in your retirement accounts specifically.`, amount:null, priority:'med' });
+    } else if (st.riskTolerance === 'aggressive' && hasShortGoal) {
+      result.push({ icon:'⏳', title:'Match allocation to timeline', sub:`Your aggressive risk tolerance is great for long-term accounts, but keep your near-term goal funds in a HYSA — you'll need them soon.`, amount:null, priority:'high' });
+    } else if (st.riskTolerance === 'conservative' && hasShortGoal) {
+      result.push({ icon:'⏳', title:'Your approach matches your goals', sub:`Your conservative approach aligns well with your near-term goals. Short timelines need safe money — you're on the right track.`, amount:null, priority:'med' });
+    }
+  }
+
+  return result.slice(0, 4);
 }
 
 function computePlan() {
@@ -3886,6 +3926,42 @@ function getPortfolioGuidance(tolerance, phase) {
   return guides[tolerance] || null;
 }
 
+function getGoalTimeHorizonChip(timeline) {
+  const tl = (timeline||'').toLowerCase();
+  if (tl.includes('within 1') || tl.includes('under 1') || tl.includes('within-6mo') || tl.includes('6-12mo'))
+    return `<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:8px 12px;font-size:12px;color:#92400E;line-height:1.5;margin-top:8px;">⚡ <strong>Keep funds in HYSA</strong> — don't invest money you need this soon</div>`;
+  if (tl.includes('1–3') || tl.includes('1-3') || tl.includes('1-2'))
+    return `<div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:8px 12px;font-size:12px;color:#92400E;line-height:1.5;margin-top:8px;">📅 <strong>Conservative allocation</strong> — short-term bonds or CDs mixed with HYSA</div>`;
+  if (tl.includes('3–5') || tl.includes('3-5'))
+    return `<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.15);border-radius:10px;padding:8px 12px;font-size:12px;color:#1E40AF;line-height:1.5;margin-top:8px;">⚖️ <strong>Moderate allocation</strong> — 50% stocks, 50% bonds/cash</div>`;
+  if (tl.includes('5+') || tl.includes('5-') || parseInt(tl) >= 5)
+    return `<div style="background:rgba(5,150,105,0.05);border:1px solid rgba(5,150,105,0.15);border-radius:10px;padding:8px 12px;font-size:12px;color:#065F46;line-height:1.5;margin-top:8px;">🌱 <strong>Growth allocation</strong> — 70-80% stocks is appropriate for this timeline</div>`;
+  return '';
+}
+
+function renderTimeHorizonCard() {
+  const actions = [
+    'Long-term accounts (15+ years away) can afford to be aggressive — time smooths out volatility',
+    'Short-term goals (under 5 years) should stay conservative — you may need this money soon',
+    'Medium-term goals (5-15 years) warrant a balanced approach — growth with some protection',
+    'Your retirement accounts are almost always long-term — keep them invested aggressively when young',
+    'As you get closer to needing money, gradually shift to more conservative investments — this is called a \'glide path\''
+  ];
+  const actionsHTML = actions.map(a =>
+    `<div class="portfolio-card-action"><div class="portfolio-card-bullet moderate"></div><span>${annotateTips(a)}</span></div>`
+  ).join('');
+  return `<div class="portfolio-card moderate" onclick="this.classList.toggle('expanded')">
+    <div class="portfolio-card-header">
+      <div class="portfolio-card-title">Time Horizon = Your Biggest Advantage ⏳</div>
+      <span class="portfolio-card-chevron">▼</span>
+    </div>
+    <div class="portfolio-card-body">
+      <div class="portfolio-card-actions">${actionsHTML}</div>
+      <div class="portfolio-card-compliance">Your time horizon determines how much risk you can take — longer horizons can tolerate more volatility.</div>
+    </div>
+  </div>`;
+}
+
 function renderPortfolioCard(guidance) {
   if (!guidance) return '';
   const actionsHTML = guidance.actions.map(a =>
@@ -4042,7 +4118,8 @@ function buildRoadmap(currentPhase, name) {
     if (status==='active'||status==='done') {
       const targetChip = phase.target ? `<div class="phase-target-chip">🎯 ${phase.target}</div>` : '';
       const portfolioCardHtml = phase.portfolioGuidance ? renderPortfolioCard(phase.portfolioGuidance) : '';
-      actionsHTML = portfolioCardHtml + targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
+      const timeHorizonHtml = phase.num === 2 ? renderTimeHorizonCard() : '';
+      actionsHTML = timeHorizonHtml + portfolioCardHtml + targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
         const isNA = naArr.includes(ai);
         const checked = !isNA && state.checks[key].includes(ai);
         const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
@@ -4307,6 +4384,82 @@ function openProgress() {
     'Life events can change your plan instantly — that\'s the feature. Your progress is always preserved.'
   ];
   document.getElementById('progInsightText').textContent = insights[totalActions % insights.length];
+
+  // Render money timeline
+  const tlSection = document.getElementById('progTimelineSection');
+  const tlEl = document.getElementById('progTimeline');
+  if (tlSection && tlEl && state.age) {
+    tlSection.style.display = 'block';
+    const age = state.age;
+    const retireAge = state.goalRetire?.targetAge || 65;
+    const yearsToRetire = retireAge - age;
+    const maxAge = Math.max(retireAge + 5, age + 40);
+    const span = maxAge - age;
+
+    // Build milestones
+    const milestones = [];
+    milestones.push({ age: age, label: 'Today', color: 'var(--navy)' });
+    if (c.emergencyGap <= 0) milestones.push({ age: age, label: 'Emergency fund ✓', color: '#4CAF50' });
+    else if (c.monthsToBuffer > 0) milestones.push({ age: age + Math.ceil(c.monthsToBuffer / 12), label: 'Emergency fund', color: '#F59E0B' });
+    if (state.goalHome?.timeline) {
+      const tMap = {'Within 1 year':1,'1–3 years':2,'3–5 years':4,'5+ years':7};
+      milestones.push({ age: age + (tMap[state.goalHome.timeline]||3), label: '🏡 Home', color: 'var(--pink)' });
+    }
+    if (state.goalRetire) milestones.push({ age: retireAge, label: '🌅 Retire', color: 'var(--pink)' });
+    else milestones.push({ age: retireAge, label: 'Typical retirement', color: 'var(--muted)' });
+
+    // SVG timeline
+    const w = 310, h = 80, pad = 10;
+    const lineY = 35;
+    const toX = a => pad + ((a - age) / span) * (w - pad * 2);
+
+    // Color zones: short-term (red), medium (amber), long-term (green)
+    const shortEnd = Math.min(age + 5, maxAge);
+    const medEnd = Math.min(age + 15, maxAge);
+    const zones = `
+      <rect x="${toX(age)}" y="${lineY-4}" width="${toX(shortEnd)-toX(age)}" height="8" rx="4" fill="rgba(245,158,11,0.15)"/>
+      <rect x="${toX(shortEnd)}" y="${lineY-4}" width="${toX(medEnd)-toX(shortEnd)}" height="8" rx="0" fill="rgba(59,130,246,0.1)"/>
+      <rect x="${toX(medEnd)}" y="${lineY-4}" width="${toX(maxAge)-toX(medEnd)}" height="8" rx="4" fill="rgba(5,150,105,0.1)"/>
+    `;
+
+    let dots = '';
+    let labels = '';
+    milestones.forEach((m, idx) => {
+      const x = toX(Math.min(m.age, maxAge));
+      dots += `<circle cx="${x}" cy="${lineY}" r="5" fill="${m.color}" stroke="white" stroke-width="2"/>`;
+      const yOff = idx % 2 === 0 ? lineY - 16 : lineY + 20;
+      labels += `<text x="${x}" y="${yOff}" text-anchor="middle" font-size="9" font-weight="600" fill="var(--slate)">${m.label}</text>`;
+    });
+
+    const zoneLegend = `<div style="display:flex;gap:12px;margin-top:8px;">
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#B45309;"><div style="width:8px;height:8px;border-radius:2px;background:rgba(245,158,11,0.3);"></div>Short-term</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#1E40AF;"><div style="width:8px;height:8px;border-radius:2px;background:rgba(59,130,246,0.2);"></div>Medium</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#065F46;"><div style="width:8px;height:8px;border-radius:2px;background:rgba(5,150,105,0.2);"></div>Long-term</div>
+    </div>`;
+
+    const ageInsight = yearsToRetire > 25
+      ? `At ${age}, you have ${yearsToRetire} years until retirement. Your long-term accounts can afford to be invested aggressively — time is your greatest asset.`
+      : yearsToRetire > 15
+      ? `At ${age}, you have ${yearsToRetire} years until retirement. A balanced approach protects gains while still capturing growth.`
+      : `At ${age}, you're within ${yearsToRetire} years of retirement. Begin shifting long-term accounts gradually toward more conservative allocations.`;
+
+    tlEl.innerHTML = `
+      <div style="background:white;border-radius:14px;border:1px solid var(--border);padding:14px;">
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;">
+          ${zones}
+          <line x1="${toX(age)}" x2="${toX(maxAge)}" y1="${lineY}" y2="${lineY}" stroke="var(--border)" stroke-width="2"/>
+          ${dots}
+          ${labels}
+          <text x="${toX(age)}" y="${h - 4}" font-size="9" fill="var(--muted)">Age ${age}</text>
+          <text x="${toX(maxAge)}" y="${h - 4}" text-anchor="end" font-size="9" fill="var(--muted)">Age ${maxAge}</text>
+        </svg>
+        ${zoneLegend}
+      </div>
+      <div style="background:rgba(30,35,64,0.04);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:13px;color:var(--slate);line-height:1.55;">⏳ ${ageInsight}</div>`;
+  } else if (tlSection) {
+    tlSection.style.display = 'none';
+  }
+
   goTo('progress-screen');
 }
 
