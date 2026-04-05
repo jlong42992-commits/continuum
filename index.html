@@ -475,6 +475,78 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .home-goal-ontrack { background:rgba(46,125,50,0.08); border:1px solid rgba(46,125,50,0.2); border-radius:10px; padding:10px 12px; font-size:12px; color:#2E7D32; line-height:1.5; margin-top:10px; font-weight:600; }
 .home-goal-compliance { font-size:10px; color:var(--muted); margin-top:12px; line-height:1.4; font-style:italic; }
 .goal-screen-tip { background:rgba(232,24,109,0.06); border:1px solid rgba(232,24,109,0.15); border-radius:12px; padding:12px 14px; font-size:12px; color:var(--slate); line-height:1.55; margin-top:-4px; }
+
+/* FLOATING ACTION BUTTON */
+.fab-life-change { position:fixed; bottom:80px; right:20px; width:48px; height:48px; border-radius:50%; background:var(--navy); border:none; color:white; font-size:22px; display:none; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 16px rgba(30,35,64,0.35); z-index:90; transition:transform 0.2s; touch-action:manipulation; }
+.fab-life-change:active { transform:scale(0.92); }
+@media (max-width:480px) { .fab-life-change { position:fixed; } }
+
+/* FAB MODAL */
+.fab-modal-backdrop { display:none; position:fixed; inset:0; background:rgba(30,35,64,0.5); z-index:150; }
+.fab-modal-backdrop.show { display:block; }
+.fab-modal { position:fixed; bottom:0; left:0; right:0; max-height:70vh; background:var(--cream); border-radius:20px 20px 0 0; z-index:151; transform:translateY(100%); transition:transform 0.3s ease; overflow-y:auto; }
+.fab-modal.show { transform:translateY(0); }
+.fab-modal-handle { width:36px; height:4px; border-radius:2px; background:var(--border); margin:10px auto 0; }
+.fab-modal-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--navy); padding:16px 24px 12px; }
+.fab-modal-body { padding:0 24px 32px; display:flex; flex-direction:column; gap:8px; }
+
+/* BACK BUTTON */
+.ob-back { font-size:13px; font-weight:500; color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-bottom:12px; touch-action:manipulation; background:none; border:none; font-family:'DM Sans',sans-serif; padding:0; }
+.ob-back:active { color:var(--pink); }
+
+/* GOAL SUMMARY SCREEN */
+#goal-summary { background:var(--navy); }
+.goal-summary-card { padding:60px 28px 40px; display:flex; flex-direction:column; align-items:center; text-align:center; flex:1; justify-content:center; }
+.goal-summary-emoji { font-size:56px; margin-bottom:20px; }
+.goal-summary-name { font-family:'DM Serif Display',serif; font-size:28px; color:var(--cream); margin-bottom:28px; }
+.goal-summary-numbers { display:flex; gap:12px; width:100%; margin-bottom:28px; }
+.goal-summary-num { flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px 10px; }
+.goal-summary-num-val { font-family:'DM Serif Display',serif; font-size:22px; color:white; margin-bottom:4px; }
+.goal-summary-num-label { font-size:10px; color:rgba(245,240,232,0.5); font-weight:600; letter-spacing:0.04em; text-transform:uppercase; }
+.goal-summary-actions { width:100%; text-align:left; margin-bottom:32px; }
+.goal-summary-actions-title { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(245,240,232,0.4); margin-bottom:12px; }
+.goal-summary-action { background:rgba(255,255,255,0.06); border-radius:10px; padding:12px 14px; margin-bottom:6px; font-size:13px; color:rgba(245,240,232,0.8); display:flex; align-items:center; gap:10px; }
+.goal-summary-action-dot { width:6px; height:6px; border-radius:50%; background:var(--pink); flex-shrink:0; }
+
+/* ROADMAP VISUAL REDESIGN */
+.phase-card { box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+.phase-card.foundation { border-left:4px solid #F59E0B; }
+.phase-card.growth { border-left:4px solid #10B981; }
+.phase-card.protection { border-left:4px solid #3B82F6; }
+.phase-card.optimization { border-left:4px solid #8B5CF6; }
+.phase-card.legacy { border-left:4px solid #D97706; }
+.phase-progress-chip { display:inline-flex; align-items:center; gap:4px; background:rgba(30,35,64,0.06); border-radius:8px; padding:3px 8px; font-size:11px; font-weight:600; color:var(--slate); margin-left:8px; }
+.phase-desc { font-style:italic; font-size:13px; }
+.phase-action-item { border-bottom:1px solid rgba(0,0,0,0.04); padding-bottom:8px; }
+.phase-action-item:last-child { border-bottom:none; padding-bottom:0; }
+.action-check { border-radius:50%; width:20px; height:20px; }
+
+/* GOAL CARD GRADIENT HEADER */
+.goal-roadmap-card { border-radius:18px; overflow:hidden; margin-top:8px; border:2px solid var(--border); background:white; }
+.goal-roadmap-header { padding:12px 16px; display:flex; align-items:center; gap:10px; }
+.goal-roadmap-header.home { background:linear-gradient(135deg,rgba(232,24,109,0.08),rgba(232,24,109,0.02)); }
+.goal-roadmap-header.baby { background:linear-gradient(135deg,rgba(244,114,182,0.08),rgba(244,114,182,0.02)); }
+.goal-roadmap-header.college { background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(59,130,246,0.02)); }
+.goal-roadmap-header.debt { background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(239,68,68,0.02)); }
+.goal-roadmap-header.retire { background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(245,158,11,0.02)); }
+.goal-roadmap-header.business { background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(16,185,129,0.02)); }
+.goal-roadmap-header.trip { background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02)); }
+
+/* PROFILE EDIT BUTTONS */
+.prof-edit-btn { background:none; border:1px solid var(--border); border-radius:8px; padding:4px 10px; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:var(--pink); cursor:pointer; touch-action:manipulation; margin-left:auto; }
+
+/* OB OPTION PREMIUM */
+.ob-option { box-shadow:0 1px 4px rgba(0,0,0,0.04); transition:all 0.25s ease; }
+.ob-option.selected { box-shadow:0 4px 16px rgba(232,24,109,0.15); }
+
+/* SPLASH AUTH REDESIGN */
+.splash-auth-gradient { position:absolute; inset:0; background:linear-gradient(135deg,rgba(30,35,64,0.95) 0%,rgba(61,66,112,0.8) 40%,rgba(232,24,109,0.2) 100%); animation:gradientShift 8s ease infinite alternate; }
+@keyframes gradientShift { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+.splash-welcome-btn { background:rgba(255,255,255,0.1); color:var(--cream); border:1px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px 32px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; width:100%; transition:all 0.2s; touch-action:manipulation; margin-top:8px; }
+.splash-welcome-btn:hover { background:rgba(255,255,255,0.18); }
+
+/* SECTION DOT ACCENT */
+.section-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--pink); margin-right:6px; vertical-align:middle; }
 </style>
 </head>
 <body>
@@ -482,14 +554,14 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 
 <!-- SPLASH -->
 <div class="screen active" id="splash">
-  <div class="splash-bg"></div>
+  <div class="splash-bg splash-auth-gradient"></div>
   <div class="splash-content">
     <div class="logo-mark"><svg viewBox="0 0 36 36" fill="none"><path d="M6 18 Q6 8 18 8 Q30 8 30 18 Q30 28 18 28" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="18" cy="28" r="3" fill="white"/><path d="M13 18 L18 13 L23 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="splash-title">Continuum</div>
-    <div class="splash-sub">A Living Financial Plan</div>
-    <div class="splash-tagline">"Your financial life will change many times.<br>Your plan should change with it."</div>
-    <button class="btn-primary" onclick="goTo('ob1')" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">Get Started</button>
-    <button class="btn-secondary" onclick="openLogin()" style="-webkit-tap-highlight-color:transparent;">I already have an account</button>
+    <div class="splash-sub">Your personal financial planner</div>
+    <div class="splash-tagline">"Your personal financial planner —<br>always in your pocket."</div>
+    <button class="btn-primary" onclick="goTo('ob1')" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">Build My Plan →</button>
+    <button class="splash-welcome-btn" id="splashWelcomeBtn" onclick="splashWelcomeBack()" style="-webkit-tap-highlight-color:transparent;">Welcome back</button>
   </div>
 </div>
 
@@ -523,6 +595,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB1: Name/Age -->
 <div class="screen" id="ob1">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('splash')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">Let's start with the basics.</div>
     <div class="ob-hint">This helps us personalize your experience.</div>
@@ -537,6 +610,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB2: Life Stage -->
 <div class="screen" id="ob2">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob1')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">What's your current life situation?</div>
     <div class="ob-hint">Select all that apply.</div>
@@ -553,6 +627,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB2.5: Spouse Details (shown only if partner selected) -->
 <div class="screen" id="ob25">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob25-risk')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">Tell us about your partner.</div>
     <div class="ob-hint">This helps us personalise protection targets, filing status, and long-term planning for both of you.</div>
@@ -576,6 +651,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-QUIZ: Financial Literacy -->
 <div class="screen" id="ob25-literacy">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob2')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">A few quick questions.</div>
     <div class="ob-hint">Helps us explain things at the right level — no wrong answers.</div>
@@ -602,6 +678,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB25-RISK: Risk Tolerance -->
 <div class="screen" id="ob25-risk">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob25-literacy')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">How do you approach risk?</div>
     <div class="ob-hint">Helps us tailor your investment recommendations — no wrong answers.</div>
@@ -628,6 +705,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB3: Financial Snapshot -->
 <div class="screen" id="ob3">
   <div class="ob-header">
+    <button class="ob-back" onclick="state.lifeStage.includes('partner')?goTo('ob25'):goTo('ob25-risk')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question">Where are you financially?</div>
     <div class="ob-hint">Rough estimates are totally fine — we're not tracking to the dollar.</div>
@@ -644,6 +722,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB4: Income & Tax -->
 <div class="screen" id="ob4">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob3')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question" id="ob4Title">Tell us your income.</div>
     <div class="ob-hint">We'll calculate real take-home using actual 2024 tax brackets.</div>
@@ -758,6 +837,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB4.5: Current Savings Activity -->
 <div class="screen" id="ob45">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob4')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
     <div class="ob-question" id="ob45Question">What are you saving today?</div>
     <div class="ob-hint">Only include what's automated — money you intentionally set aside.</div>
@@ -824,6 +904,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-SPOUSE-SAVINGS: Partner's savings activity -->
 <div class="screen" id="ob-spouse-savings">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob45')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question" id="spouseSavingsTitle">What is your partner saving?</div>
     <div class="ob-hint">Same idea — only automated, intentional savings.</div>
@@ -871,6 +952,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB5: Debts & Challenge -->
 <div class="screen" id="ob5">
   <div class="ob-header">
+    <button class="ob-back" onclick="state.lifeStage.includes('partner')?goTo('ob-spouse-savings'):goTo('ob45')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Assets & Liabilities</div>
     <div class="ob-hint">Add what you own and what you owe — we'll calculate your net worth and factor it into your plan.</div>
@@ -910,6 +992,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOALS: What are you working toward? -->
 <div class="screen" id="ob-goals">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob5')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">What are you working toward?</div>
     <div class="ob-hint">Select everything that applies — we'll shape your plan around your goals.</div>
@@ -926,6 +1009,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-CHALLENGE: Biggest challenge -->
 <div class="screen" id="ob-challenge">
   <div class="ob-header">
+    <button class="ob-back" onclick="goTo('ob-goals')">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">What's your biggest challenge?</div>
     <div class="ob-hint">This helps us focus your plan on what matters most right now.</div>
@@ -945,6 +1029,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-HOME: Home buying planner -->
 <div class="screen" id="ob-goal-home">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Let's plan your home purchase. 🏡</div>
     <div class="ob-hint">We'll calculate exactly how much you need to save and build it into your roadmap.</div>
@@ -979,7 +1064,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectHomeGoal();showGoalSummaryThenAdvance('home')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip — fill this in later</button>
   </div>
 </div>
@@ -987,6 +1072,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-BABY: Having a child -->
 <div class="screen" id="ob-goal-baby">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Let's plan for your little one. 👶</div>
     <div class="ob-hint">We'll estimate startup costs and ongoing expenses to factor into your plan.</div>
@@ -1023,7 +1109,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectBabyGoal();showGoalSummaryThenAdvance('child')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
@@ -1031,6 +1117,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-COLLEGE: College savings -->
 <div class="screen" id="ob-goal-college">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Let's plan for college. 🎓</div>
     <div class="ob-hint">We'll project costs with inflation and calculate your monthly savings target.</div>
@@ -1070,7 +1157,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectCollegeGoal();showGoalSummaryThenAdvance('college')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
@@ -1078,6 +1165,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-DEBT: Pay off debt -->
 <div class="screen" id="ob-goal-debt">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Let's tackle your debt. 💳</div>
     <div class="ob-hint">We'll calculate exactly what it costs to pay this off and how much interest you'll save.</div>
@@ -1114,7 +1202,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectDebtGoal();showGoalSummaryThenAdvance('debt')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
@@ -1122,6 +1210,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-RETIRE: Retire early -->
 <div class="screen" id="ob-goal-retire">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Let's calculate your FIRE number. 🌅</div>
     <div class="ob-hint">We'll use the 4% rule to estimate how much you need to retire — and how to get there.</div>
@@ -1147,7 +1236,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectRetireGoal();showGoalSummaryThenAdvance('retire')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
@@ -1155,6 +1244,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-BUSINESS: Start a business -->
 <div class="screen" id="ob-goal-business">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Let's plan your business launch. 🚀</div>
     <div class="ob-hint">We'll calculate the personal runway you need before you make the leap.</div>
@@ -1188,7 +1278,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectBusinessGoal();showGoalSummaryThenAdvance('business')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
@@ -1196,6 +1286,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-GOAL-TRIP: Dream trip -->
 <div class="screen" id="ob-goal-trip">
   <div class="ob-header">
+    <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
     <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
     <div class="ob-question">Tell us about your dream trip. ✈️</div>
     <div class="ob-hint">We'll calculate a simple monthly savings target to make it happen.</div>
@@ -1220,7 +1311,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="ob-footer">
-    <button class="btn-primary" onclick="advanceGoalQueue()">Continue →</button>
+    <button class="btn-primary" onclick="collectTripGoal();showGoalSummaryThenAdvance('trip')">Continue →</button>
     <button class="btn-secondary" onclick="advanceGoalQueue()">Skip for now</button>
   </div>
 </div>
@@ -1358,7 +1449,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
   <div class="prof-body">
     <div class="prof-section">
-      <div class="prof-section-title">Your Details</div>
+      <div class="prof-section-title" style="display:flex;align-items:center;">Your Details<button class="prof-edit-btn" onclick="editSection('personal')">Edit</button></div>
       <div class="prof-card">
         <div class="prof-row"><div class="prof-row-icon">👤</div><div class="prof-row-content"><div class="prof-row-label">Name</div><div class="prof-row-value" id="profDetailName">—</div></div></div>
         <div class="prof-row"><div class="prof-row-icon">🎂</div><div class="prof-row-content"><div class="prof-row-label">Age</div><div class="prof-row-value" id="profDetailAge">—</div></div></div>
@@ -1372,7 +1463,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       </div>
     </div>
     <div class="prof-section">
-      <div class="prof-section-title">Your Targets</div>
+      <div class="prof-section-title" style="display:flex;align-items:center;">Income & Savings<button class="prof-edit-btn" onclick="editSection('income')">Edit</button></div>
       <div class="prof-card" id="profTargetsCard"></div>
     </div>
     <div class="prof-section">
@@ -1417,6 +1508,28 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
   </div>
   <div class="goals-body" id="goalsScreenBody"></div>
+</div>
+
+<!-- GOAL SUMMARY -->
+<div class="screen" id="goal-summary">
+  <div class="goal-summary-card" id="goalSummaryContent"></div>
+</div>
+
+<!-- FAB LIFE CHANGE BUTTON -->
+<button class="fab-life-change" id="fabLifeChange" onclick="openFabModal()">⚡</button>
+<div class="fab-modal-backdrop" id="fabBackdrop" onclick="closeFabModal()"></div>
+<div class="fab-modal" id="fabModal">
+  <div class="fab-modal-handle"></div>
+  <div class="fab-modal-title">Something changed?</div>
+  <div class="fab-modal-body">
+    <div class="lc-event" onclick="selectFabEvent(this,'baby','👶','Having a Baby')"><div class="lc-event-icon">👶</div><div><div class="lc-event-label">Having a Baby</div><div class="lc-event-desc">Expecting or recently welcomed a child</div></div></div>
+    <div class="lc-event" onclick="selectFabEvent(this,'married','💍','Got Married')"><div class="lc-event-icon">💍</div><div><div class="lc-event-label">Got Married</div><div class="lc-event-desc">Recently married or newly combining finances</div></div></div>
+    <div class="lc-event" onclick="selectFabEvent(this,'newjob','💼','New Job or Promotion')"><div class="lc-event-icon">💼</div><div><div class="lc-event-label">New Job or Promotion</div><div class="lc-event-desc">Changed employers or got a significant raise</div></div></div>
+    <div class="lc-event" onclick="selectFabEvent(this,'house','🏡','Buying a Home')"><div class="lc-event-icon">🏡</div><div><div class="lc-event-label">Buying a Home</div><div class="lc-event-desc">Purchasing or recently closed on a home</div></div></div>
+    <div class="lc-event" onclick="selectFabEvent(this,'divorce','💔','Separation or Divorce')"><div class="lc-event-icon">💔</div><div><div class="lc-event-label">Separation or Divorce</div><div class="lc-event-desc">Going through or recently completed a separation</div></div></div>
+    <div class="lc-event" onclick="selectFabEvent(this,'inheritance','🏦','Received an Inheritance')"><div class="lc-event-icon">🏦</div><div><div class="lc-event-label">Received an Inheritance</div><div class="lc-event-desc">Came into a significant amount of money or assets</div></div></div>
+    <div class="lc-event" onclick="selectFabEvent(this,'jobloss','😟','Job Loss')"><div class="lc-event-icon">😟</div><div><div class="lc-event-label">Job Loss</div><div class="lc-event-desc">Recently unemployed or income significantly reduced</div></div></div>
+  </div>
 </div>
 
 <!-- TOOLTIP POPUP -->
@@ -1491,7 +1604,7 @@ const state = {
   goalQueue: [], goalQueueIdx: 0,
   checks:{}, naItems:{}, currentPhase:1, lifeEvents:[], activity:[],
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
-  calc:{}, taxCalc:{}
+  calc:{}, taxCalc:{}, editMode: false, editReturnTo: null
 };
 
 // ── LOCAL STORAGE SAVE / LOAD ──
@@ -1759,12 +1872,24 @@ function goTo(id) {
   document.getElementById(id).classList.add('active');
   const navScreens = ['roadmap','progress-screen','reports-screen','goals-screen','profile-screen','planupdate'];
   document.getElementById('bottomNav').style.display = navScreens.includes(id) ? 'flex' : 'none';
+  // Show/hide FAB on main screens
+  const fab = document.getElementById('fabLifeChange');
+  if (fab) fab.style.display = navScreens.includes(id) ? 'flex' : 'none';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const navMap = {roadmap:0,'progress-screen':1,'reports-screen':2,'goals-screen':3,planupdate:0,'profile-screen':4};
   if (navMap[id] !== undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
   document.getElementById(id).scrollTop = 0;
   if (id === 'ob4') ob4Setup();
   if (id === 'ob-goals') setupGoalsScreen();
+  // Edit mode: change header if returning to ob screen
+  if (state.editMode && id.startsWith('ob')) {
+    const headerQ = document.querySelector(`#${id} .ob-question`);
+    if (headerQ && !headerQ.dataset.original) {
+      headerQ.dataset.original = headerQ.textContent;
+      const sectionNames = {ob1:'Personal Details',ob4:'Income',ob45:'Savings','ob-goals':'Goals'};
+      if (sectionNames[id]) headerQ.textContent = `Update your ${sectionNames[id]}`;
+    }
+  }
 }
 
 // ── ONBOARDING ──
@@ -2556,6 +2681,41 @@ function advanceGoalQueue() {
   } else {
     goTo('ob-challenge');
   }
+}
+
+function showGoalSummaryThenAdvance(goalType) {
+  renderGoalSummary(goalType);
+  goTo('goal-summary');
+}
+
+function renderGoalSummary(goalType) {
+  const goalData = {
+    home: { emoji:'🏡', name:'Home Purchase', getData:()=>{ const h=state.goalHome; if(!h||!h.calc) return null; return { total:fmt(h.calc.totalCashNeeded), monthly:fmt(h.calc.monthlyTarget)+'/mo', timeline:h.timeline||'3–5 years', actions:['Open dedicated savings account','Automate monthly transfers','Check your credit score'] }; }},
+    child: { emoji:'👶', name:'Having a Child', getData:()=>{ const b=state.goalBaby; if(!b||!b.calc) return null; return { total:fmt(b.calc.totalCashNeeded), monthly:fmt(b.calc.monthlyTarget)+'/mo', timeline:b.timeline||'Planning', actions:['Build baby emergency fund','Review health insurance','Research parental leave'] }; }},
+    college: { emoji:'🎓', name:'College Savings', getData:()=>{ const c=state.goalCollege; if(!c||!c.calc) return null; return { total:fmt(c.calc.inflationAdjusted), monthly:fmt(c.calc.monthlyTarget)+'/mo', timeline:c.calc.yearsToCollege+' years', actions:['Open a 529 account','Automate monthly contributions','Choose investment options'] }; }},
+    debt: { emoji:'💳', name:'Debt Payoff', getData:()=>{ const d=state.goalDebt; if(!d||!d.calc) return null; return { total:fmt(d.balance), monthly:fmt(d.calc.monthlyPayment)+'/mo', timeline:d.calc.months+' months', actions:['Set up auto-payment','Stop new charges','Consider balance transfer'] }; }},
+    retire: { emoji:'🌅', name:'Early Retirement', getData:()=>{ const r=state.goalRetire; if(!r||!r.calc) return null; return { total:fmt(r.calc.fireNumber), monthly:fmt(r.calc.monthlyTarget)+'/mo', timeline:'Age '+r.targetAge, actions:['Max 401k contributions','Max Roth IRA','Set auto-rebalance'] }; }},
+    business: { emoji:'🚀', name:'Start a Business', getData:()=>{ const b=state.goalBusiness; if(!b||!b.calc) return null; return { total:fmt(b.calc.runwayTarget), monthly:fmt(b.calc.monthlyTarget)+'/mo', timeline:b.runwayMonths+'-mo runway', actions:['Build personal runway fund','Open business checking','Research business structure'] }; }},
+    trip: { emoji:'✈️', name:'Dream Trip', getData:()=>{ const t=state.goalTrip; if(!t||!t.calc) return null; return { total:fmt(t.cost), monthly:fmt(t.calc.monthlyTarget)+'/mo', timeline:t.timeline||'1–3 years', actions:['Open trip savings account','Automate monthly savings','Research travel rewards'] }; }},
+  };
+  const g = goalData[goalType];
+  if (!g) { advanceGoalQueue(); return; }
+  const data = g.getData();
+  if (!data) { advanceGoalQueue(); return; }
+  const el = document.getElementById('goalSummaryContent');
+  el.innerHTML = `
+    <div class="goal-summary-emoji">${g.emoji}</div>
+    <div class="goal-summary-name">Your ${g.name} Plan</div>
+    <div class="goal-summary-numbers">
+      <div class="goal-summary-num"><div class="goal-summary-num-val">${data.total}</div><div class="goal-summary-num-label">Total Needed</div></div>
+      <div class="goal-summary-num"><div class="goal-summary-num-val">${data.monthly}</div><div class="goal-summary-num-label">Monthly Target</div></div>
+      <div class="goal-summary-num"><div class="goal-summary-num-val">${data.timeline}</div><div class="goal-summary-num-label">Timeline</div></div>
+    </div>
+    <div class="goal-summary-actions">
+      <div class="goal-summary-actions-title">Top Actions</div>
+      ${data.actions.map(a => `<div class="goal-summary-action"><div class="goal-summary-action-dot"></div>${a}</div>`).join('')}
+    </div>
+    <button class="btn-primary" onclick="advanceGoalQueue()" style="max-width:320px;">Got it →</button>`;
 }
 
 // ── GENERIC GOAL CHECK TOGGLE ──
@@ -3654,7 +3814,7 @@ function buildRoadmap(currentPhase, name) {
     const phaseInfoBtn = PHASE_INFO[phase.num] ? `<span class="phase-info-btn" onclick="showPhaseInfo(${phase.num},event)">ℹ️</span>` : '';
     // The spine line after Foundation needs to account for the home goal card spacer
     const lineClass = (phase.num === 1 && homeGoalActive) ? status : status;
-    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${lineClass}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status}"><div class="phase-card-top"><div class="phase-name">${phase.emoji} ${phase.name} ${phaseInfoBtn}</div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div>${phase.num===1 && anyGoalActive ? `<div style="padding-top:16px;">${[homeGoalActive?renderHomeGoalCard():'', state.goalBaby?.calc?.totalCashNeeded>0?renderBabyGoalCard():'', state.goalCollege?.calc?.monthlyTarget>0?renderCollegeGoalCard():'', state.goalDebt?.calc?.monthlyPayment>0?renderDebtGoalCard():'', state.goalRetire?.calc?.fireNumber>0?renderRetireGoalCard():'', state.goalBusiness?.calc?.runwayTarget>0?renderBusinessGoalCard():'', state.goalTrip?.calc?.monthlyTarget>0?renderTripGoalCard():''].filter(Boolean).join('<div style="height:16px;"></div>')}</div>` : ''}</div></div>`;
+    body.innerHTML += `<div class="phase-item"><div class="phase-spine"><div class="phase-dot ${status}">${status==='done'?'✓':phase.num}</div>${!isLast?`<div class="phase-line ${lineClass}"></div>`:''}</div><div class="phase-content"><div class="phase-card ${status} ${PHASE_CLASSES[phase.num]||''}"><div class="phase-card-top"><div class="phase-name"><span style="font-family:'DM Serif Display',serif;">${phase.emoji} ${phase.name}</span> ${phaseInfoBtn}<span class="phase-progress-chip">${completed}/${effective}</span></div><div class="phase-badge ${status}">${status==='done'?'Complete':status==='active'?'Active':'Locked'}</div></div><div class="phase-desc">${phase.desc}</div>${riskNoteHtml}${actionsHTML}</div>${phase.num===1 && anyGoalActive ? `<div style="padding-top:16px;">${[homeGoalActive?renderHomeGoalCard():'', state.goalBaby?.calc?.totalCashNeeded>0?renderBabyGoalCard():'', state.goalCollege?.calc?.monthlyTarget>0?renderCollegeGoalCard():'', state.goalDebt?.calc?.monthlyPayment>0?renderDebtGoalCard():'', state.goalRetire?.calc?.fireNumber>0?renderRetireGoalCard():'', state.goalBusiness?.calc?.runwayTarget>0?renderBusinessGoalCard():'', state.goalTrip?.calc?.monthlyTarget>0?renderTripGoalCard():''].filter(Boolean).join('<div style="height:16px;"></div>')}</div>` : ''}</div></div>`;
   });
 }
 
@@ -4176,6 +4336,116 @@ function toggleGoalCard(card, key) {
   document.querySelectorAll('.goal-card.expanded').forEach(c => c.classList.remove('expanded'));
   if (!wasExpanded) card.classList.add('expanded');
 }
+
+// ── FAB MODAL ──
+function openFabModal() {
+  document.getElementById('fabBackdrop').classList.add('show');
+  document.getElementById('fabModal').classList.add('show');
+  document.querySelectorAll('#fabModal .lc-event').forEach(e => e.classList.remove('selected'));
+}
+function closeFabModal() {
+  document.getElementById('fabBackdrop').classList.remove('show');
+  document.getElementById('fabModal').classList.remove('show');
+}
+function selectFabEvent(el, id, icon, label) {
+  closeFabModal();
+  selectedEvent = {id, icon, label};
+  document.getElementById('recalEventBadge').textContent = `${icon} ${label}`;
+  document.getElementById('recalIcon').textContent = icon;
+  goTo('recalibrating');
+  const steps = document.querySelectorAll('.recal-step');
+  steps.forEach(s => s.classList.remove('visible'));
+  steps.forEach((s,i) => setTimeout(() => s.classList.add('visible'), 400+i*500));
+  setTimeout(() => { computeLifeChangeUpdate(); goTo('planupdate'); }, 3200);
+}
+
+// ── BACK FROM GOAL ──
+function goBackFromGoal() {
+  if (state.goalQueueIdx > 1) {
+    state.goalQueueIdx -= 2;
+    advanceGoalQueue();
+  } else {
+    goTo('ob-goals');
+  }
+}
+
+// ── SPLASH WELCOME BACK ──
+function splashWelcomeBack() {
+  const saved = tryLoadSaved();
+  if (saved && saved.state && saved.state.name) {
+    Object.assign(state, saved.state);
+    if (saved.retirementRows) retirementRows = saved.retirementRows;
+    buildRoadmap(state.currentPhase || 1, state.name || 'You');
+    goTo('roadmap');
+  } else {
+    alert('No saved plan found — let\'s build one!');
+    goTo('ob1');
+  }
+}
+
+// Check for saved state on load to personalize splash
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = tryLoadSaved();
+  const btn = document.getElementById('splashWelcomeBtn');
+  if (btn && saved && saved.state && saved.state.name) {
+    btn.textContent = `Welcome back, ${saved.state.name} →`;
+  }
+});
+
+// ── PROFILE EDIT MODE ──
+function editSection(section) {
+  state.editMode = true;
+  state.editReturnTo = 'profile-screen';
+  const screenMap = { personal:'ob1', income:'ob4', savings:'ob45', goals:'ob-goals' };
+  goTo(screenMap[section] || 'ob1');
+}
+
+// Modify nextOb behavior for editMode: after continue, return to profile
+const _origNextOb = nextOb;
+nextOb = function(step) {
+  if (state.editMode) {
+    // In edit mode, collect data but return to profile
+    if (step === 1) {
+      state.name = document.getElementById('firstName').value || 'Friend';
+      state.age = parseInt(document.getElementById('userAge').value) || 30;
+      state.editMode = false;
+      openProfile();
+      return;
+    }
+    if (step === 4) {
+      state.grossIncome = parseFloat(document.getElementById('grossIncome').value) || 0;
+      state.incomeType = ob4Type;
+      state.filingStatus = ob4Filing;
+      state.stateCode = document.getElementById('stateSelect').value || '';
+      state.monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+      if (state.lifeStage.includes('partner')) {
+        state.spouseIncome = parseFloat(document.getElementById('spouseGrossIncome').value) || 0;
+        state.spouseIncomeType = sp4Type;
+      }
+      computeFinancials();
+      state.editMode = false;
+      saveState();
+      openProfile();
+      return;
+    }
+    if (step === 45) {
+      collectSavingsInputs();
+      computeFinancials();
+      state.editMode = false;
+      saveState();
+      openProfile();
+      return;
+    }
+  }
+  _origNextOb(step);
+};
+
+// ── ENHANCED SAVE STATE - call after major changes ──
+const _origBuildPlan = buildPlan;
+// Already calls saveState() inside setTimeout in buildPlan, no extra needed
+
+// ── ROADMAP PHASE CLASSES ──
+const PHASE_CLASSES = ['','foundation','growth','protection','optimization','legacy'];
 </script>
 </body>
 </html>
