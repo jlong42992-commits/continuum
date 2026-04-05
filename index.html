@@ -580,6 +580,11 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .risk-result-value { font-family:'DM Serif Display',serif; font-size:20px; color:var(--cream); }
 .challenge-response { display:none; background:rgba(232,24,109,0.04); border:1px solid rgba(232,24,109,0.15); border-radius:14px; padding:14px 16px; font-size:13px; color:var(--slate); line-height:1.55; margin-top:8px; animation:fadeUp 0.3s ease; }
 .challenge-response.show { display:block; }
+/* ROADMAP ACTION CARDS */
+.phase-action-item { background:white; border:1px solid var(--border); border-radius:12px; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--navy); line-height:1.4; margin-bottom:0; }
+.action-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; background:white; margin-top:0; }
+.action-check.checked { background:#4CAF50; border-color:#4CAF50; }
+.action-check.checked::after { content:'✓'; color:white; font-size:12px; font-weight:700; }
 </style>
 </head>
 <body>
@@ -666,8 +671,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB2.5: Spouse Details -->
 <div class="screen" id="ob25">
   <div class="ob-header">
-    <button class="ob-back" onclick="goTo('ob25-risk')">← Back</button>
-    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:40%"></div></div>
+    <button class="ob-back" onclick="goTo('ob2')">← Back</button>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:20%"></div></div>
     <div class="ob-question">Tell us about your partner.</div>
     <div class="ob-hint">We'll plan for both of you — together is better.</div>
   </div>
@@ -690,8 +695,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB-QUIZ: Financial Literacy -->
 <div class="screen" id="ob25-literacy">
   <div class="ob-header">
-    <button class="ob-back" onclick="goTo('ob2')">← Back</button>
-    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:25%"></div></div>
+    <button class="ob-back" onclick="state.lifeStage.includes('partner')?goTo('ob25'):goTo('ob2')">← Back</button>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:30%"></div></div>
     <div class="ob-question">How do you think about money?</div>
     <div class="ob-hint">No right or wrong answers — this helps us speak your language.</div>
   </div>
@@ -699,28 +704,28 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-quiz-block" id="quizBlock1">
       <div class="ob-quiz-num">01</div>
       <div class="ob-quiz-question">How comfortable are you with investing?</div>
-      <div class="ob-pill-row">
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ1','beginner')">Beginner</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ1','some')">Some knowledge</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ1','confident')">Confident</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ1','beginner')"><div class="ob-option-icon">🌱</div><div><div class="ob-option-label">Beginner</div><div class="ob-option-desc" style="font-style:italic;">I'm still figuring out the basics of saving and investing</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ1','some')"><div class="ob-option-icon">📘</div><div><div class="ob-option-label">Some knowledge</div><div class="ob-option-desc" style="font-style:italic;">I understand the concepts but not all the details</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ1','confident')"><div class="ob-option-icon">📈</div><div><div class="ob-option-label">Confident</div><div class="ob-option-desc" style="font-style:italic;">I manage my own investments and understand tax strategies</div></div></div>
       </div>
     </div>
     <div class="ob-quiz-block" id="quizBlock2" style="opacity:0.4;">
       <div class="ob-quiz-num">02</div>
       <div class="ob-quiz-question">Do you know the difference between a Roth and Traditional IRA?</div>
-      <div class="ob-pill-row">
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ2','yes')">Yes</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ2','sort_of')">Sort of</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ2','no')">No</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ2','yes')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Yes</div><div class="ob-option-desc" style="font-style:italic;">I understand how they're taxed differently</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ2','sort_of')"><div class="ob-option-icon">🤔</div><div><div class="ob-option-label">Sort of</div><div class="ob-option-desc" style="font-style:italic;">I've heard of them but I'm fuzzy on the details</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ2','no')"><div class="ob-option-icon">❓</div><div><div class="ob-option-label">No</div><div class="ob-option-desc" style="font-style:italic;">Not familiar with the difference</div></div></div>
       </div>
     </div>
     <div class="ob-quiz-block" id="quizBlock3" style="opacity:0.4;">
       <div class="ob-quiz-num">03</div>
       <div class="ob-quiz-question">Have you ever worked with a financial advisor?</div>
-      <div class="ob-pill-row">
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ3','yes')">Yes</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ3','no')">No</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ3','not_yet')">Not yet</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ3','yes')"><div class="ob-option-icon">🤝</div><div><div class="ob-option-label">Yes</div><div class="ob-option-desc" style="font-style:italic;">I've worked with one before</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ3','no')"><div class="ob-option-icon">🙅</div><div><div class="ob-option-label">No</div><div class="ob-option-desc" style="font-style:italic;">Never have</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'quizQ3','not_yet')"><div class="ob-option-icon">🔜</div><div><div class="ob-option-label">Not yet</div><div class="ob-option-desc" style="font-style:italic;">I'm open to it but haven't yet</div></div></div>
       </div>
     </div>
   </div>
@@ -739,28 +744,28 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-quiz-block">
       <div class="ob-quiz-num">01</div>
       <div class="ob-quiz-question">If your investments dropped 20%, what would you do?</div>
-      <div class="ob-pill-row">
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ1','sell')">🛡️ Sell</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ1','hold')">⚖️ Hold</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ1','buy')">🚀 Buy more</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ1','sell')"><div class="ob-option-icon">🛡️</div><div><div class="ob-option-label">Sell</div><div class="ob-option-desc" style="font-style:italic;">I'd move to cash to stop further losses</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ1','hold')"><div class="ob-option-icon">⚖️</div><div><div class="ob-option-label">Hold</div><div class="ob-option-desc" style="font-style:italic;">I'd stay the course and wait for recovery</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ1','buy')"><div class="ob-option-icon">🚀</div><div><div class="ob-option-label">Buy more</div><div class="ob-option-desc" style="font-style:italic;">I'd see it as a buying opportunity</div></div></div>
       </div>
     </div>
     <div class="ob-quiz-block">
       <div class="ob-quiz-num">02</div>
       <div class="ob-quiz-question">When do you expect to need this money?</div>
-      <div class="ob-pill-row">
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ2','soon')">Under 5yr</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ2','medium')">5–15yr</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ2','long')">15+yr</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ2','soon')"><div class="ob-option-icon">🗓️</div><div><div class="ob-option-label">Under 5 years</div><div class="ob-option-desc" style="font-style:italic;">I may need access to it soon</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ2','medium')"><div class="ob-option-icon">📅</div><div><div class="ob-option-label">5–15 years</div><div class="ob-option-desc" style="font-style:italic;">Medium-term horizon</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ2','long')"><div class="ob-option-icon">🌅</div><div><div class="ob-option-label">15+ years</div><div class="ob-option-desc" style="font-style:italic;">Long-term — retirement or beyond</div></div></div>
       </div>
     </div>
     <div class="ob-quiz-block">
       <div class="ob-quiz-num">03</div>
       <div class="ob-quiz-question">How would you describe your investment goal?</div>
-      <div class="ob-pill-row">
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ3','preserve')">🏦 Preserve</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ3','balanced')">⚖️ Balanced</div>
-        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ3','maximize')">🚀 Maximize</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ3','preserve')"><div class="ob-option-icon">🏦</div><div><div class="ob-option-label">Preserve wealth</div><div class="ob-option-desc" style="font-style:italic;">Protect what I have, accept lower returns</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ3','balanced')"><div class="ob-option-icon">⚖️</div><div><div class="ob-option-label">Balanced growth</div><div class="ob-option-desc" style="font-style:italic;">Mix of stability and growth</div></div></div>
+        <div class="ob-option" onclick="selectQuizPill(this,'riskQ3','maximize')"><div class="ob-option-icon">🚀</div><div><div class="ob-option-label">Maximize growth</div><div class="ob-option-desc" style="font-style:italic;">I'm focused on maximum long-term growth and can handle volatility</div></div></div>
       </div>
     </div>
     <div class="risk-result-chip" id="riskResultChip">
@@ -774,7 +779,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <!-- OB3: Financial Snapshot -->
 <div class="screen" id="ob3">
   <div class="ob-header">
-    <button class="ob-back" onclick="state.lifeStage.includes('partner')?goTo('ob25'):goTo('ob25-risk')">← Back</button>
+    <button class="ob-back" onclick="goTo('ob25-risk')">← Back</button>
     <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:45%"></div></div>
     <div class="ob-question">Where are you right now?</div>
     <div class="ob-hint">Be honest — this is just your starting point.</div>
@@ -828,11 +833,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
       </div>
       <div class="ob-input-group">
         <div class="ob-label">How does your partner get paid?</div>
-        <select class="ob-input" id="sp4TypeSelect" onchange="sp4SelectType(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
-          <option value="w2">🏢 W-2 — Employer withholds taxes</option>
-          <option value="1099">💼 1099 — Self-employed / contractor</option>
-          <option value="both">🔀 Both — W-2 job + 1099 income</option>
-          <option value="none">🏠 Not working</option>
+        <div class="ob-pill-row" style="margin-top:4px;">
+          <div class="ob-pill selected" id="sp4-w2" onclick="sp4SelectTypePill('w2')">🏢 W-2</div>
+          <div class="ob-pill" id="sp4-1099" onclick="sp4SelectTypePill('1099')">💼 1099</div>
+          <div class="ob-pill" id="sp4-none" onclick="sp4SelectTypePill('none')">🏠 Not working</div>
+        </div>
+        <select class="ob-input" id="sp4TypeSelect" onchange="sp4SelectType(this.value)" style="display:none;">
+          <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option><option value="none">Not working</option>
         </select>
       </div>
 
@@ -919,6 +926,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
   <div class="ob-body">
 
+    <div style="background:rgba(30,35,64,0.04);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--slate);line-height:1.55;">💰 Tell us what you're putting away automatically. This is money that moves without you thinking about it.</div>
     <!-- RETIREMENT ACCOUNTS -->
     <div class="ob-label" style="margin-bottom:10px;">Retirement Accounts</div>
     <div id="retirementAccountRows"></div>
@@ -926,7 +934,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 
     <!-- AUTO SAVINGS -->
     <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
-    <div class="ob-label" style="margin-bottom:6px;">Do you auto-transfer to a savings account?</div>
+    <div class="ob-label" style="margin-bottom:2px;">Do you auto-transfer to a savings account?</div>
+    <div style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:6px;">An automatic transfer to a savings or high-yield savings account (HYSA) each month</div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
       <div class="ob-option" id="autoSavYes" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoSav(true)"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
       <div class="ob-option" id="autoSavNo" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoSav(false)"><div class="ob-option-label" style="font-size:14px;">No</div></div>
@@ -941,7 +950,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     </div>
 
     <!-- AUTO INVEST -->
-    <div class="ob-label" style="margin-bottom:6px;">Do you auto-invest to a brokerage or other account?</div>
+    <div class="ob-label" style="margin-bottom:2px;">Do you auto-invest to a brokerage or other account?</div>
+    <div style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:6px;">An automatic transfer to a brokerage or investment account — not retirement</div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
       <div class="ob-option" id="autoInvYes" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoInv(true)"><div class="ob-option-label" style="font-size:14px;">Yes</div></div>
       <div class="ob-option" id="autoInvNo" style="flex:1;justify-content:center;padding:12px;" onclick="toggleAutoInv(false)"><div class="ob-option-label" style="font-size:14px;">No</div></div>
@@ -1046,11 +1056,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 
     <!-- ASSETS -->
     <div class="al-section-label">Assets — what you own</div>
+    <div style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:10px;margin-top:-6px;">🏦 Include everything — property, accounts, investments.</div>
     <div id="assetRows"></div>
     <button class="add-debt-btn" id="addAssetBtn" onclick="addAssetRow()">+ Add an asset</button>
 
     <!-- LIABILITIES -->
     <div class="al-section-label" style="margin-top:20px;">Liabilities — what you owe</div>
+    <div style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:10px;margin-top:-6px;">📋 Include all debts and loans.</div>
     <div id="liabilityRows"></div>
     <button class="add-debt-btn" onclick="addLiabilityRow()">+ Add a liability</button>
 
@@ -1753,8 +1765,22 @@ function irsLimitLabel(type, age) {
   return lim ? `Max: ${fmt(lim)}/yr` : '';
 }
 
-const fmt = n => (n == null || isNaN(n) || !isFinite(n)) ? '$0' : '$' + Math.round(n).toLocaleString();
-const fmtK = n => (n == null || isNaN(n) || !isFinite(n)) ? '$0' : n >= 1000000 ? '$' + (n/1000000).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1000 ? '$' + (n/1000).toFixed(1).replace('.0','') + 'k' : fmt(n);
+// ── COMMA FORMATTING FOR INPUTS ──
+function formatNumberInput(el) {
+  const raw = el.value.replace(/,/g, '');
+  if (raw === '' || raw === '-') return;
+  const num = parseFloat(raw);
+  if (isNaN(num)) return;
+  el.dataset.rawValue = raw;
+  // Only format if not currently focused (to avoid cursor jumping)
+}
+function getInputNumber(el) {
+  if (!el) return 0;
+  const raw = (el.value || '').replace(/,/g, '');
+  return parseFloat(raw) || 0;
+}
+const fmt = n => { if (n == null || isNaN(n) || !isFinite(n)) return '$0'; const v = Math.round(n); return (v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString(); };
+const fmtK = n => { if (n == null || isNaN(n) || !isFinite(n)) return '$0'; const a = Math.abs(n); const sign = n < 0 ? '−' : ''; if (a >= 1000000) return sign + '$' + (a/1000000).toFixed(2).replace(/\.?0+$/, '') + 'M'; if (a >= 1000) return sign + '$' + (a/1000).toFixed(1).replace('.0','') + 'k'; return fmt(n); };
 const fmtSafe = n => (!n && n !== 0) || isNaN(n) || !isFinite(n) ? '' : '$' + Math.round(n).toLocaleString();
 
 // ── DEBT CLASSIFICATION ──
@@ -1790,6 +1816,9 @@ const GLOSSARY = {
   poa:             { term:'Power of Attorney (POA)', body:'A legal document authorizing someone to act on your behalf for financial or medical decisions if you\'re unable to. Every adult should have one — without it, even a spouse may face hurdles managing your affairs.' },
   estate_planning: { term:'Estate Planning', body:'Preparing what happens to your assets and dependents after you die or become incapacitated. Includes a will, beneficiary designations, and powers of attorney. It protects your family — not just your wealth.' },
   asset_mix:       { term:'Asset Mix', body:'How your investments are spread across different types — stocks, bonds, real estate, cash. Your mix should reflect how long until you need the money and how much risk you\'re comfortable with.' },
+  index_funds:     { term:'Index Funds', body:'A type of mutual fund or ETF that tracks a market index like the S&P 500. They offer broad diversification, low fees (0.03-0.20% vs 1%+ for active funds), and historically outperform most actively managed funds over the long term.' },
+  market_timing:   { term:'Why Not to Time the Market', body:'Missing just the 10 best market days over 20 years can cut your returns in half. Staying invested through volatility is statistically better than trying to buy low and sell high. Time in the market beats timing the market.' },
+  small_cap_tilt:  { term:'Small-Cap & International Tilt', body:'Small-cap stocks (smaller companies) and international stocks have historically delivered higher long-term returns than large-cap US stocks, though with more volatility. Adding 10-20% to each can boost growth for aggressive investors with long horizons.' },
 };
 
 const PHASE_INFO = {
@@ -1816,6 +1845,9 @@ const TERM_MAP = [
   [/\bPOA\b/,                                                                    'poa'],
   [/estate\s+planning/i,                                                         'estate_planning'],
   [/asset\s+mix|full\s+asset/i,                                                  'asset_mix'],
+  [/index\s+fund/i,                                                          'index_funds'],
+  [/market\s+timing/i,                                                       'market_timing'],
+  [/small.cap|international\s+tilt/i,                                        'small_cap_tilt'],
 ];
 
 // Terms shown even to intermediate users (higher-complexity only)
@@ -2052,6 +2084,12 @@ function addAssetRow() {
         <option value="Retirement Account - IRA">Retirement – IRA</option>
         <option value="Retirement Account - Roth IRA">Retirement – Roth IRA</option>
         <option value="Crypto">Crypto</option>
+        <option value="SEP IRA">SEP IRA</option>
+        <option value="403b">403b</option>
+        <option value="Rental Property">Rental Property</option>
+        <option value="Vacation Home">Vacation Home</option>
+        <option value="Cash Value Life Insurance">Cash Value Life Insurance</option>
+        <option value="Business">Business</option>
         <option value="Other">Other</option>
       </select>
       ${hasPartner ? `<select class="al-select asset-owner" style="max-width:80px;font-size:13px;">${ownerOptions()}</select>` : ''}
@@ -2105,6 +2143,8 @@ function addLiabilityRow() {
         <option value="Credit Card">Credit Card</option>
         <option value="Personal Loan">Personal Loan</option>
         <option value="Medical Debt">Medical Debt</option>
+        <option value="HELOC">HELOC</option>
+        <option value="Business Loan">Business Loan</option>
         <option value="Other">Other</option>
       </select>
       ${hasPartner ? `<select class="al-select liability-owner" style="max-width:80px;font-size:13px;">${ownerOptions()}</select>` : ''}
@@ -2127,15 +2167,23 @@ function addLiabilityRow() {
   document.getElementById('liabilityRows').appendChild(row);
   updateNetWorth();
 }
+
+const ASSET_DESCS = {
+  'Home':'Primary residence — current estimated market value','Car':'Current market value','Savings Account':'Emergency fund and short-term savings','Checking Account':'Day-to-day spending money','Brokerage Account':'Taxable investment account','Retirement Account - 401k':'Workplace retirement — split Traditional and Roth','Retirement Account - IRA':'Pre-tax retirement account','Retirement Account - Roth IRA':'After-tax retirement — tax-free growth','SEP IRA':'Self-employed retirement account','403b':'Nonprofit/school workplace retirement','Crypto':'Current market value of all crypto holdings','Rental Property':'Investment property generating rental income','Vacation Home':'Second home','Cash Value Life Insurance':'Permanent life insurance with investment component','Business':'Estimated value of a business you own','Other':'Anything else of significant value'
+};
+const LIABILITY_DESCS = {
+  'Mortgage':'Home loan — this is good debt building equity','Car Loan':'Vehicle financing','Student Loan':'Education debt — federal loans have income-based repayment options','Credit Card':'High-interest revolving debt — priority to pay off','Personal Loan':'Fixed-term loan','Medical Debt':'Often negotiable — many hospitals have hardship programs','HELOC':'Home equity line of credit','Business Loan':'Business financing','Other':'Other debt'
+};
+
 function nextOb(step) {
   if (step===1) { state.name = document.getElementById('firstName').value||'Friend'; state.age = parseInt(document.getElementById('userAge').value)||30; goTo('ob2'); }
   else if (step===2) {
-    goTo('ob25-literacy');
+    if (state.lifeStage.includes('partner')) goTo('ob25'); else goTo('ob25-literacy');
   }
   else if (step===25) {
     state.spouseName = document.getElementById('spouseName').value || '';
     state.spouseAge  = parseInt(document.getElementById('spouseAge').value) || null;
-    goTo('ob3');
+    goTo('ob25-literacy');
   }
   else if (step==='literacy') {
     const scores = {
@@ -2161,18 +2209,18 @@ function nextOb(step) {
       if (state[q] && scores[q][state[q]] !== undefined) total += scores[q][state[q]];
     });
     state.riskTolerance = total <= 2 ? 'conservative' : total <= 4 ? 'moderate' : 'aggressive';
-    if (state.lifeStage.includes('partner')) goTo('ob25'); else goTo('ob3');
+    goTo('ob3');
   }
   else if (step===3) goTo('ob4');
   else if (step===4) {
-    state.grossIncome   = parseFloat(document.getElementById('grossIncome').value) || 0;
+    state.grossIncome   = getInputNumber(document.getElementById('grossIncome'));
     state.incomeType    = ob4Type;
     state.filingStatus  = ob4Filing;
     state.stateCode     = document.getElementById('stateSelect').value || '';
-    state.monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+    state.monthlyExpenses = getInputNumber(document.getElementById('monthlyExpenses'));
     // Spouse income
     if (state.lifeStage.includes('partner')) {
-      state.spouseIncome     = parseFloat(document.getElementById('spouseGrossIncome').value) || 0;
+      state.spouseIncome     = getInputNumber(document.getElementById('spouseGrossIncome'));
       state.spouseIncomeType = sp4Type;
     }
     // Personalize savings screen headers
@@ -2247,6 +2295,7 @@ function renderRetirementRows() {
   const container = document.getElementById('retirementAccountRows');
   container.innerHTML = '';
   const availTypes = getAvailableRetirementTypes();
+  const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
   retirementRows.forEach((row, i) => {
     // If current type no longer available (e.g. Roth IRA after income limit), keep it but mark
     const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
@@ -2270,6 +2319,7 @@ function renderRetirementRows() {
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="syncRetRow(${i},'amt',this.value)"/></div>
           <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
         </div>
+        <div style="font-size:11px;font-style:italic;color:var(--muted);margin-top:4px;">${acctDescs[row.type]||''}</div>
         ${(() => {
           const lim = irsLimit(row.type, state.age);
           const annualAmt = (row.amt||0) * 12;
@@ -2504,6 +2554,7 @@ function renderSpouseRetRows() {
   if (!container) return;
   container.innerHTML = '';
   const availTypes = getSpouseRetirementTypes();
+  const acctDescs = {'401k / 403b':'Pre-tax workplace retirement account','Roth 401k':'After-tax workplace account — withdrawals are tax-free','Traditional IRA':'Pre-tax or after-tax depending on your income','Roth IRA':'After-tax account — withdrawals in retirement are tax-free','SEP IRA':'For self-employed — contribute up to 25% of net earnings','HSA':'Triple tax advantage — only with a high-deductible health plan','Pension':'Defined benefit — your employer pays you a set amount in retirement'};
   const spAge = state.spouseAge || 35;
   spouseRetRows.forEach((row, i) => {
     const isRoth = row.type === 'Roth 401k' || row.type === 'Roth IRA';
@@ -2527,6 +2578,7 @@ function renderSpouseRetRows() {
           <div style="position:relative;flex:1;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" value="${row.amt||''}" oninput="spouseRetRows[${i}].amt=parseFloat(this.value)||0"/></div>
           <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
         </div>
+        <div style="font-size:11px;font-style:italic;color:var(--muted);margin-top:4px;">${acctDescs[row.type]||''}</div>
         ${limLabel ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${limLabel} · 2025 IRS limit${spAge>=50?' (catch-up)':''}</div>` : ''}
       </div>`;
   });
@@ -3519,7 +3571,12 @@ function computeFinancials() {
   // Total assets from entered asset rows (liquid savings already included via assets)
   const totalAssetsValue = (state.assets||[]).reduce((s,a) => s+(a.value||0), 0);
   const userNetWorth     = totalAssetsValue - totalDebt;
-  const lifeInsuranceTarget     = hasDeps ? householdGross * 10 : gross * 5;
+  const totalLiabilities = totalDebt;
+  const hasKids = (state.lifeStage||[]).includes('kids');
+  const caregivingValue = hasKids ? 500000 : 0;
+  const lifeInsurancePrimary = (gross * 10) + totalLiabilities + caregivingValue;
+  const lifeInsuranceSpouse = spouseGross > 0 ? (spouseGross * 10) + totalLiabilities + caregivingValue : 0;
+  const lifeInsuranceTarget     = hasDeps ? lifeInsurancePrimary : gross * 5;
   const disabilityMonthlyTarget = Math.round(takeHomeMonthly * 0.6);
   const retirementMonthly = recommendedMonthly;
 
@@ -3531,7 +3588,7 @@ function computeFinancials() {
     savTarget, recommendedSavingsRate, recommendedMonthly, maxMonthly,
     savingsGapMonthly, savingsGapRate: savingsGapRate.toFixed(1), onTrack, opportunityMonthly,
     monthsToBuffer, totalDebt, highInterestDebt,
-    lifeInsuranceTarget, disabilityMonthlyTarget,
+    lifeInsuranceTarget, lifeInsurancePrimary, lifeInsuranceSpouse, disabilityMonthlyTarget,
     totalAssetsValue, userNetWorth,
     retirementMonthly, annualIncome: gross, grossAnnual: gross,
     householdGross, householdTakeHomeMonthly,
@@ -3786,7 +3843,8 @@ function getPhases() {
           if (onlyMortgage) return 'Your debt is a mortgage — focus on investing the difference vs. accelerating payoff';
           return badTotal > 0 ? `Eliminate high-interest debt — ${fmt(badTotal)} in bad debt (APR > 4%)` : 'No high-interest debt — stay disciplined and invest the difference';
         })(),
-        'Open or fully fund taxable investment account'
+        'Open or fully fund taxable investment account',
+        ...(state.riskTolerance === 'aggressive' ? ['Maximize equity exposure — target 90-100% stocks in long-term accounts','Focus on low-cost index funds: total market, S&P 500, international','Avoid market timing — stay invested through volatility','Consider small-cap and international tilt for higher growth potential'] : [])
       ],
       hints:[
         'Even increasing by 1% of income per year adds up significantly over a career.',
@@ -3800,13 +3858,16 @@ function getPhases() {
       desc:'Overlay growth with protection when others depend on your income.',
       target: inc > 0 && hasDeps ? `Target: ${fmtK(c.lifeInsuranceTarget)} life insurance` : null,
       actions:[
-        inc > 0 && hasDeps ? `Review life insurance — target ${fmtK(c.lifeInsuranceTarget)} (10× income)` : 'Review life insurance coverage',
+        inc > 0 && hasDeps ? `${state.name||'You'}: Target ${fmtK(c.lifeInsurancePrimary||c.lifeInsuranceTarget)} life insurance` : 'Review life insurance coverage',
+        ...(inc > 0 && hasDeps && c.lifeInsuranceSpouse > 0 ? [`${state.spouseName||'Partner'}: Target ${fmtK(c.lifeInsuranceSpouse)} life insurance`] : []),
         inc > 0 ? `Check disability insurance — should cover ${fmt(c.disabilityMonthlyTarget)}/mo (60% of income)` : 'Check disability insurance',
         'Name or update beneficiaries on all accounts',
         hasDeps ? 'Establish guardian designations for dependents' : 'Create a basic will or estate document',
         'Build a protection-focused to-do checklist'
       ],
       hints:[
+        'Life insurance coverage accounts for 10× income + all debts + caregiving value if you have children.',
+        ...(inc > 0 && hasDeps && c.lifeInsuranceSpouse > 0 ? ['Both partners need coverage — the value of caregiving is often overlooked.'] : []),
         'Term life insurance is affordable and pays out a lump sum to your family if you die.',
         'You\'re statistically more likely to be disabled during your working years than to die. This coverage protects your income.',
         'Log in to each retirement account and insurance policy and confirm the right people are listed.',
@@ -3829,7 +3890,8 @@ function getPhases() {
         'Review tax diversification: pre-tax vs. Roth vs. taxable balance',
         c.totalDebt > 0 ? 'Confirm all debt is eliminated before accelerating optimization' : 'Reduce concentration risk in employer stock or single sector',
         'Align assets to time horizons (near-term vs. long-term)',
-        'Preview retirement withdrawal sequencing strategy'
+        'Preview retirement withdrawal sequencing strategy',
+        ...(state.riskTolerance === 'aggressive' ? ['Keep aggressive allocation only in long-term accounts (15+ year horizon)','Review and rebalance annually — not more frequently'] : [])
       ],
       hints:[
         'Knowing exactly what you own and where it\'s held is the foundation of tax-efficient investing.',
@@ -4103,9 +4165,21 @@ function openProgress() {
     const status = ph.num < state.currentPhase ? 'complete' : ph.num===state.currentPhase ? 'active' : 'locked';
     const color = status==='complete'?'#4CAF50':status==='active'?'var(--pink)':'var(--border)';
     const pctColor = status==='complete'?'#2E7D32':status==='active'?'var(--pink)':'var(--muted)';
-    const label = status==='locked'?'Locked':status==='complete'?'✓ Complete':`${done}/${total} done`;
+    const label = status==='locked'?'Locked': pct >= 100 ?'✓ Phase Complete':`${done}/${total} done`;
+    if (pct >= 100) color = '#4CAF50';
     pp.innerHTML+=`<div class="pps-card"><div class="pps-top"><div class="pps-name">${ph.emoji} ${ph.name}</div><div class="pps-pct" style="color:${pctColor}">${label}</div></div><div class="pps-bar"><div class="pps-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
   });
+  // Auto-advance phase if current phase is 100% complete
+  const curKey = `p${state.currentPhase}`;
+  const curPhaseObj = phases.find(p => p.num === state.currentPhase);
+  if (curPhaseObj) {
+    const curDone = (state.checks[curKey]||[]).length;
+    const curTotal = curPhaseObj.actions.length;
+    if (curDone >= curTotal && state.currentPhase < 5) {
+      state.currentPhase++;
+      saveState();
+    }
+  }
   const na = document.getElementById('progNextAction'); na.innerHTML='';
   const curPhase = phases.find(p=>p.num===state.currentPhase);
   if (curPhase) {
@@ -4158,40 +4232,86 @@ function renderNetWorthReport() {
   const totalA = assets.reduce((s,a) => s + (a.value||0), 0);
   const totalL = liabs.reduce((s,l) => s + (l.amount||0), 0);
   const nw     = totalA - totalL;
-  const nwColor = nw >= 0 ? 'var(--cream)' : '#ff7b7b';
+  const nwColor = nw >= 0 ? '#2E7D32' : 'var(--pink)';
   const aPct = totalA+totalL > 0 ? Math.max(4, (totalA/(totalA+totalL))*100) : 50;
   const lPct = 100 - aPct;
+
+  // Categorize assets
+  const categories = {};
+  assets.forEach(a => {
+    if (!a.value && !a.tradBal && !a.rothBal) return;
+    const val = a.tradBal || a.rothBal ? (a.tradBal||0)+(a.rothBal||0) : a.value||0;
+    let cat = 'Other';
+    const t = (a.type||'').toLowerCase();
+    if (t.includes('401k')||t.includes('ira')||t.includes('sep')||t.includes('403b')||t.includes('pension')||t.includes('retirement')) cat = 'Retirement';
+    else if (t.includes('home')||t.includes('rental')||t.includes('vacation')||t.includes('property')) cat = 'Real Estate';
+    else if (t.includes('savings')||t.includes('checking')||t.includes('hysa')) cat = 'Cash';
+    else if (t.includes('brokerage')||t.includes('crypto')||t.includes('invest')) cat = 'Investments';
+    categories[cat] = (categories[cat]||0) + val;
+  });
+  const catColors = { Retirement:'var(--navy)', 'Real Estate':'var(--slate)', Cash:'#4CAF50', Investments:'var(--pink)', Other:'var(--muted)' };
+  const catTotal = Object.values(categories).reduce((s,v) => s+v, 0) || 1;
+
+  // Donut chart
+  let donutSegs = '';
+  let offset = 0;
+  Object.entries(categories).forEach(([cat, val]) => {
+    const pct = (val / catTotal) * 100;
+    const dash = `${pct * 2.51327} ${251.327 - pct * 2.51327}`;
+    donutSegs += `<circle cx="50" cy="50" r="40" fill="none" stroke="${catColors[cat]||'var(--muted)'}" stroke-width="12" stroke-dasharray="${dash}" stroke-dashoffset="${-offset * 2.51327}" transform="rotate(-90 50 50)"/>`;
+    offset += pct;
+  });
+
+  const iconMap = {'Home':'🏠','Car':'🚗','Savings Account':'💰','Checking Account':'🏦','Brokerage Account':'📊','Crypto':'₿','Rental Property':'🏘️','Vacation Home':'🏖️','Business':'💼','Cash Value Life Insurance':'🛡️'};
+  const liabIcons = {'Mortgage':'🏠','Car Loan':'🚗','Student Loan':'🎓','Credit Card':'💳','Personal Loan':'📄','Medical Debt':'🏥','HELOC':'🏠','Business Loan':'💼'};
 
   let assetRows = '';
   assets.forEach(a => {
     if (!a.value && !a.tradBal && !a.rothBal) return;
-    if (a.tradBal || a.rothBal) {
-      if (a.tradBal) assetRows += assetBreakdownRow(a.type + ' — Traditional', a.tradBal, '401k', a.owner, false);
-      if (a.rothBal) assetRows += assetBreakdownRow(a.type + ' — Roth', a.rothBal, 'Roth', a.owner, false);
-    } else {
-      assetRows += assetBreakdownRow(a.type, a.value, a.type.split(' ')[0], a.owner, false);
-    }
+    const val = a.tradBal || a.rothBal ? (a.tradBal||0)+(a.rothBal||0) : a.value||0;
+    const icon = iconMap[a.type] || '💎';
+    const owner = a.owner === 'partner' ? (state.spouseName||'Partner') : a.owner === 'joint' ? 'Joint' : '';
+    assetRows += `<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:10px;">
+      <span style="font-size:18px;">${icon}</span>
+      <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--navy);">${a.type}${owner ? ' <span style="font-size:10px;color:var(--muted);font-weight:500;">'+owner+'</span>' : ''}</div></div>
+      <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--navy);">${fmt(val)}</div>
+    </div>`;
   });
 
   let liabRows = '';
   liabs.forEach(l => {
-    liabRows += assetBreakdownRow(l.type, l.amount, l.apr > 0 ? `${l.apr}% APR` : 'Liability', l.owner, true);
+    const icon = liabIcons[l.type] || '📋';
+    liabRows += `<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:10px;">
+      <span style="font-size:18px;">${icon}</span>
+      <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--navy);">${l.type}</div>${l.apr > 0 ? `<span style="font-size:10px;font-weight:700;color:var(--pink);">${l.apr}% APR</span>` : ''}</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--pink);">−${fmt(l.amount)}</div>
+    </div>`;
   });
 
   body.innerHTML = `
-    <div class="nw-summary">
-      <div class="nw-total-label">Estimated Net Worth</div>
-      <div class="nw-total-val" style="color:${nwColor}">${nw<0?'−$':'$'}${Math.abs(Math.round(nw)).toLocaleString()}</div>
-      <div class="nw-bar-track">
-        <div class="nw-bar-assets" style="width:${aPct.toFixed(1)}%"></div>
-        <div class="nw-bar-liab" style="width:${lPct.toFixed(1)}%"></div>
-      </div>
-      <div class="nw-summary-row"><span>Total assets</span><span>${fmt(totalA)}</span></div>
-      <div class="nw-summary-row" style="margin-top:4px;"><span>Total liabilities</span><span>−${fmt(totalL)}</span></div>
+    <div style="text-align:center;padding:8px 0 20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Net Worth</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:38px;color:${nwColor};">${nw<0?'−':''}${fmt(Math.abs(nw)).replace('$','$')}</div>
     </div>
-    ${assets.length > 0 || state.currentSavings > 0 ? `<div class="rpt-section-label">Assets</div>${assetRows}` : '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px 0;">No assets entered yet — add them in the Assets & Liabilities step.</div>'}
-    ${liabs.length > 0 ? `<div class="rpt-section-label" style="margin-top:16px;">Liabilities</div>${liabRows}` : ''}
-    <p class="compliance-note">Net worth is estimated from data you entered. Actual values may differ.</p>`;
+    <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin-bottom:20px;">
+      <div style="width:${aPct.toFixed(1)}%;background:var(--navy);border-radius:5px 0 0 5px;"></div>
+      <div style="width:${lPct.toFixed(1)}%;background:var(--pink);border-radius:0 5px 5px 0;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
+      <div style="background:rgba(30,35,64,0.06);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);">Assets: ${fmt(totalA)}</div>
+      <div style="background:rgba(232,24,109,0.06);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--pink);">Liabilities: ${fmt(totalL)}</div>
+    </div>
+    ${assets.length > 0 ? `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Assets</div>${assetRows}` : ''}
+    ${liabs.length > 0 ? `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;">Liabilities</div>${liabRows}` : ''}
+    ${Object.keys(categories).length > 1 ? `
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:20px 0 12px;">Asset Allocation</div>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <svg viewBox="0 0 100 100" style="width:100px;height:100px;flex-shrink:0;">${donutSegs}<text x="50" y="54" text-anchor="middle" font-family="DM Serif Display,serif" font-size="14" fill="var(--navy)">${Object.keys(categories).length}</text><text x="50" y="64" text-anchor="middle" font-size="7" fill="var(--muted)">categories</text></svg>
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+        ${Object.entries(categories).map(([cat, val]) => `<div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:${catColors[cat]||'var(--muted)'};"></div><span style="font-size:12px;color:var(--slate);">${cat}</span></div><span style="font-size:12px;font-weight:600;color:var(--navy);">${fmt(val)}</span></div>`).join('')}
+      </div>
+    </div>` : ''}
+    <p class="compliance-note" style="margin-top:16px;">Net worth is estimated from data you entered. Actual values may differ.</p>`;
 }
 
 function assetBreakdownRow(label, value, tag, owner, isLiab) {
@@ -4210,36 +4330,103 @@ function assetBreakdownRow(label, value, tag, owner, isLiab) {
 function renderCashFlowReport() {
   const body = document.getElementById('rptBody');
   if (!state.calc || !state.grossIncome) {
-    body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">Complete onboarding to see your cash flow report.</div>';
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">Complete onboarding to see your projection.</div>';
     return;
   }
   const c = state.calc;
-  const t = state.taxCalc;
-  const grossMo  = (c.householdGross || state.grossIncome) / 12;
-  const taxMo    = c.taxMonthly || 0;
-  const expMo    = c.expMonthly || 0;
-  const savMo    = c.savingsMonthly || 0;
-  const surplusMo = c.unallocMonthly || 0;
+  const currentNW = c.userNetWorth || 0;
+  const monthlySavings = c.totalActualSavingsMonthly || 0;
+  const monthlyExp = state.monthlyExpenses || 0;
+  const age = state.age || 30;
+  const retireAge = state.goalRetire?.targetAge || 65;
+  const years = 30;
 
-  const row = (color, label, sub, amount, cls) =>
-    `<div class="cf-row"><div class="cf-bar" style="background:${color}"></div><div class="cf-info"><div class="cf-label">${label}</div>${sub?`<div class="cf-sublabel">${sub}</div>`:''}</div><div class="cf-amount ${cls}">${amount}</div></div>`;
+  let scenario = state._cfScenario || 'base';
+  const scenarios = {
+    base: { growth: 0.07, inflation: 0.03, label: 'Base case' },
+    conservative: { growth: 0.05, inflation: 0.03, label: 'Conservative' },
+    optimistic: { growth: 0.09, inflation: 0.02, label: 'Optimistic' }
+  };
+  const sc = scenarios[scenario];
+
+  // Calculate projections
+  const points = [];
+  let nw = currentNW;
+  let annualSav = monthlySavings * 12;
+  let annualExp = monthlyExp * 12;
+  for (let y = 0; y <= years; y++) {
+    points.push({ year: y, age: age + y, nw: nw, exp: annualExp });
+    nw = nw * (1 + sc.growth) + annualSav;
+    annualExp *= (1 + sc.inflation);
+  }
+  const maxNW = Math.max(...points.map(p => p.nw), 1);
+  const maxExp = Math.max(...points.map(p => p.exp), 1);
+  const maxVal = Math.max(maxNW, maxExp * 2);
+
+  // SVG chart
+  const w = 320, h = 200, pad = 40;
+  const cw = w - pad * 2, ch = h - pad - 20;
+  const toX = y => pad + (y / years) * cw;
+  const toY = v => h - pad - (Math.max(0, v) / maxVal) * ch;
+
+  let nwPath = `M ${toX(0)} ${toY(points[0].nw)}`;
+  let expPath = `M ${toX(0)} ${toY(points[0].exp)}`;
+  let areaPath = `M ${toX(0)} ${toY(points[0].nw)}`;
+  points.forEach((p, i) => {
+    if (i > 0) { nwPath += ` L ${toX(i)} ${toY(p.nw)}`; expPath += ` L ${toX(i)} ${toY(p.exp)}`; }
+    areaPath += ` L ${toX(i)} ${toY(p.nw)}`;
+  });
+  areaPath += ` L ${toX(years)} ${h - pad} L ${toX(0)} ${h - pad} Z`;
+
+  const finalNW = points[years].nw;
+  const finalLabel = finalNW >= 1000000 ? '$' + (finalNW / 1000000).toFixed(1) + 'M' : fmtK(finalNW);
+  const retireIdx = Math.min(retireAge - age, years);
+  const retireNW = retireIdx >= 0 && retireIdx <= years ? points[retireIdx]?.nw || 0 : finalNW;
+  const retireLabel = retireNW >= 1000000 ? '$' + (retireNW / 1000000).toFixed(1) + 'M' : fmtK(retireNW);
+
+  // Y-axis labels
+  const ySteps = 4;
+  let yLabels = '';
+  for (let i = 0; i <= ySteps; i++) {
+    const val = (maxVal / ySteps) * i;
+    const label = val >= 1000000 ? '$' + (val / 1000000).toFixed(1) + 'M' : val >= 1000 ? '$' + Math.round(val / 1000) + 'k' : '$' + Math.round(val);
+    const y2 = h - pad - (i / ySteps) * ch;
+    yLabels += `<text x="${pad - 4}" y="${y2 + 3}" text-anchor="end" fill="var(--muted)" font-size="9">${label}</text>`;
+    yLabels += `<line x1="${pad}" x2="${w - pad}" y1="${y2}" y2="${y2}" stroke="var(--border)" stroke-width="0.5"/>`;
+  }
+
+  // Retirement marker
+  let retireMarker = '';
+  if (retireIdx > 0 && retireIdx <= years) {
+    const rx = toX(retireIdx);
+    retireMarker = `<line x1="${rx}" x2="${rx}" y1="20" y2="${h - pad}" stroke="var(--pink)" stroke-width="1" stroke-dasharray="4 3"/><text x="${rx}" y="16" text-anchor="middle" fill="var(--pink)" font-size="9" font-weight="600">Retire ${retireAge}</text>`;
+  }
 
   body.innerHTML = `
-    <div class="rpt-section-label">Monthly Cash Flow</div>
-    ${row('#4CAF50', 'Gross Income', c.householdGross > state.grossIncome ? 'Household combined' : 'Before taxes', '+'+fmt(grossMo)+'/mo', 'pos')}
-    ${row('var(--pink)', 'Taxes', `${(t.effectiveRate*100).toFixed(1)}% effective rate`, '−'+fmt(taxMo)+'/mo', 'neg')}
-    ${t.preTaxAnnual > 0 ? row('#2196F3', 'Pre-tax contributions', '401k / IRA / SEP — reduces taxable income', '−'+fmt(t.preTaxAnnual/12)+'/mo', 'neg') : ''}
-    ${row('#E8786D', 'Living expenses', 'Rent, food, utilities, transport', '−'+fmt(expMo)+'/mo', 'neg')}
-    ${savMo > 0 ? row('#8BC34A', 'Intentional savings', 'Retirement accounts + auto-transfers', '−'+fmt(savMo)+'/mo', 'neg') : ''}
-    ${c.savingsGapMonthly > 0 ? row('#FFB300', 'Savings gap', `${fmt(c.savingsGapMonthly)}/mo short of ${c.savTarget?.label||'15%'} target`, '↑'+fmt(c.savingsGapMonthly)+'/mo', '') : ''}
-    <div class="cf-surplus-card">
-      <div>
-        <div class="cf-surplus-label">Unallocated Surplus</div>
-        <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-top:2px;">After all tracked outflows</div>
-      </div>
-      <div class="cf-surplus-val" style="color:${surplusMo>=0?'var(--cream)':'#ff7b7b'}">${surplusMo>=0?'+':'-'}${fmt(Math.abs(surplusMo))}/mo</div>
+    <div style="display:flex;gap:6px;margin-bottom:16px;">
+      ${Object.keys(scenarios).map(k => `<div class="ob-pill${scenario===k?' selected':''}" onclick="state._cfScenario='${k}';renderCashFlowReport()" style="flex:1;padding:8px 6px;font-size:12px;">${scenarios[k].label}</div>`).join('')}
     </div>
-    <p class="compliance-note">Based on data you entered. Not a guarantee of actual cash flow.</p>`;
+    <div style="background:white;border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:12px;">
+      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;">
+        ${yLabels}
+        <path d="${areaPath}" fill="rgba(232,24,109,0.06)"/>
+        <path d="${nwPath}" fill="none" stroke="var(--pink)" stroke-width="2.5"/>
+        <path d="${expPath}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        ${retireMarker}
+        <text x="${pad}" y="${h - 8}" fill="var(--muted)" font-size="9">Today (${age})</text>
+        <text x="${w - pad}" y="${h - 8}" text-anchor="end" fill="var(--muted)" font-size="9">Age ${age + years}</text>
+      </svg>
+      <div style="display:flex;gap:16px;margin-top:10px;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--slate);"><div style="width:12px;height:3px;border-radius:1px;background:var(--pink);"></div>Net worth</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);"><div style="width:12px;height:3px;border-radius:1px;background:var(--muted);border-top:1px dashed var(--muted);"></div>Expenses</div>
+      </div>
+    </div>
+    <div style="background:var(--navy);border-radius:16px;padding:18px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-bottom:6px;">Projected net worth at age ${Math.min(retireAge, age + years)}</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:var(--cream);">${retireLabel}</div>
+      <div style="font-size:12px;color:rgba(245,240,232,0.5);margin-top:4px;">${sc.label}: ${(sc.growth*100).toFixed(0)}% growth, ${(sc.inflation*100).toFixed(0)}% inflation</div>
+    </div>
+    <p class="compliance-note" style="margin-top:12px;">Projections are illustrative only. Actual returns will vary. Not financial advice.</p>`;
 }
 
 function openProfile() {
@@ -4493,9 +4680,9 @@ nextOb = function(step) {
       state.incomeType = ob4Type;
       state.filingStatus = ob4Filing;
       state.stateCode = document.getElementById('stateSelect').value || '';
-      state.monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+      state.monthlyExpenses = getInputNumber(document.getElementById('monthlyExpenses'));
       if (state.lifeStage.includes('partner')) {
-        state.spouseIncome = parseFloat(document.getElementById('spouseGrossIncome').value) || 0;
+        state.spouseIncome = getInputNumber(document.getElementById('spouseGrossIncome'));
         state.spouseIncomeType = sp4Type;
       }
       computeFinancials();
@@ -4525,14 +4712,12 @@ const PHASE_CLASSES = ['','foundation','growth','protection','optimization','leg
 
 // ── PREMIUM QUIZ/PILL HELPERS ──
 function selectQuizPill(el, group, val) {
-  const parent = el.closest('.ob-quiz-block') || el.closest('.ob-pill-row');
-  if (parent) parent.querySelectorAll('.ob-pill').forEach(p => p.classList.remove('selected'));
+  const parent = el.closest('.ob-quiz-block');
+  if (parent) parent.querySelectorAll('.ob-pill,.ob-option').forEach(p => p.classList.remove('selected'));
   el.classList.add('selected');
   state[group] = val;
-  // Reveal next quiz block
   if (group === 'quizQ1') { const b2 = document.getElementById('quizBlock2'); if (b2) b2.style.opacity = '1'; }
   if (group === 'quizQ2') { const b3 = document.getElementById('quizBlock3'); if (b3) b3.style.opacity = '1'; }
-  // Show risk result if all 3 risk questions answered
   if (['riskQ1','riskQ2','riskQ3'].includes(group)) {
     if (state.riskQ1 && state.riskQ2 && state.riskQ3) {
       const scores = { riskQ1:{sell:0,hold:1,buy:2}, riskQ2:{soon:0,medium:1,long:2}, riskQ3:{preserve:0,balanced:1,maximize:2} };
@@ -4571,6 +4756,17 @@ function ob4SelectFilingPill(filing) {
     const map = {ob4FilingSingle:'single',ob4FilingMarried:'married',ob4FilingHoh:'hoh'};
     if (el) el.classList.toggle('selected', map[id] === filing);
   });
+}
+
+function sp4SelectTypePill(type) {
+  sp4Type = type;
+  document.getElementById('sp4TypeSelect').value = type;
+  ['sp4-w2','sp4-1099','sp4-none'].forEach(id => {
+    const el = document.getElementById(id);
+    const map = {'sp4-w2':'w2','sp4-1099':'1099','sp4-none':'none'};
+    if (el) el.classList.toggle('selected', map[id] === type);
+  });
+  ob4UpdateHouseholdPreview();
 }
 
 // Challenge response
