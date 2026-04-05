@@ -603,6 +603,21 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .risk-profile-pill.moderate { background:rgba(245,158,11,0.1); color:#B45309; }
 .risk-profile-pill.aggressive { background:rgba(16,185,129,0.1); color:#059669; }
 
+/* BOTTOM SHEET MODAL */
+.bottom-sheet-backdrop { display:none; position:fixed; inset:0; background:rgba(30,35,64,0.5); z-index:160; }
+.bottom-sheet-backdrop.show { display:block; }
+.bottom-sheet { position:fixed; bottom:0; left:0; right:0; max-height:85vh; background:var(--cream); border-radius:20px 20px 0 0; z-index:161; transform:translateY(100%); transition:transform 0.3s ease; overflow-y:auto; padding-bottom:40px; }
+.bottom-sheet.show { transform:translateY(0); }
+.bottom-sheet-handle { width:36px; height:4px; border-radius:2px; background:var(--border); margin:10px auto 0; }
+.bottom-sheet-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--navy); padding:16px 24px 8px; }
+.bottom-sheet-body { padding:0 24px 24px; }
+.type-grid { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 16px; }
+.type-grid-item { width:calc(25% - 8px); display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px; border-radius:14px; border:2px solid transparent; cursor:pointer; transition:all 0.2s; }
+.type-grid-item:hover { background:rgba(232,24,109,0.04); }
+.type-grid-item.selected { border-color:var(--pink); background:rgba(232,24,109,0.04); }
+.type-grid-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+.type-grid-label { font-size:10px; font-weight:600; color:var(--navy); text-align:center; line-height:1.2; }
+
 /* ROADMAP ACTION CARDS */
 .phase-action-item { background:white; border:1px solid var(--border); border-radius:12px; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--navy); line-height:1.4; margin-bottom:0; }
 .action-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; background:white; margin-top:0; }
@@ -827,43 +842,47 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   <div class="ob-body">
 
     <!-- ── YOUR INCOME ── -->
-    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);margin-bottom:4px;" id="ob4YouLabel">Your Income</div>
-    <div class="ob-input-group">
-      <div class="ob-label">Gross Annual Income</div>
-      <div class="ob-sublabel">Total before any taxes or deductions</div>
-      <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:28px;color:var(--muted);pointer-events:none;">$</span><input class="ob-input-hero" id="grossIncome" type="number" placeholder="0" min="0" oninput="ob4UpdateHouseholdPreview()" style="padding-left:28px;"/></div>
-    </div>
-    <div class="ob-input-group">
-      <div class="ob-label">How do you get paid?</div>
-      <div class="ob-pill-row" style="margin-top:4px;">
-        <div class="ob-pill selected" id="ob4TypeW2" onclick="ob4SelectTypePill('w2')">🏢 W-2</div>
-        <div class="ob-pill" id="ob4Type1099" onclick="ob4SelectTypePill('1099')">💼 1099</div>
-        <div class="ob-pill" id="ob4TypeBoth" onclick="ob4SelectTypePill('both')">🔀 Both</div>
+    <div style="background:white;border-radius:18px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:4px;border-bottom:2px solid var(--pink);display:inline-block;padding-bottom:4px;" id="ob4YouLabel">Your Income</div>
+      <div class="ob-input-group" style="margin-top:14px;">
+        <div class="ob-label">Gross Annual Income</div>
+        <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:28px;color:var(--muted);pointer-events:none;">$</span><input class="ob-input-hero" id="grossIncome" type="text" inputmode="numeric" placeholder="0" oninput="formatNumberInput(this);ob4UpdateHouseholdPreview()" style="padding-left:28px;"/></div>
       </div>
-      <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="display:none;">
-        <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option>
-      </select>
+      <div class="ob-input-group" style="margin-top:12px;">
+        <div class="ob-label">How do you get paid?</div>
+        <div class="ob-pill-row" style="margin-top:4px;">
+          <div class="ob-pill selected" id="ob4TypeW2" onclick="ob4SelectTypePill('w2')">🏢 W-2</div>
+          <div class="ob-pill" id="ob4Type1099" onclick="ob4SelectTypePill('1099')">💼 1099</div>
+          <div class="ob-pill" id="ob4TypeBoth" onclick="ob4SelectTypePill('both')">🔀 Both</div>
+        </div>
+        <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="display:none;">
+          <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option>
+        </select>
+      </div>
     </div>
 
     <!-- ── SPOUSE INCOME (shown only if partner selected) ── -->
     <div id="spouseIncomeSection" style="display:none;">
-      <div style="height:1px;background:var(--border);margin:4px 0 16px;"></div>
-      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);margin-bottom:4px;" id="ob4SpouseLabel">Partner's Income</div>
-      <div class="ob-input-group">
-        <div class="ob-label">Gross Annual Income</div>
-        <div class="ob-sublabel">Enter 0 if your partner doesn't work</div>
-        <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="spouseGrossIncome" type="number" placeholder="65,000" min="0" oninput="ob4UpdateHouseholdPreview()"/></div>
-      </div>
-      <div class="ob-input-group">
-        <div class="ob-label">How does your partner get paid?</div>
-        <div class="ob-pill-row" style="margin-top:4px;">
-          <div class="ob-pill selected" id="sp4-w2" onclick="sp4SelectTypePill('w2')">🏢 W-2</div>
-          <div class="ob-pill" id="sp4-1099" onclick="sp4SelectTypePill('1099')">💼 1099</div>
-          <div class="ob-pill" id="sp4-none" onclick="sp4SelectTypePill('none')">🏠 Not working</div>
+      <div style="height:16px;"></div>
+      <div style="background:white;border-radius:18px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+        <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:4px;border-bottom:2px solid var(--pink);display:inline-block;padding-bottom:4px;" id="ob4SpouseLabel">Partner's Income</div>
+        <div class="ob-input-group" style="margin-top:14px;">
+          <div class="ob-label">Gross Annual Income</div>
+          <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:28px;color:var(--muted);pointer-events:none;">$</span><input class="ob-input-hero" id="spouseGrossIncome" type="text" inputmode="numeric" placeholder="0" oninput="formatNumberInput(this);ob4UpdateHouseholdPreview()" style="padding-left:28px;"/></div>
+          <div id="spouseNotWorkingNote" style="display:none;font-size:12px;font-style:italic;color:var(--muted);margin-top:4px;">Caring for the family? That has enormous value too.</div>
         </div>
-        <select class="ob-input" id="sp4TypeSelect" onchange="sp4SelectType(this.value)" style="display:none;">
-          <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option><option value="none">Not working</option>
-        </select>
+        <div class="ob-input-group" style="margin-top:12px;">
+          <div class="ob-label">How does your partner get paid?</div>
+          <div class="ob-pill-row" style="margin-top:4px;">
+            <div class="ob-pill selected" id="sp4-w2" onclick="sp4SelectTypePill('w2')">🏢 W-2</div>
+            <div class="ob-pill" id="sp4-1099" onclick="sp4SelectTypePill('1099')">💼 1099</div>
+            <div class="ob-pill" id="sp4-both" onclick="sp4SelectTypePill('both')">🔀 Both</div>
+            <div class="ob-pill" id="sp4-none" onclick="sp4SelectTypePill('none')">🏠 Not working</div>
+          </div>
+          <select class="ob-input" id="sp4TypeSelect" onchange="sp4SelectType(this.value)" style="display:none;">
+            <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option><option value="none">Not working</option>
+          </select>
+        </div>
       </div>
 
       <!-- Household preview card -->
@@ -933,7 +952,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-input-group">
       <div class="ob-label">Monthly Living Expenses</div>
       <div class="ob-sublabel">Combined household — rent, food, utilities, transport, etc.</div>
-      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="monthlyExpenses" type="number" placeholder="3,500" min="0"/></div>
+      <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted);">$</span><input class="ob-input-hero" id="monthlyExpenses" type="text" inputmode="numeric" placeholder="0" oninput="formatNumberInput(this)" style="font-size:24px;padding-left:24px;"/></div>
     </div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb(4)">Continue →</button></div>
@@ -1081,13 +1100,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="al-section-label">Assets — what you own</div>
     <div style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:10px;margin-top:-6px;">🏦 Include everything — property, accounts, investments.</div>
     <div id="assetRows"></div>
-    <button class="add-debt-btn" id="addAssetBtn" onclick="addAssetRow()">+ Add an asset</button>
+    <button class="add-debt-btn" id="addAssetBtn" onclick="openAssetSheet()">+ Add an asset</button>
 
     <!-- LIABILITIES -->
     <div class="al-section-label" style="margin-top:20px;">Liabilities — what you owe</div>
     <div style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:10px;margin-top:-6px;">📋 Include all debts and loans.</div>
     <div id="liabilityRows"></div>
-    <button class="add-debt-btn" onclick="addLiabilityRow()">+ Add a liability</button>
+    <button class="add-debt-btn" onclick="openLiabSheet()">+ Add a liability</button>
 
     <!-- Net worth -->
     <div class="networth-card">
@@ -1645,6 +1664,22 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   </div>
 </div>
 
+<!-- ASSET BOTTOM SHEET -->
+<div class="bottom-sheet-backdrop" id="assetSheetBackdrop" onclick="closeAssetSheet()"></div>
+<div class="bottom-sheet" id="assetSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-title" id="assetSheetTitle">Add an Asset</div>
+  <div class="bottom-sheet-body" id="assetSheetBody"></div>
+</div>
+
+<!-- LIABILITY BOTTOM SHEET -->
+<div class="bottom-sheet-backdrop" id="liabSheetBackdrop" onclick="closeLiabSheet()"></div>
+<div class="bottom-sheet" id="liabSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-title">Add a Liability</div>
+  <div class="bottom-sheet-body" id="liabSheetBody"></div>
+</div>
+
 <!-- TOOLTIP POPUP -->
 <div id="tooltipBackdrop" onclick="hideTip()"></div>
 <div id="tooltipPopup">
@@ -1792,16 +1827,27 @@ function irsLimitLabel(type, age) {
 
 // ── COMMA FORMATTING FOR INPUTS ──
 function formatNumberInput(el) {
-  const raw = el.value.replace(/,/g, '');
-  if (raw === '' || raw === '-') return;
-  const num = parseFloat(raw);
-  if (isNaN(num)) return;
-  el.dataset.rawValue = raw;
-  // Only format if not currently focused (to avoid cursor jumping)
+  let raw = el.value.replace(/[^0-9.]/g, '');
+  if (raw === '') { el.dataset.raw = ''; return; }
+  // Handle multiple decimal points
+  const parts = raw.split('.');
+  if (parts.length > 2) raw = parts[0] + '.' + parts.slice(1).join('');
+  el.dataset.raw = raw;
+  // Format with commas
+  const numParts = raw.split('.');
+  numParts[0] = numParts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const formatted = numParts.join('.');
+  // Only update display if different (preserve cursor)
+  if (el.value !== formatted) {
+    const pos = el.selectionStart;
+    const diff = formatted.length - el.value.length;
+    el.value = formatted;
+    el.setSelectionRange(pos + diff, pos + diff);
+  }
 }
 function getInputNumber(el) {
   if (!el) return 0;
-  const raw = (el.value || '').replace(/,/g, '');
+  const raw = el.dataset?.raw || (el.value || '').replace(/,/g, '');
   return parseFloat(raw) || 0;
 }
 const fmt = n => { if (n == null || isNaN(n) || !isFinite(n)) return '$0'; const v = Math.round(n); return (v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString(); };
@@ -1862,6 +1908,7 @@ const GLOSSARY = {
   long_term_smooth:{ term:'Time Smooths Volatility', body:'The stock market has never had a negative 20-year return in history. Over 1-year periods, stocks lose money about 25% of the time. Over 10-year periods, about 5% of the time. Over 20-year periods, 0% of the time. Time is your protection against short-term swings.' },
   short_term_risk: { term:'Short-Term Investment Risk', body:'If the market drops 30% right before you need the money, you don\'t have time to recover. Money needed within 5 years should stay in high-yield savings, CDs, or short-term bonds — even though returns are lower, you won\'t risk losing principal when you need it most.' },
   medium_term_mix: { term:'Medium-Term Investing', body:'For goals 5-15 years away, a 60/40 stock/bond mix has historically provided good growth with less volatility than 100% stocks. This gives you enough time to recover from a downturn while still capturing meaningful growth.' },
+  hsa_stealth:     { term:'HSA — The Stealth IRA', body:'An HSA is triple tax advantaged: contributions reduce taxable income, investments grow tax-free, and withdrawals for medical expenses are tax-free. After age 65, you can withdraw for any reason (taxed as income, like a Traditional IRA). If you have a high-deductible health plan, max this account before taxable investing.' },
 };
 
 const PHASE_INFO = {
@@ -2043,7 +2090,11 @@ function goTo(id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const navMap = {roadmap:0,'progress-screen':1,'reports-screen':2,'goals-screen':3,planupdate:0,'profile-screen':4};
   if (navMap[id] !== undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
-  document.getElementById(id).scrollTop = 0;
+  const screenEl = document.getElementById(id);
+  screenEl.scrollTop = 0;
+  const phone = document.querySelector('.phone');
+  if (phone) phone.scrollTop = 0;
+  window.scrollTo(0, 0);
   if (id === 'ob4') ob4Setup();
   if (id === 'ob-goals') setupGoalsScreen();
   // Edit mode: change header if returning to ob screen
@@ -3478,7 +3529,7 @@ function ob4Setup() {
   if (hasPartner) {
     const spouseName = state.spouseName || 'Partner';
     document.getElementById('ob4Title').textContent = 'Tell us your household income.';
-    document.getElementById('ob4YouLabel').textContent = `Your Income — ${state.name || 'You'}`;
+    document.getElementById('ob4YouLabel').textContent = `${state.name || 'Your'}'s Income`;
     document.getElementById('ob4SpouseLabel').textContent = `${spouseName}'s Income`;
     document.getElementById('hhYouLabel').textContent = state.name || 'You';
     document.getElementById('hhSpouseLabel').textContent = spouseName;
@@ -3488,8 +3539,8 @@ function ob4Setup() {
 }
 
 function ob4UpdateHouseholdPreview() {
-  const yourGross = parseFloat(document.getElementById('grossIncome').value) || 0;
-  const spouseGross = parseFloat(document.getElementById('spouseGrossIncome')?.value) || 0;
+  const yourGross = getInputNumber(document.getElementById('grossIncome'));
+  const spouseGross = getInputNumber(document.getElementById('spouseGrossIncome'));
   const hasPartner = state.lifeStage.includes('partner');
   if (!hasPartner || yourGross === 0) {
     document.getElementById('householdPreviewCard').style.display = 'none';
@@ -5017,12 +5068,15 @@ function ob4SelectFilingPill(filing) {
 
 function sp4SelectTypePill(type) {
   sp4Type = type;
-  document.getElementById('sp4TypeSelect').value = type;
-  ['sp4-w2','sp4-1099','sp4-none'].forEach(id => {
+  document.getElementById('sp4TypeSelect').value = type === 'both' ? 'both' : type;
+  ['sp4-w2','sp4-1099','sp4-both','sp4-none'].forEach(id => {
     const el = document.getElementById(id);
-    const map = {'sp4-w2':'w2','sp4-1099':'1099','sp4-none':'none'};
+    const map = {'sp4-w2':'w2','sp4-1099':'1099','sp4-both':'both','sp4-none':'none'};
     if (el) el.classList.toggle('selected', map[id] === type);
   });
+  // Show/hide "not working" note
+  const noteEl = document.getElementById('spouseNotWorkingNote');
+  if (noteEl) noteEl.style.display = type === 'none' ? 'block' : 'none';
   ob4UpdateHouseholdPreview();
 }
 
@@ -5041,6 +5095,206 @@ selectOption = function(el, group, val) {
     if (resp) { resp.textContent = CHALLENGE_RESPONSES[val]; resp.classList.add('show'); }
   }
 };
+
+// ── ASSET BOTTOM SHEET ──
+let pendingAssetType = '';
+const ASSET_TYPES_GRID = [
+  {type:'Home',icon:'🏠',color:'#F59E0B'},
+  {type:'Rental Property',icon:'🏢',color:'#8B5CF6'},
+  {type:'Vacation Home',icon:'🏖️',color:'#06B6D4'},
+  {type:'Car',icon:'🚗',color:'#6366F1'},
+  {type:'Brokerage Account',icon:'💼',color:'var(--pink)'},
+  {type:'Savings Account',icon:'🏦',color:'#10B981'},
+  {type:'Checking Account',icon:'🏧',color:'#F59E0B'},
+  {type:'Retirement Account - 401k',icon:'📊',color:'var(--navy)'},
+  {type:'Retirement Account - Roth IRA',icon:'📈',color:'#10B981'},
+  {type:'Retirement Account - IRA',icon:'📉',color:'#3B82F6'},
+  {type:'SEP IRA',icon:'🌿',color:'#8B5CF6'},
+  {type:'HSA',icon:'🏥',color:'#EF4444'},
+  {type:'Crypto',icon:'₿',color:'#F59E0B'},
+  {type:'Cash Value Life Insurance',icon:'💰',color:'#059669'},
+  {type:'Business',icon:'🏭',color:'var(--slate)'},
+  {type:'Other',icon:'❓',color:'var(--muted)'}
+];
+const LIAB_TYPES_GRID = [
+  {type:'Mortgage',icon:'🏠',color:'#F59E0B'},
+  {type:'Car Loan',icon:'🚗',color:'#6366F1'},
+  {type:'Student Loan',icon:'🎓',color:'#3B82F6'},
+  {type:'Credit Card',icon:'💳',color:'#EF4444'},
+  {type:'Personal Loan',icon:'👤',color:'var(--slate)'},
+  {type:'Medical Debt',icon:'🏥',color:'#EF4444'},
+  {type:'HELOC',icon:'🏦',color:'#8B5CF6'},
+  {type:'Business Loan',icon:'🏭',color:'var(--navy)'},
+  {type:'Other',icon:'❓',color:'var(--muted)'}
+];
+
+function openAssetSheet() {
+  pendingAssetType = '';
+  const body = document.getElementById('assetSheetBody');
+  const hasPartner = state.lifeStage.includes('partner');
+  body.innerHTML = `
+    <div class="ob-label" style="margin-bottom:4px;">Select type</div>
+    <div class="type-grid" id="assetTypeGrid">
+      ${ASSET_TYPES_GRID.map(t => `<div class="type-grid-item" onclick="selectAssetSheetType(this,'${t.type.replace(/'/g,"\\'")}')"><div class="type-grid-icon" style="background:${t.color}20;">${t.icon}</div><div class="type-grid-label">${t.type.replace('Retirement Account - ','').replace('Account','')}</div></div>`).join('')}
+    </div>
+    <div id="assetSheetDesc" style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:12px;display:none;"></div>
+    ${hasPartner ? `<div class="ob-label" style="margin-bottom:4px;">Owner</div><div class="ob-pill-row" style="margin-bottom:14px;" id="assetOwnerPills"><div class="ob-pill selected" onclick="selectAssetOwner(this,'you')">You</div><div class="ob-pill" onclick="selectAssetOwner(this,'partner')">${state.spouseName||'Partner'}</div><div class="ob-pill" onclick="selectAssetOwner(this,'joint')">Joint</div></div>` : ''}
+    <div id="assetSheetValueArea"></div>
+    <div id="assetSheetExtra"></div>
+    <button class="btn-primary" style="margin-top:16px;" onclick="submitAssetSheet()">Add Asset</button>
+    <div style="text-align:center;margin-top:8px;"><span style="font-size:13px;color:var(--muted);cursor:pointer;" onclick="closeAssetSheet()">Cancel</span></div>`;
+  document.getElementById('assetSheetBackdrop').classList.add('show');
+  document.getElementById('assetSheet').classList.add('show');
+}
+
+let pendingAssetOwner = 'you';
+function selectAssetOwner(el, owner) {
+  pendingAssetOwner = owner;
+  const pills = document.getElementById('assetOwnerPills');
+  if (pills) pills.querySelectorAll('.ob-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectAssetSheetType(el, type) {
+  pendingAssetType = type;
+  document.querySelectorAll('#assetTypeGrid .type-grid-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  const desc = ASSET_DESCS[type] || '';
+  const descEl = document.getElementById('assetSheetDesc');
+  if (descEl) { descEl.textContent = desc; descEl.style.display = desc ? 'block' : 'none'; }
+  // Render value area
+  const valArea = document.getElementById('assetSheetValueArea');
+  const extra = document.getElementById('assetSheetExtra');
+  if (type === 'Retirement Account - 401k' || type === '403b') {
+    valArea.innerHTML = `<div class="ob-label">Traditional Balance</div><div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetTradBal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:24px;padding-left:24px;"/></div><div class="ob-label">Roth Balance</div><div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetRothBal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:24px;padding-left:24px;"/></div>`;
+  } else if (type === 'HSA') {
+    valArea.innerHTML = `<div class="ob-label">HSA Balance</div><div style="font-size:11px;font-style:italic;color:var(--muted);margin-bottom:6px;">Current value in your Health Savings Account</div><div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:24px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetAssetVal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:28px;padding-left:28px;"/></div>`;
+    extra.innerHTML = `<div style="background:rgba(30,35,64,0.04);border-radius:12px;padding:12px;margin-top:10px;font-size:12px;color:var(--slate);line-height:1.5;cursor:pointer;" onclick="showTip('hsa_stealth',event)">💡 HSA is triple tax advantaged — contributions pre-tax, growth tax-free, medical withdrawals tax-free. Often called a stealth IRA.</div>`;
+  } else if (type === 'Other') {
+    valArea.innerHTML = `<div class="ob-label">What is this asset?</div><input class="ob-input" type="text" id="sheetAssetCustomName" placeholder="e.g. Collectibles, Art" style="margin-bottom:10px;border-bottom:2px solid var(--border);"/><div class="ob-label" style="margin-top:8px;">Value</div><div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:24px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetAssetVal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:28px;padding-left:28px;"/></div>`;
+  } else {
+    valArea.innerHTML = `<div class="ob-label">Value</div><div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:24px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetAssetVal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:28px;padding-left:28px;"/></div>`;
+  }
+  extra.innerHTML = '';
+  if (type === 'Rental Property' || type === 'Vacation Home') {
+    extra.innerHTML = `<div style="background:rgba(232,24,109,0.04);border:1px solid rgba(232,24,109,0.15);border-radius:12px;padding:12px;margin-top:10px;font-size:13px;color:var(--slate);">Do you have a mortgage on this property? <span style="color:var(--pink);font-weight:600;cursor:pointer;" onclick="closeAssetSheet();openLiabSheet()">+ Add linked mortgage</span></div>`;
+  }
+  if (type === 'Cash Value Life Insurance') {
+    extra.innerHTML = `<div style="background:rgba(30,35,64,0.04);border-radius:12px;padding:12px;margin-top:10px;font-size:12px;color:var(--slate);line-height:1.5;">💡 Cash value life insurance can be a powerful tax-free wealth tool for high earners who have maxed out all other tax-advantaged accounts.</div>`;
+  }
+}
+
+function submitAssetSheet() {
+  if (!pendingAssetType) return;
+  assetCount++;
+  const id = `asset_${assetCount}`;
+  const row = document.createElement('div');
+  row.className = 'al-row'; row.id = id;
+  const type = pendingAssetType;
+  const owner = pendingAssetOwner;
+  let value = 0, tradBal = 0, rothBal = 0, customName = '';
+  if (type === 'Retirement Account - 401k' || type === '403b') {
+    tradBal = getInputNumber(document.getElementById('sheetTradBal'));
+    rothBal = getInputNumber(document.getElementById('sheetRothBal'));
+    value = tradBal + rothBal;
+  } else {
+    value = getInputNumber(document.getElementById('sheetAssetVal'));
+  }
+  if (type === 'Other') customName = document.getElementById('sheetAssetCustomName')?.value || '';
+  const displayName = customName || type.replace('Retirement Account - ','');
+  const iconMap = {'Home':'🏠','Rental Property':'🏢','Vacation Home':'🏖️','Car':'🚗','Brokerage Account':'💼','Savings Account':'🏦','Checking Account':'🏧','Crypto':'₿','Business':'🏭','Cash Value Life Insurance':'💰','HSA':'🏥','SEP IRA':'🌿','Other':'❓'};
+  const icon = iconMap[type] || (type.includes('401k') ? '📊' : type.includes('Roth IRA') ? '📈' : type.includes('IRA') ? '📉' : '💎');
+  const ownerLabel = owner === 'partner' ? (state.spouseName||'Partner') : owner === 'joint' ? 'Joint' : '';
+  row.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:20px;">${icon}</span>
+    <div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:600;color:var(--navy);">${displayName}${ownerLabel ? ` <span style="font-size:10px;color:var(--muted);">${ownerLabel}</span>` : ''}</div>${tradBal || rothBal ? `<div style="font-size:11px;color:var(--muted);">Trad: ${fmt(tradBal)} · Roth: ${fmt(rothBal)}</div>` : ''}</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);">${fmt(value)}</div>
+    <button class="ob-debt-remove" onclick="removeRow('${id}');updateNetWorth()">×</button>
+  </div>
+  <input type="hidden" class="asset-type" value="${type}"/>
+  <input type="hidden" class="al-value-input" value="${value}"/>
+  ${owner !== 'you' ? `<input type="hidden" class="asset-owner" value="${owner}"/>` : ''}
+  ${tradBal ? `<input type="hidden" class="asset-trad-bal" value="${tradBal}"/>` : ''}
+  ${rothBal ? `<input type="hidden" class="asset-roth-bal" value="${rothBal}"/>` : ''}`;
+  document.getElementById('assetRows').appendChild(row);
+  updateNetWorth();
+  closeAssetSheet();
+}
+
+function closeAssetSheet() {
+  document.getElementById('assetSheetBackdrop').classList.remove('show');
+  document.getElementById('assetSheet').classList.remove('show');
+}
+
+// ── LIABILITY BOTTOM SHEET ──
+let pendingLiabType = '', pendingLiabOwner = 'you';
+function openLiabSheet() {
+  pendingLiabType = '';
+  const body = document.getElementById('liabSheetBody');
+  const hasPartner = state.lifeStage.includes('partner');
+  body.innerHTML = `
+    <div class="ob-label" style="margin-bottom:4px;">Select type</div>
+    <div class="type-grid" id="liabTypeGrid">
+      ${LIAB_TYPES_GRID.map(t => `<div class="type-grid-item" onclick="selectLiabSheetType(this,'${t.type.replace(/'/g,"\\'")}')"><div class="type-grid-icon" style="background:${t.color}20;">${t.icon}</div><div class="type-grid-label">${t.type}</div></div>`).join('')}
+    </div>
+    <div id="liabSheetDesc" style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:12px;display:none;"></div>
+    ${hasPartner ? `<div class="ob-label" style="margin-bottom:4px;">Owner</div><div class="ob-pill-row" style="margin-bottom:14px;" id="liabOwnerPills"><div class="ob-pill selected" onclick="pendingLiabOwner='you';this.parentElement.querySelectorAll('.ob-pill').forEach(p=>p.classList.remove('selected'));this.classList.add('selected')">You</div><div class="ob-pill" onclick="pendingLiabOwner='partner';this.parentElement.querySelectorAll('.ob-pill').forEach(p=>p.classList.remove('selected'));this.classList.add('selected')">${state.spouseName||'Partner'}</div><div class="ob-pill" onclick="pendingLiabOwner='joint';this.parentElement.querySelectorAll('.ob-pill').forEach(p=>p.classList.remove('selected'));this.classList.add('selected')">Joint</div></div>` : ''}
+    <div id="liabSheetValueArea"></div>
+    <button class="btn-primary" style="margin-top:16px;" onclick="submitLiabSheet()">Add Liability</button>
+    <div style="text-align:center;margin-top:8px;"><span style="font-size:13px;color:var(--muted);cursor:pointer;" onclick="closeLiabSheet()">Cancel</span></div>`;
+  document.getElementById('liabSheetBackdrop').classList.add('show');
+  document.getElementById('liabSheet').classList.add('show');
+}
+
+function selectLiabSheetType(el, type) {
+  pendingLiabType = type;
+  document.querySelectorAll('#liabTypeGrid .type-grid-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  const desc = LIABILITY_DESCS[type] || '';
+  const descEl = document.getElementById('liabSheetDesc');
+  if (descEl) { descEl.textContent = desc; descEl.style.display = desc ? 'block' : 'none'; }
+  const valArea = document.getElementById('liabSheetValueArea');
+  let extraInput = '';
+  if (type === 'Other') extraInput = `<div class="ob-label">What is this debt?</div><input class="ob-input" type="text" id="sheetLiabCustomName" placeholder="e.g. Tax lien, Family loan" style="margin-bottom:10px;border-bottom:2px solid var(--border);"/>`;
+  valArea.innerHTML = `${extraInput}
+    <div class="ob-label">Balance</div>
+    <div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetLiabBal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:24px;padding-left:24px;"/></div>
+    <div class="ob-label">Interest Rate (APR)</div>
+    <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);">%</span><input class="ob-input" type="number" id="sheetLiabAPR" placeholder="0.0" step="0.1" style="padding-left:24px;"/></div>`;
+}
+
+function submitLiabSheet() {
+  if (!pendingLiabType) return;
+  liabilityCount++;
+  const id = `liability_${liabilityCount}`;
+  const row = document.createElement('div');
+  row.className = 'al-row'; row.id = id;
+  const type = pendingLiabType;
+  const amount = getInputNumber(document.getElementById('sheetLiabBal'));
+  const apr = parseFloat(document.getElementById('sheetLiabAPR')?.value) || 0;
+  const customName = document.getElementById('sheetLiabCustomName')?.value || '';
+  const displayName = customName || type;
+  const liabIcons = {'Mortgage':'🏠','Car Loan':'🚗','Student Loan':'🎓','Credit Card':'💳','Personal Loan':'👤','Medical Debt':'🏥','HELOC':'🏦','Business Loan':'🏭','Other':'📋'};
+  const icon = liabIcons[type] || '📋';
+  row.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:20px;">${icon}</span>
+    <div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:600;color:var(--navy);">${displayName}</div>${apr > 0 ? `<span style="font-size:11px;font-weight:700;color:var(--pink);">${apr}% APR</span>` : ''}</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--pink);">−${fmt(amount)}</div>
+    <button class="ob-debt-remove" onclick="removeRow('${id}');updateNetWorth()">×</button>
+  </div>
+  <input type="hidden" class="liability-type" value="${type}"/>
+  <input type="hidden" class="al-bal" value="${amount}"/>
+  <input type="hidden" class="al-apr" value="${apr}"/>
+  ${pendingLiabOwner !== 'you' ? `<input type="hidden" class="liability-owner" value="${pendingLiabOwner}"/>` : ''}`;
+  document.getElementById('liabilityRows').appendChild(row);
+  updateNetWorth();
+  closeLiabSheet();
+}
+
+function closeLiabSheet() {
+  document.getElementById('liabSheetBackdrop').classList.remove('show');
+  document.getElementById('liabSheet').classList.remove('show');
+}
 </script>
 </body>
 </html>
