@@ -580,6 +580,29 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .risk-result-value { font-family:'DM Serif Display',serif; font-size:20px; color:var(--cream); }
 .challenge-response { display:none; background:rgba(232,24,109,0.04); border:1px solid rgba(232,24,109,0.15); border-radius:14px; padding:14px 16px; font-size:13px; color:var(--slate); line-height:1.55; margin-top:8px; animation:fadeUp 0.3s ease; }
 .challenge-response.show { display:block; }
+/* PORTFOLIO GUIDANCE CARD */
+.portfolio-card { border-radius:16px; overflow:hidden; margin-bottom:14px; border:1.5px solid var(--border); background:white; }
+.portfolio-card.conservative { border-left:4px solid #3B82F6; }
+.portfolio-card.moderate { border-left:4px solid #F59E0B; }
+.portfolio-card.aggressive { border-left:4px solid #10B981; }
+.portfolio-card-header { padding:14px 16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; touch-action:manipulation; }
+.portfolio-card-title { font-weight:700; font-size:14px; color:var(--navy); display:flex; align-items:center; gap:6px; }
+.portfolio-card-chevron { color:var(--muted); transition:transform 0.2s; font-size:14px; flex-shrink:0; }
+.portfolio-card.expanded .portfolio-card-chevron { transform:rotate(180deg); }
+.portfolio-card-body { display:none; padding:0 16px 16px; }
+.portfolio-card.expanded .portfolio-card-body { display:block; }
+.portfolio-card-actions { display:flex; flex-direction:column; gap:8px; }
+.portfolio-card-action { display:flex; align-items:flex-start; gap:8px; font-size:13px; color:var(--navy); line-height:1.45; }
+.portfolio-card-bullet { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:6px; }
+.portfolio-card-bullet.conservative { background:#3B82F6; }
+.portfolio-card-bullet.moderate { background:#F59E0B; }
+.portfolio-card-bullet.aggressive { background:#10B981; }
+.portfolio-card-compliance { font-size:11px; color:var(--muted); margin-top:12px; line-height:1.5; font-style:italic; }
+.risk-profile-pill { display:inline-flex; align-items:center; gap:5px; border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; margin-top:8px; }
+.risk-profile-pill.conservative { background:rgba(59,130,246,0.1); color:#3B82F6; }
+.risk-profile-pill.moderate { background:rgba(245,158,11,0.1); color:#B45309; }
+.risk-profile-pill.aggressive { background:rgba(16,185,129,0.1); color:#059669; }
+
 /* ROADMAP ACTION CARDS */
 .phase-action-item { background:white; border:1px solid var(--border); border-radius:12px; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--navy); line-height:1.4; margin-bottom:0; }
 .action-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; background:white; margin-top:0; }
@@ -1451,6 +1474,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   <div class="roadmap-header">
     <div class="roadmap-title" id="roadmapGreeting">Your Plan</div>
     <div class="roadmap-sub">Actions with your actual numbers</div>
+    <div id="roadmapRiskPill"></div>
   </div>
   <div class="roadmap-body" id="roadmapBody"></div>
   <p class="compliance-note" style="margin:0 28px;">Continuum is for educational purposes only. Not financial advice. Consult a licensed advisor.</p>
@@ -1819,6 +1843,16 @@ const GLOSSARY = {
   index_funds:     { term:'Index Funds', body:'A type of mutual fund or ETF that tracks a market index like the S&P 500. They offer broad diversification, low fees (0.03-0.20% vs 1%+ for active funds), and historically outperform most actively managed funds over the long term.' },
   market_timing:   { term:'Why Not to Time the Market', body:'Missing just the 10 best market days over 20 years can cut your returns in half. Staying invested through volatility is statistically better than trying to buy low and sell high. Time in the market beats timing the market.' },
   small_cap_tilt:  { term:'Small-Cap & International Tilt', body:'Small-cap stocks (smaller companies) and international stocks have historically delivered higher long-term returns than large-cap US stocks, though with more volatility. Adding 10-20% to each can boost growth for aggressive investors with long horizons.' },
+  bond_stock_bal:  { term:'Bond/Stock Balance', body:'Bonds provide stability and income with less volatility than stocks. A 40-60% bond allocation reduces portfolio swings significantly — you\'ll capture less upside in bull markets but lose less in downturns. For conservative investors, this trade-off is worth the peace of mind.' },
+  bonds_explained: { term:'Bond Funds', body:'Bonds are loans you make to governments or corporations in exchange for regular interest payments. US Treasury bonds are the safest (backed by the government). Investment-grade corporate bonds pay slightly more. Bond funds spread your money across hundreds of bonds for diversification.' },
+  dividends:       { term:'Dividend Stocks', body:'Companies that regularly pay out a portion of profits to shareholders. Dividend-paying stocks tend to be larger, more established companies with lower volatility. The income stream provides returns even when stock prices are flat, making them ideal for conservative portfolios.' },
+  ibonds:          { term:'I-Bonds & CDs', body:'I-Bonds are US government savings bonds that adjust for inflation — currently yielding around 4-5%. CDs (Certificates of Deposit) lock your money for a set period at a guaranteed rate. Both are virtually risk-free and excellent for the fixed-income portion of a conservative portfolio.' },
+  classic_6040:    { term:'The 60/40 Portfolio', body:'The classic balanced portfolio: 60% stocks for growth, 40% bonds for stability. It has historically delivered about 8% average annual returns with roughly half the volatility of an all-stock portfolio. It\'s the starting point for most moderate investors.' },
+  intl_diversify:  { term:'International Diversification', body:'US stocks make up only ~60% of global market cap. Adding international stocks (developed and emerging markets) reduces concentration in one country\'s economy. When US markets struggle, international markets sometimes do better, smoothing your overall returns.' },
+  interest_rate_risk: { term:'Interest Rate Risk', body:'When interest rates rise, existing bond prices fall. Short-term bonds are less affected than long-term bonds. Mixing short and intermediate bonds protects against rate changes while still earning reasonable yield. This matters most in rising-rate environments.' },
+  stay_the_course: { term:'Staying the Course', body:'The average investor earns 3-4% less per year than the market because they buy high (greed) and sell low (fear). Having a written plan and rebalancing mechanically — not emotionally — is the single biggest edge individual investors have.' },
+  stocks_long_term:{ term:'Why Stocks Outperform Long-Term', body:'Over any 30-year period in history, stocks have outperformed bonds, gold, and cash. The S&P 500 has returned ~10% annually since 1928. The trade-off is short-term volatility — but with 15+ years, the odds overwhelmingly favor stocks.' },
+  when_shift_conservative: { term:'When to Shift Conservative', body:'As you approach a financial goal (within 5-10 years), gradually move that money to bonds and cash. This protects gains from a poorly-timed market crash. Money you won\'t need for 15+ years can stay aggressive — time heals volatility.' },
 };
 
 const PHASE_INFO = {
@@ -1848,6 +1882,16 @@ const TERM_MAP = [
   [/index\s+fund/i,                                                          'index_funds'],
   [/market\s+timing/i,                                                       'market_timing'],
   [/small.cap|international\s+tilt/i,                                        'small_cap_tilt'],
+  [/bond.*stock\s+balance|40.*60%\s+bond/i,                                  'bond_stock_bal'],
+  [/Treasury.*corporate|high-quality\s+bond/i,                               'bonds_explained'],
+  [/dividend.paying/i,                                                        'dividends'],
+  [/I-bonds|CDs\s+for/i,                                                     'ibonds'],
+  [/60\/40|classic.*balanced/i,                                               'classic_6040'],
+  [/international\s+exposure|international\s+fund/i,                          'intl_diversify'],
+  [/interest\s+rate\s+risk/i,                                                 'interest_rate_risk'],
+  [/stay\s+the\s+course|chasing\s+performance/i,                             'stay_the_course'],
+  [/stocks\s+outperform|why\s+stocks/i,                                      'stocks_long_term'],
+  [/shift.*conservative|within\s+10\s+years/i,                               'when_shift_conservative'],
 ];
 
 // Terms shown even to intermediate users (higher-complexity only)
@@ -3796,6 +3840,69 @@ function computePlan() {
   buildRoadmap(phase, state.name);
 }
 
+// ── PORTFOLIO GUIDANCE ──
+function getPortfolioGuidance(tolerance, phase) {
+  const guides = {
+    conservative: {
+      title: 'Building a Conservative Portfolio 🛡️',
+      style: 'conservative',
+      actions: [
+        'Target 40-60% bonds, 40-60% stocks for stability with some growth',
+        'Prioritize high-quality bond funds: US Treasury, investment-grade corporate',
+        'Keep 1-2 years of expenses in cash or short-term bonds as a buffer',
+        'Focus on dividend-paying stocks for income and lower volatility',
+        'Rebalance quarterly to maintain your target allocation',
+        'Consider I-bonds or CDs for the fixed income portion',
+        'Your lower risk tolerance means prioritizing capital preservation over maximum growth'
+      ]
+    },
+    moderate: {
+      title: 'Building a Balanced Portfolio ⚖️',
+      style: 'moderate',
+      actions: [
+        'Target 60-70% stocks, 30-40% bonds for balanced growth and stability',
+        'Core holding: low-cost total market index fund for broad diversification',
+        'Add international exposure — target 20-30% of stock allocation in international funds',
+        'Bond allocation: mix of short and intermediate term to manage interest rate risk',
+        'Rebalance annually or when allocation drifts more than 5% from target',
+        'As you approach goals, gradually shift allocation more conservative',
+        'Avoid chasing performance — stay the course through market cycles'
+      ]
+    },
+    aggressive: {
+      title: 'Building an Aggressive Portfolio 🚀',
+      style: 'aggressive',
+      actions: [
+        'Target 90-100% stocks — maximize long-term growth potential',
+        'Core: low-cost total market index funds (US and international)',
+        'Consider a small-cap tilt — historically higher returns with higher volatility',
+        'Minimize bonds until within 10 years of your goal',
+        'Stay fully invested — time in market beats timing the market',
+        'Rebalance annually — resist the urge to react to market swings',
+        'Your high risk tolerance is an advantage — most people sell at the wrong time'
+      ]
+    }
+  };
+  return guides[tolerance] || null;
+}
+
+function renderPortfolioCard(guidance) {
+  if (!guidance) return '';
+  const actionsHTML = guidance.actions.map(a =>
+    `<div class="portfolio-card-action"><div class="portfolio-card-bullet ${guidance.style}"></div><span>${annotateTips(a)}</span></div>`
+  ).join('');
+  return `<div class="portfolio-card ${guidance.style}" id="portfolioCard_${guidance.style}" onclick="this.classList.toggle('expanded')">
+    <div class="portfolio-card-header">
+      <div class="portfolio-card-title">${guidance.title}</div>
+      <span class="portfolio-card-chevron">▼</span>
+    </div>
+    <div class="portfolio-card-body">
+      <div class="portfolio-card-actions">${actionsHTML}</div>
+      <div class="portfolio-card-compliance">Asset allocation suggestions are educational only. Consult a licensed advisor for personalized investment guidance.</div>
+    </div>
+  </div>`;
+}
+
 // ── PHASES ──
 function getPhases() {
   const c = state.calc;
@@ -3823,13 +3930,8 @@ function getPhases() {
     { num:2, name:'Growth', emoji:'🌱',
       desc:'Accumulate wealth intentionally through better saving, investing, and efficiency.',
       target: inc > 0 ? `Target: ${fmt(c.retirementMonthly)}/mo to retirement` : null,
-      riskNote: state.riskTolerance === 'conservative'
-        ? 'Your risk profile suggests prioritizing stable, diversified index funds with a 30–40% bond allocation to cushion volatility.'
-        : state.riskTolerance === 'aggressive'
-        ? 'Your growth-focused profile supports a stock-heavy portfolio (80%+ equities). Expect volatility — stay the course and avoid emotional selling.'
-        : state.riskTolerance === 'moderate'
-        ? 'Your balanced profile suggests a 60/40 stock-to-bond split as a solid starting point for long-term wealth building.'
-        : null,
+      riskNote: null,
+      portfolioGuidance: state.riskTolerance ? getPortfolioGuidance(state.riskTolerance, 'growth') : null,
       actions:[
         inc > 0 ? `Increase savings rate to ${c.savTarget?.label || '15–20%'} — target ${fmtSafe(c.recommendedMonthly)}/month` : 'Increase savings rate by 1–2%',
         inc > 0 ? `Contribute ${fmt(c.retirementMonthly)}/month to retirement accounts` : 'Set consistent retirement contributions',
@@ -3843,8 +3945,7 @@ function getPhases() {
           if (onlyMortgage) return 'Your debt is a mortgage — focus on investing the difference vs. accelerating payoff';
           return badTotal > 0 ? `Eliminate high-interest debt — ${fmt(badTotal)} in bad debt (APR > 4%)` : 'No high-interest debt — stay disciplined and invest the difference';
         })(),
-        'Open or fully fund taxable investment account',
-        ...(state.riskTolerance === 'aggressive' ? ['Maximize equity exposure — target 90-100% stocks in long-term accounts','Focus on low-cost index funds: total market, S&P 500, international','Avoid market timing — stay invested through volatility','Consider small-cap and international tilt for higher growth potential'] : [])
+        'Open or fully fund taxable investment account'
       ],
       hints:[
         'Even increasing by 1% of income per year adds up significantly over a career.',
@@ -3878,20 +3979,14 @@ function getPhases() {
     { num:4, name:'Optimization', emoji:'⚙️',
       desc:'Shift from more to better. Tax-aware investing and portfolio efficiency.',
       target: inc > 0 ? `Annual income: ${fmt(c.annualIncome)} — tax efficiency is now high leverage` : null,
-      riskNote: state.riskTolerance === 'conservative'
-        ? 'Your conservative profile means prioritizing capital preservation. Consider increasing bond allocation as you approach your goals.'
-        : state.riskTolerance === 'aggressive'
-        ? 'Your aggressive profile can support higher equity concentration — but actively monitor for single-stock and sector concentration risk.'
-        : state.riskTolerance === 'moderate'
-        ? 'Your moderate profile calls for annual rebalancing to maintain your target allocation across all three tax buckets.'
-        : null,
+      riskNote: null,
+      portfolioGuidance: state.riskTolerance ? getPortfolioGuidance(state.riskTolerance, 'optimization') : null,
       actions:[
         'Map your full asset mix across all accounts and tax categories',
         'Review tax diversification: pre-tax vs. Roth vs. taxable balance',
         c.totalDebt > 0 ? 'Confirm all debt is eliminated before accelerating optimization' : 'Reduce concentration risk in employer stock or single sector',
         'Align assets to time horizons (near-term vs. long-term)',
-        'Preview retirement withdrawal sequencing strategy',
-        ...(state.riskTolerance === 'aggressive' ? ['Keep aggressive allocation only in long-term accounts (15+ year horizon)','Review and rebalance annually — not more frequently'] : [])
+        'Preview retirement withdrawal sequencing strategy'
       ],
       hints:[
         'Knowing exactly what you own and where it\'s held is the foundation of tax-efficient investing.',
@@ -3924,6 +4019,14 @@ function getPhases() {
 
 function buildRoadmap(currentPhase, name) {
   document.getElementById('roadmapGreeting').textContent = `${name}'s Roadmap`;
+  // Render risk profile pill
+  const riskPillEl = document.getElementById('roadmapRiskPill');
+  if (riskPillEl) {
+    if (state.riskTolerance) {
+      const riskLabels = {conservative:'🛡️ Conservative Investor',moderate:'⚖️ Balanced Investor',aggressive:'🚀 Aggressive Investor'};
+      riskPillEl.innerHTML = `<div class="risk-profile-pill ${state.riskTolerance}">${riskLabels[state.riskTolerance]||''}</div>`;
+    } else { riskPillEl.innerHTML = ''; }
+  }
   const body = document.getElementById('roadmapBody'); body.innerHTML='';
   const phases = getPhases();
   const homeGoalActive = state.goalHome && state.goalHome.targetPrice > 0;
@@ -3938,7 +4041,8 @@ function buildRoadmap(currentPhase, name) {
     let actionsHTML='';
     if (status==='active'||status==='done') {
       const targetChip = phase.target ? `<div class="phase-target-chip">🎯 ${phase.target}</div>` : '';
-      actionsHTML = targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
+      const portfolioCardHtml = phase.portfolioGuidance ? renderPortfolioCard(phase.portfolioGuidance) : '';
+      actionsHTML = portfolioCardHtml + targetChip + `<div class="phase-actions">` + phase.actions.map((a,ai) => {
         const isNA = naArr.includes(ai);
         const checked = !isNA && state.checks[key].includes(ai);
         const textStyle = isNA ? 'text-decoration:line-through;color:#bbb;flex:1;min-width:0;' : checked ? 'text-decoration:line-through;color:var(--muted);flex:1;min-width:0;' : 'color:var(--navy);flex:1;min-width:0;';
