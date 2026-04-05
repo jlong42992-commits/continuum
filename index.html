@@ -48,61 +48,67 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .btn-secondary { background:transparent; color:var(--muted); border:none; padding:14px; font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; width:100%; margin-top:8px; touch-action:manipulation; }
 
 /* ONBOARDING */
-.ob-header { padding:56px 28px 20px; }
-.ob-step-indicator { display:flex; gap:6px; margin-bottom:28px; }
-.ob-step-dot { height:4px; border-radius:2px; background:var(--border); transition:all 0.3s; flex:1; }
-.ob-step-dot.active { background:var(--pink); }
-.ob-step-dot.done { background:var(--navy); }
-.ob-question { font-family:'DM Serif Display',serif; font-size:26px; color:var(--navy); line-height:1.25; margin-bottom:8px; }
-.ob-hint { font-size:14px; color:var(--muted); line-height:1.5; }
-.ob-body { padding:8px 28px 32px; flex:1; display:flex; flex-direction:column; gap:12px; }
-.ob-option { background:white; border:2px solid var(--border); border-radius:16px; padding:18px 20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:14px; }
-.ob-option:hover { border-color:var(--pink); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
-.ob-option.selected { border-color:var(--pink); background:#FDF0F5; }
-.ob-option-icon { width:40px; height:40px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.ob-header { padding:52px 28px 20px; }
+.ob-progress-bar { height:3px; background:var(--border); border-radius:2px; margin-bottom:32px; overflow:hidden; }
+.ob-progress-fill { height:100%; background:var(--pink); border-radius:2px; transition:width 0.5s ease; }
+.ob-step-indicator { display:none; }
+.ob-step-dot { display:none; }
+.ob-question { font-family:'DM Serif Display',serif; font-size:28px; color:var(--navy); line-height:1.2; margin-bottom:8px; letter-spacing:-0.5px; }
+.ob-hint { font-size:14px; color:var(--muted); line-height:1.6; }
+.ob-body { padding:8px 28px 32px; flex:1; display:flex; flex-direction:column; gap:14px; }
+.ob-option { background:white; border:2px solid var(--border); border-left:4px solid var(--border); border-radius:16px; padding:20px; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px; position:relative; }
+.ob-option:hover { border-color:rgba(232,24,109,0.3); transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+.ob-option.selected { border-color:rgba(232,24,109,0.3); border-left-color:var(--pink); background:rgba(232,24,109,0.04); box-shadow:0 4px 20px rgba(232,24,109,0.1); }
+.ob-option.selected::after { content:'✓'; position:absolute; right:16px; top:50%; transform:translateY(-50%); width:24px; height:24px; border-radius:50%; background:var(--pink); color:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+.ob-option-icon { width:44px; height:44px; border-radius:14px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; transition:all 0.2s; }
 .ob-option.selected .ob-option-icon { background:rgba(232,24,109,0.1); }
 .ob-option-label { font-weight:600; font-size:15px; color:var(--navy); }
-.ob-option-desc { font-size:13px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.ob-option-desc { font-size:13px; color:var(--muted); margin-top:3px; line-height:1.4; }
 .ob-footer { padding:16px 28px 40px; }
-.ob-input-group { display:flex; flex-direction:column; gap:8px; }
-.ob-label { font-size:12px; font-weight:700; color:var(--slate); letter-spacing:0.05em; text-transform:uppercase; }
+.ob-input-group { display:flex; flex-direction:column; gap:6px; }
+.ob-label { font-size:11px; font-weight:700; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
 .ob-sublabel { font-size:12px; color:var(--muted); margin-top:-4px; }
-.ob-input { background:white; border:2px solid var(--border); border-radius:14px; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--navy); outline:none; transition:border-color 0.2s; width:100%; }
-.ob-input:focus { border-color:var(--pink); }
+.ob-input { background:white; border:none; border-bottom:2px solid var(--border); border-radius:0; padding:14px 4px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--navy); outline:none; transition:all 0.2s; width:100%; }
+.ob-input:focus { border-bottom-color:var(--pink); transform:translateY(-1px); }
 .ob-input-row { display:flex; gap:10px; }
 .ob-input-row .ob-input-group { flex:1; }
 .ob-input-prefix { position:relative; }
-.ob-input-prefix .ob-input { padding-left:32px; }
-.ob-prefix-symbol { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:16px; color:var(--muted); pointer-events:none; }
-.ob-debt-row { background:white; border:1px solid var(--border); border-radius:14px; padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+.ob-input-prefix .ob-input { padding-left:24px; }
+.ob-prefix-symbol { position:absolute; left:4px; top:50%; transform:translateY(-50%); font-size:16px; color:var(--muted); pointer-events:none; }
+.ob-input-hero { font-family:'DM Serif Display',serif; font-size:36px; color:var(--navy); border:none; border-bottom:2px solid var(--border); border-radius:0; padding:12px 4px; outline:none; width:100%; background:transparent; transition:all 0.2s; }
+.ob-input-hero:focus { border-bottom-color:var(--pink); }
+.ob-input-hero::placeholder { color:var(--border); }
+.ob-debt-row { background:white; border:1px solid var(--border); border-radius:16px; padding:14px 16px; display:flex; flex-direction:column; gap:8px; }
 .ob-debt-row-top { display:flex; align-items:center; gap:8px; }
 .ob-debt-row-top input { flex:1; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--navy); background:transparent; min-width:0; }
 .ob-debt-row-bottom { display:flex; gap:8px; }
-.ob-debt-field { flex:1; display:flex; flex-direction:column; gap:3px; background:var(--cream); border-radius:8px; padding:7px 10px; }
-.ob-debt-field-label { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:0.05em; text-transform:uppercase; }
+.ob-debt-field { flex:1; display:flex; flex-direction:column; gap:3px; background:var(--cream); border-radius:10px; padding:8px 12px; }
+.ob-debt-field-label { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
 .ob-debt-field input { border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--navy); background:transparent; width:100%; }
-.ob-debt-remove { background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
-.add-debt-btn { background:transparent; border:2px dashed var(--border); border-radius:14px; padding:13px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--muted); cursor:pointer; width:100%; transition:all 0.2s; }
+.ob-debt-remove { background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px; line-height:1; flex-shrink:0; border-radius:50%; transition:all 0.2s; }
+.ob-debt-remove:hover { background:rgba(232,24,109,0.1); color:var(--pink); }
+.add-debt-btn { background:transparent; border:2px dashed var(--border); border-radius:16px; padding:16px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:var(--muted); cursor:pointer; width:100%; transition:all 0.2s; }
 .add-debt-btn:hover { border-color:var(--pink); color:var(--pink); }
 
 /* ASSETS & LIABILITIES */
-.al-section-label { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin:14px 0 8px; }
-.al-row { background:white; border:1px solid var(--border); border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+.al-section-label { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin:18px 0 10px; display:flex; align-items:center; gap:6px; }
+.al-row { background:white; border:1.5px solid var(--border); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:10px; margin-bottom:10px; transition:all 0.2s; }
+.al-row:hover { border-color:rgba(232,24,109,0.2); box-shadow:0 2px 12px rgba(0,0,0,0.04); }
 .al-row-top { display:flex; align-items:center; gap:8px; }
 .al-select { flex:1; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--navy); background:transparent; min-width:0; appearance:none; -webkit-appearance:none; cursor:pointer; }
 .al-select:invalid, .al-select option[value=""] { color:var(--muted); }
-.al-value-input { flex:1; border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--navy); background:transparent; text-align:right; min-width:60px; max-width:110px; }
+.al-value-input { flex:1; border:none; outline:none; font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; color:var(--navy); background:transparent; text-align:right; min-width:60px; }
 .al-row-bottom { display:flex; gap:8px; }
 .al-link-select { border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--navy); background:transparent; width:100%; appearance:none; -webkit-appearance:none; }
-.plaid-card { background:var(--cream); border:1.5px dashed var(--border); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; opacity:0.65; }
-.plaid-icon { font-size:20px; flex-shrink:0; }
+.plaid-card { background:linear-gradient(135deg,var(--navy),var(--slate)); border:none; border-radius:18px; padding:18px 20px; display:flex; align-items:center; gap:14px; margin-bottom:18px; opacity:1; }
+.plaid-icon { font-size:24px; flex-shrink:0; }
 .plaid-text { flex:1; min-width:0; }
-.plaid-title { font-size:13px; font-weight:700; color:var(--navy); }
-.plaid-sub { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
-.plaid-badge { font-size:10px; font-weight:700; background:var(--border); color:var(--muted); border-radius:6px; padding:3px 8px; letter-spacing:0.05em; flex-shrink:0; text-transform:uppercase; }
-.networth-card { background:var(--navy); border-radius:16px; padding:16px 20px; margin-top:16px; display:flex; justify-content:space-between; align-items:center; }
-.networth-label { font-size:11px; font-weight:700; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:0.07em; }
-.networth-value { font-size:22px; font-weight:700; color:var(--cream); font-variant-numeric:tabular-nums; }
+.plaid-title { font-size:14px; font-weight:700; color:var(--cream); }
+.plaid-sub { font-size:12px; color:rgba(245,240,232,0.6); margin-top:3px; line-height:1.4; }
+.plaid-badge { font-size:10px; font-weight:700; background:rgba(232,24,109,0.2); color:var(--pink); border-radius:8px; padding:4px 10px; letter-spacing:0.05em; flex-shrink:0; text-transform:uppercase; }
+.networth-card { background:var(--navy); border-radius:20px; padding:24px; margin-top:20px; text-align:center; }
+.networth-label { font-size:11px; font-weight:700; color:rgba(245,240,232,0.45); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; }
+.networth-value { font-family:'DM Serif Display',serif; font-size:34px; color:var(--cream); font-variant-numeric:tabular-nums; }
 
 /* RESULT */
 #result { background:var(--navy); }
@@ -133,20 +139,24 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 .numbers-divider { height:1px; background:rgba(255,255,255,0.08); margin:10px 0; }
 
 /* ROADMAP CONFIRM */
-#roadmap-confirm { background:var(--cream); }
+#roadmap-confirm { background:var(--navy); }
 .rc-header { padding:56px 28px 24px; }
-.rc-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--navy); margin-bottom:8px; line-height:1.2; }
-.rc-sub { font-size:14px; color:var(--muted); line-height:1.55; }
+.rc-title { font-family:'DM Serif Display',serif; font-size:28px; color:var(--cream); margin-bottom:8px; line-height:1.2; }
+.rc-sub { font-size:14px; color:rgba(245,240,232,0.55); line-height:1.55; }
 .rc-body { padding:0 28px 16px; flex:1; }
 .rc-phase-group { margin-bottom:22px; }
-.rc-phase-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; gap:7px; }
-.rc-item { background:white; border:1.5px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:8px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:border-color 0.15s,background 0.15s; touch-action:manipulation; }
-.rc-item.selected { border-color:var(--navy); background:rgba(30,35,64,0.03); }
-.rc-checkbox { width:22px; height:22px; border-radius:7px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; margin-top:1px; }
-.rc-item.selected .rc-checkbox { background:var(--navy); border-color:var(--navy); }
+.rc-phase-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,240,232,0.35); margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+.rc-item { background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.1); border-radius:14px; padding:14px 16px; margin-bottom:8px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:all 0.2s; touch-action:manipulation; }
+.rc-item:hover { background:rgba(255,255,255,0.1); }
+.rc-item.selected { background:rgba(255,255,255,0.1); border-color:rgba(76,175,80,0.4); border-left:4px solid #4CAF50; }
+.rc-checkbox { width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s; margin-top:1px; }
+.rc-item.selected .rc-checkbox { background:#4CAF50; border-color:#4CAF50; }
 .rc-item.selected .rc-checkbox::after { content:'✓'; color:white; font-size:12px; font-weight:700; }
-.rc-item-text { font-size:13px; color:var(--navy); line-height:1.45; }
+.rc-item-text { font-size:13px; color:rgba(245,240,232,0.8); line-height:1.45; }
+.rc-item.selected .rc-item-text { color:var(--cream); }
+.rc-detected { font-size:9px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; background:rgba(76,175,80,0.2); color:#4CAF50; border-radius:4px; padding:2px 6px; margin-left:6px; }
 .rc-footer { padding:12px 28px 44px; display:flex; flex-direction:column; gap:10px; }
+.rc-footer .btn-secondary { color:rgba(245,240,232,0.5); }
 
 /* ROADMAP */
 #roadmap { background:var(--cream); }
@@ -535,10 +545,6 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 /* PROFILE EDIT BUTTONS */
 .prof-edit-btn { background:none; border:1px solid var(--border); border-radius:8px; padding:4px 10px; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:var(--pink); cursor:pointer; touch-action:manipulation; margin-left:auto; }
 
-/* OB OPTION PREMIUM */
-.ob-option { box-shadow:0 1px 4px rgba(0,0,0,0.04); transition:all 0.25s ease; }
-.ob-option.selected { box-shadow:0 4px 16px rgba(232,24,109,0.15); }
-
 /* SPLASH AUTH REDESIGN */
 .splash-auth-gradient { position:absolute; inset:0; background:linear-gradient(135deg,rgba(30,35,64,0.95) 0%,rgba(61,66,112,0.8) 40%,rgba(232,24,109,0.2) 100%); animation:gradientShift 8s ease infinite alternate; }
 @keyframes gradientShift { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
@@ -547,6 +553,33 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 
 /* SECTION DOT ACCENT */
 .section-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--pink); margin-right:6px; vertical-align:middle; }
+
+/* PREMIUM OB HELPERS */
+.ob-section-label { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--pink); margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.ob-section-dot { width:6px; height:6px; border-radius:50%; background:var(--pink); }
+.ob-pill-row { display:flex; gap:8px; }
+.ob-pill { flex:1; background:white; border:2px solid var(--border); border-radius:24px; padding:12px 8px; text-align:center; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--navy); cursor:pointer; transition:all 0.2s; touch-action:manipulation; }
+.ob-pill:hover { border-color:rgba(232,24,109,0.3); }
+.ob-pill.selected { background:var(--navy); border-color:var(--navy); color:white; }
+.ob-color-card { background:white; border:2px solid var(--border); border-left:4px solid var(--border); border-radius:16px; padding:20px; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:14px; position:relative; }
+.ob-color-card.fragile { border-left-color:transparent; }
+.ob-color-card.fragile.selected { background:rgba(239,68,68,0.04); border-left-color:#EF4444; border-color:rgba(239,68,68,0.2); }
+.ob-color-card.building { border-left-color:transparent; }
+.ob-color-card.building.selected { background:rgba(245,158,11,0.04); border-left-color:#F59E0B; border-color:rgba(245,158,11,0.2); }
+.ob-color-card.stable { border-left-color:transparent; }
+.ob-color-card.stable.selected { background:rgba(16,185,129,0.04); border-left-color:#10B981; border-color:rgba(16,185,129,0.2); }
+.ob-color-card.optimizing { border-left-color:transparent; }
+.ob-color-card.optimizing.selected { background:rgba(59,130,246,0.04); border-left-color:#3B82F6; border-color:rgba(59,130,246,0.2); }
+.ob-color-card.selected::after { content:'✓'; position:absolute; right:16px; top:50%; transform:translateY(-50%); width:24px; height:24px; border-radius:50%; background:var(--pink); color:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+.ob-quiz-block { background:white; border-radius:18px; padding:20px; border:1px solid var(--border); transition:opacity 0.4s ease, transform 0.4s ease; }
+.ob-quiz-num { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:var(--navy); color:white; font-size:12px; font-weight:700; margin-bottom:10px; }
+.ob-quiz-question { font-size:15px; font-weight:600; color:var(--navy); margin-bottom:12px; line-height:1.4; }
+.risk-result-chip { display:none; background:var(--navy); border-radius:16px; padding:14px 20px; text-align:center; margin-top:8px; animation:fadeUp 0.4s ease; }
+.risk-result-chip.show { display:block; }
+.risk-result-label { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(245,240,232,0.5); margin-bottom:4px; }
+.risk-result-value { font-family:'DM Serif Display',serif; font-size:20px; color:var(--cream); }
+.challenge-response { display:none; background:rgba(232,24,109,0.04); border:1px solid rgba(232,24,109,0.15); border-radius:14px; padding:14px 16px; font-size:13px; color:var(--slate); line-height:1.55; margin-top:8px; animation:fadeUp 0.3s ease; }
+.challenge-response.show { display:block; }
 </style>
 </head>
 <body>
@@ -596,13 +629,19 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob1">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('splash')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">Let's start with the basics.</div>
-    <div class="ob-hint">This helps us personalize your experience.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:5%"></div></div>
+    <div class="ob-question">Let's get to know you.</div>
+    <div class="ob-hint">We'll use this to personalize everything.</div>
   </div>
-  <div class="ob-body">
-    <div class="ob-input-group"><div class="ob-label">First Name</div><input class="ob-input" id="firstName" type="text" placeholder="e.g. Alex"/></div>
-    <div class="ob-input-group"><div class="ob-label">Age</div><input class="ob-input" id="userAge" type="number" placeholder="32" min="18" max="75"/></div>
+  <div class="ob-body" style="justify-content:center;gap:32px;">
+    <div class="ob-input-group">
+      <div class="ob-label">Your First Name</div>
+      <input class="ob-input-hero" id="firstName" type="text" placeholder="Your first name" autocomplete="given-name"/>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-label">Your Age</div>
+      <input class="ob-input-hero" id="userAge" type="number" placeholder="32" min="18" max="75" style="font-size:32px;"/>
+    </div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb(1)">Continue →</button></div>
 </div>
@@ -611,8 +650,8 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob2">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob1')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">What's your current life situation?</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:15%"></div></div>
+    <div class="ob-question">What's your life situation?</div>
     <div class="ob-hint">Select all that apply.</div>
   </div>
   <div class="ob-body">
@@ -624,22 +663,22 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb(2)">Continue →</button></div>
 </div>
 
-<!-- OB2.5: Spouse Details (shown only if partner selected) -->
+<!-- OB2.5: Spouse Details -->
 <div class="screen" id="ob25">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob25-risk')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:40%"></div></div>
     <div class="ob-question">Tell us about your partner.</div>
-    <div class="ob-hint">This helps us personalise protection targets, filing status, and long-term planning for both of you.</div>
+    <div class="ob-hint">We'll plan for both of you — together is better.</div>
   </div>
-  <div class="ob-body">
+  <div class="ob-body" style="justify-content:center;gap:32px;">
     <div class="ob-input-group">
       <div class="ob-label">Partner's First Name</div>
-      <input class="ob-input" id="spouseName" type="text" placeholder="e.g. Jordan"/>
+      <input class="ob-input-hero" id="spouseName" type="text" placeholder="Their name" style="font-size:28px;"/>
     </div>
     <div class="ob-input-group">
       <div class="ob-label">Partner's Age</div>
-      <input class="ob-input" id="spouseAge" type="number" placeholder="34" min="18" max="75"/>
+      <input class="ob-input-hero" id="spouseAge" type="number" placeholder="34" min="18" max="75" style="font-size:28px;"/>
     </div>
   </div>
   <div class="ob-footer">
@@ -652,25 +691,38 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob25-literacy">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob2')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">A few quick questions.</div>
-    <div class="ob-hint">Helps us explain things at the right level — no wrong answers.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:25%"></div></div>
+    <div class="ob-question">How do you think about money?</div>
+    <div class="ob-hint">No right or wrong answers — this helps us speak your language.</div>
   </div>
-  <div class="ob-body">
-    <div class="ob-label" style="margin-bottom:10px;">How comfortable are you with investing?</div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ1','beginner')"><div class="ob-option-icon">🌱</div><div><div class="ob-option-label">Beginner</div><div class="ob-option-desc">I'm still figuring out the basics</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ1','some')"><div class="ob-option-icon">📘</div><div><div class="ob-option-label">Some knowledge</div><div class="ob-option-desc">I understand the concepts but not all the details</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ1','confident')"><div class="ob-option-icon">📈</div><div><div class="ob-option-label">Confident</div><div class="ob-option-desc">I manage my own investments comfortably</div></div></div>
-    <div style="height:4px;"></div>
-    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">Do you know the difference between a Roth and Traditional IRA?</div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ2','yes')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Yes</div><div class="ob-option-desc">I understand how they're taxed differently</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ2','sort_of')"><div class="ob-option-icon">🤔</div><div><div class="ob-option-label">Sort of</div><div class="ob-option-desc">I've heard of them but I'm fuzzy on the details</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ2','no')"><div class="ob-option-icon">❓</div><div><div class="ob-option-label">No</div><div class="ob-option-desc">Not familiar with the difference</div></div></div>
-    <div style="height:4px;"></div>
-    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">Have you ever worked with a financial advisor?</div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ3','yes')"><div class="ob-option-icon">🤝</div><div><div class="ob-option-label">Yes</div><div class="ob-option-desc">I've worked with one before</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ3','no')"><div class="ob-option-icon">🙅</div><div><div class="ob-option-label">No</div><div class="ob-option-desc">Never have</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'quizQ3','not_yet')"><div class="ob-option-icon">🔜</div><div><div class="ob-option-label">Not yet</div><div class="ob-option-desc">I'm open to it but haven't yet</div></div></div>
+  <div class="ob-body" style="gap:16px;">
+    <div class="ob-quiz-block" id="quizBlock1">
+      <div class="ob-quiz-num">01</div>
+      <div class="ob-quiz-question">How comfortable are you with investing?</div>
+      <div class="ob-pill-row">
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ1','beginner')">Beginner</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ1','some')">Some knowledge</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ1','confident')">Confident</div>
+      </div>
+    </div>
+    <div class="ob-quiz-block" id="quizBlock2" style="opacity:0.4;">
+      <div class="ob-quiz-num">02</div>
+      <div class="ob-quiz-question">Do you know the difference between a Roth and Traditional IRA?</div>
+      <div class="ob-pill-row">
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ2','yes')">Yes</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ2','sort_of')">Sort of</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ2','no')">No</div>
+      </div>
+    </div>
+    <div class="ob-quiz-block" id="quizBlock3" style="opacity:0.4;">
+      <div class="ob-quiz-num">03</div>
+      <div class="ob-quiz-question">Have you ever worked with a financial advisor?</div>
+      <div class="ob-pill-row">
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ3','yes')">Yes</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ3','no')">No</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'quizQ3','not_yet')">Not yet</div>
+      </div>
+    </div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb('literacy')">Continue →</button></div>
 </div>
@@ -679,25 +731,42 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob25-risk">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob25-literacy')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">How do you approach risk?</div>
-    <div class="ob-hint">Helps us tailor your investment recommendations — no wrong answers.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:35%"></div></div>
+    <div class="ob-question">How do you feel about risk?</div>
+    <div class="ob-hint">This shapes your investment recommendations.</div>
   </div>
-  <div class="ob-body">
-    <div class="ob-label" style="margin-bottom:10px;">If your investments dropped 20%, what would you do?</div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ1','sell')"><div class="ob-option-icon">😟</div><div><div class="ob-option-label">Sell</div><div class="ob-option-desc">I'd move to cash to stop further losses</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ1','hold')"><div class="ob-option-icon">🤝</div><div><div class="ob-option-label">Hold</div><div class="ob-option-desc">I'd stay the course and wait for recovery</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ1','buy')"><div class="ob-option-icon">🛒</div><div><div class="ob-option-label">Buy more</div><div class="ob-option-desc">I'd see it as a buying opportunity</div></div></div>
-    <div style="height:4px;"></div>
-    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">When do you expect to need this money?</div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ2','soon')"><div class="ob-option-icon">🗓️</div><div><div class="ob-option-label">Under 5 years</div><div class="ob-option-desc">I may need access to it soon</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ2','medium')"><div class="ob-option-icon">📅</div><div><div class="ob-option-label">5–15 years</div><div class="ob-option-desc">Medium-term horizon</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ2','long')"><div class="ob-option-icon">🌅</div><div><div class="ob-option-label">15+ years</div><div class="ob-option-desc">Long-term — retirement or beyond</div></div></div>
-    <div style="height:4px;"></div>
-    <div class="ob-label" style="margin-bottom:10px;margin-top:8px;">How would you describe your investment goal?</div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ3','preserve')"><div class="ob-option-icon">🏦</div><div><div class="ob-option-label">Preserve wealth</div><div class="ob-option-desc">Protect what I have, accept lower returns</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ3','balanced')"><div class="ob-option-icon">⚖️</div><div><div class="ob-option-label">Balanced growth</div><div class="ob-option-desc">Mix of stability and growth</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'riskQ3','maximize')"><div class="ob-option-icon">🚀</div><div><div class="ob-option-label">Maximize growth</div><div class="ob-option-desc">Highest long-term return, accept volatility</div></div></div>
+  <div class="ob-body" style="gap:16px;">
+    <div class="ob-quiz-block">
+      <div class="ob-quiz-num">01</div>
+      <div class="ob-quiz-question">If your investments dropped 20%, what would you do?</div>
+      <div class="ob-pill-row">
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ1','sell')">🛡️ Sell</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ1','hold')">⚖️ Hold</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ1','buy')">🚀 Buy more</div>
+      </div>
+    </div>
+    <div class="ob-quiz-block">
+      <div class="ob-quiz-num">02</div>
+      <div class="ob-quiz-question">When do you expect to need this money?</div>
+      <div class="ob-pill-row">
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ2','soon')">Under 5yr</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ2','medium')">5–15yr</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ2','long')">15+yr</div>
+      </div>
+    </div>
+    <div class="ob-quiz-block">
+      <div class="ob-quiz-num">03</div>
+      <div class="ob-quiz-question">How would you describe your investment goal?</div>
+      <div class="ob-pill-row">
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ3','preserve')">🏦 Preserve</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ3','balanced')">⚖️ Balanced</div>
+        <div class="ob-pill" onclick="selectQuizPill(this,'riskQ3','maximize')">🚀 Maximize</div>
+      </div>
+    </div>
+    <div class="risk-result-chip" id="riskResultChip">
+      <div class="risk-result-label">Your Profile</div>
+      <div class="risk-result-value" id="riskResultValue">Moderate Investor</div>
+    </div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb('risk')">Continue →</button></div>
 </div>
@@ -706,15 +775,15 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob3">
   <div class="ob-header">
     <button class="ob-back" onclick="state.lifeStage.includes('partner')?goTo('ob25'):goTo('ob25-risk')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question">Where are you financially?</div>
-    <div class="ob-hint">Rough estimates are totally fine — we're not tracking to the dollar.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:45%"></div></div>
+    <div class="ob-question">Where are you right now?</div>
+    <div class="ob-hint">Be honest — this is just your starting point.</div>
   </div>
   <div class="ob-body">
-    <div class="ob-option" onclick="selectOption(this,'stability','fragile')"><div class="ob-option-icon">😬</div><div><div class="ob-option-label">Feeling fragile</div><div class="ob-option-desc">Living paycheck to paycheck, limited buffer</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'stability','building')"><div class="ob-option-icon">🧱</div><div><div class="ob-option-label">Building stability</div><div class="ob-option-desc">Some savings, but not where I want to be</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'stability','stable')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Stable, growing</div><div class="ob-option-desc">Emergency fund in place, investing regularly</div></div></div>
-    <div class="ob-option" onclick="selectOption(this,'stability','optimizing')"><div class="ob-option-icon">📈</div><div><div class="ob-option-label">Optimizing</div><div class="ob-option-desc">Solid foundation, want to do more with what I have</div></div></div>
+    <div class="ob-color-card fragile" onclick="selectStabilityCard(this,'fragile')"><div class="ob-option-icon">😬</div><div><div class="ob-option-label">Feeling fragile</div><div class="ob-option-desc">Living paycheck to paycheck, limited buffer</div></div></div>
+    <div class="ob-color-card building" onclick="selectStabilityCard(this,'building')"><div class="ob-option-icon">🧱</div><div><div class="ob-option-label">Building stability</div><div class="ob-option-desc">Some savings, but not where I want to be</div></div></div>
+    <div class="ob-color-card stable" onclick="selectStabilityCard(this,'stable')"><div class="ob-option-icon">✅</div><div><div class="ob-option-label">Stable, growing</div><div class="ob-option-desc">Emergency fund in place, investing regularly</div></div></div>
+    <div class="ob-color-card optimizing" onclick="selectStabilityCard(this,'optimizing')"><div class="ob-option-icon">📈</div><div><div class="ob-option-label">Optimizing</div><div class="ob-option-desc">Solid foundation, want to do more with what I have</div></div></div>
   </div>
   <div class="ob-footer"><button class="btn-primary" onclick="nextOb(3)">Continue →</button></div>
 </div>
@@ -723,9 +792,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob4">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob3')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
-    <div class="ob-question" id="ob4Title">Tell us your income.</div>
-    <div class="ob-hint">We'll calculate real take-home using actual 2024 tax brackets.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:55%"></div></div>
+    <div class="ob-question" id="ob4Title">Let's talk about income.</div>
+    <div class="ob-hint">We'll calculate real take-home using 2024 tax brackets.</div>
   </div>
   <div class="ob-body">
 
@@ -734,14 +803,17 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-input-group">
       <div class="ob-label">Gross Annual Income</div>
       <div class="ob-sublabel">Total before any taxes or deductions</div>
-      <div class="ob-input-prefix"><span class="ob-prefix-symbol">$</span><input class="ob-input" id="grossIncome" type="number" placeholder="85,000" min="0" oninput="ob4UpdateHouseholdPreview()"/></div>
+      <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:28px;color:var(--muted);pointer-events:none;">$</span><input class="ob-input-hero" id="grossIncome" type="number" placeholder="0" min="0" oninput="ob4UpdateHouseholdPreview()" style="padding-left:28px;"/></div>
     </div>
     <div class="ob-input-group">
       <div class="ob-label">How do you get paid?</div>
-      <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
-        <option value="w2">🏢 W-2 — Employer withholds taxes</option>
-        <option value="1099">💼 1099 — Self-employed / contractor</option>
-        <option value="both">🔀 Both — W-2 job + 1099 income</option>
+      <div class="ob-pill-row" style="margin-top:4px;">
+        <div class="ob-pill selected" id="ob4TypeW2" onclick="ob4SelectTypePill('w2')">🏢 W-2</div>
+        <div class="ob-pill" id="ob4Type1099" onclick="ob4SelectTypePill('1099')">💼 1099</div>
+        <div class="ob-pill" id="ob4TypeBoth" onclick="ob4SelectTypePill('both')">🔀 Both</div>
+      </div>
+      <select class="ob-input" id="ob4TypeSelect" onchange="ob4SelectType(this.value)" style="display:none;">
+        <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option>
       </select>
     </div>
 
@@ -787,10 +859,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div style="height:1px;background:var(--border);margin:4px 0 4px;"></div>
     <div class="ob-input-group">
       <div class="ob-label">Filing Status</div>
-      <select class="ob-input" id="ob4FilingSelect" onchange="ob4SelectFiling(this.value)" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
-        <option value="single">Single</option>
-        <option value="married">Married Filing Jointly</option>
-        <option value="hoh">Head of Household</option>
+      <div class="ob-pill-row" style="margin-top:4px;">
+        <div class="ob-pill selected" id="ob4FilingSingle" onclick="ob4SelectFilingPill('single')">Single</div>
+        <div class="ob-pill" id="ob4FilingMarried" onclick="ob4SelectFilingPill('married')">Married</div>
+        <div class="ob-pill" id="ob4FilingHoh" onclick="ob4SelectFilingPill('hoh')">HOH</div>
+      </div>
+      <select class="ob-input" id="ob4FilingSelect" onchange="ob4SelectFiling(this.value)" style="display:none;">
+        <option value="single">Single</option><option value="married">Married Filing Jointly</option><option value="hoh">Head of Household</option>
       </select>
     </div>
     <div class="ob-input-group">
@@ -838,9 +913,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob45">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob4')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div><div class="ob-step-dot"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:65%"></div></div>
     <div class="ob-question" id="ob45Question">What are you saving today?</div>
-    <div class="ob-hint">Only include what's automated — money you intentionally set aside.</div>
+    <div class="ob-hint">Only include what's automated — intentional savings.</div>
   </div>
   <div class="ob-body">
 
@@ -905,7 +980,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-spouse-savings">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob45')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:70%"></div></div>
     <div class="ob-question" id="spouseSavingsTitle">What is your partner saving?</div>
     <div class="ob-hint">Same idea — only automated, intentional savings.</div>
   </div>
@@ -953,20 +1028,20 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob5">
   <div class="ob-header">
     <button class="ob-back" onclick="state.lifeStage.includes('partner')?goTo('ob-spouse-savings'):goTo('ob45')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
-    <div class="ob-question">Assets & Liabilities</div>
-    <div class="ob-hint">Add what you own and what you owe — we'll calculate your net worth and factor it into your plan.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:75%"></div></div>
+    <div class="ob-question">What do you own and owe?</div>
+    <div class="ob-hint">We'll calculate your net worth and factor it into your plan.</div>
   </div>
   <div class="ob-body">
 
     <!-- Plaid placeholder -->
     <div class="plaid-card">
-      <div class="plaid-icon">🔒</div>
+      <div class="plaid-icon">🔐</div>
       <div class="plaid-text">
-        <div class="plaid-title">🔗 Connect your accounts</div>
-        <div class="plaid-sub">Coming soon — automatically import your accounts and balances</div>
+        <div class="plaid-title">Connect your accounts</div>
+        <div class="plaid-sub">Automatically import balances and track changes over time</div>
       </div>
-      <div class="plaid-badge">Soon</div>
+      <div class="plaid-badge">Coming Soon</div>
     </div>
 
     <!-- ASSETS -->
@@ -993,9 +1068,9 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goals">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob5')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:85%"></div></div>
     <div class="ob-question">What are you working toward?</div>
-    <div class="ob-hint">Select everything that applies — we'll shape your plan around your goals.</div>
+    <div class="ob-hint">Select all that apply — we'll build a plan for each.</div>
   </div>
   <div class="ob-body">
     <div id="goalsGrid" style="display:flex;flex-direction:column;gap:8px;"></div>
@@ -1010,15 +1085,16 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-challenge">
   <div class="ob-header">
     <button class="ob-back" onclick="goTo('ob-goals')">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
-    <div class="ob-question">What's your biggest challenge?</div>
-    <div class="ob-hint">This helps us focus your plan on what matters most right now.</div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:90%"></div></div>
+    <div class="ob-question">What's holding you back?</div>
+    <div class="ob-hint">This helps us focus your plan on what matters most.</div>
   </div>
   <div class="ob-body">
     <div class="ob-option" onclick="selectOption(this,'challenge','prioritize')"><div class="ob-option-icon">🎯</div><div><div class="ob-option-label">Not sure what to do first</div><div class="ob-option-desc">Feeling overwhelmed by financial decisions and priorities</div></div></div>
     <div class="ob-option" onclick="selectOption(this,'challenge','debt')"><div class="ob-option-icon">💳</div><div><div class="ob-option-label">Dealing with debt</div><div class="ob-option-desc">Debt is hanging over me and I want to get free</div></div></div>
     <div class="ob-option" onclick="selectOption(this,'challenge','saving')"><div class="ob-option-icon">🐷</div><div><div class="ob-option-label">Saving consistently</div><div class="ob-option-desc">I start but can't seem to stick with it</div></div></div>
     <div class="ob-option" onclick="selectOption(this,'challenge','future')"><div class="ob-option-icon">🔭</div><div><div class="ob-option-label">Planning for the future</div><div class="ob-option-desc">Not sure if I'm on track for retirement or big goals</div></div></div>
+    <div class="challenge-response" id="challengeResponse"></div>
   </div>
   <div class="ob-footer">
     <button class="btn-primary" onclick="buildPlan()">Build My Plan →</button>
@@ -1030,7 +1106,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-home">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Let's plan your home purchase. 🏡</div>
     <div class="ob-hint">We'll calculate exactly how much you need to save and build it into your roadmap.</div>
   </div>
@@ -1073,7 +1149,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-baby">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Let's plan for your little one. 👶</div>
     <div class="ob-hint">We'll estimate startup costs and ongoing expenses to factor into your plan.</div>
   </div>
@@ -1118,7 +1194,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-college">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Let's plan for college. 🎓</div>
     <div class="ob-hint">We'll project costs with inflation and calculate your monthly savings target.</div>
   </div>
@@ -1166,7 +1242,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-debt">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Let's tackle your debt. 💳</div>
     <div class="ob-hint">We'll calculate exactly what it costs to pay this off and how much interest you'll save.</div>
   </div>
@@ -1211,7 +1287,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-retire">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Let's calculate your FIRE number. 🌅</div>
     <div class="ob-hint">We'll use the 4% rule to estimate how much you need to retire — and how to get there.</div>
   </div>
@@ -1245,7 +1321,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-business">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Let's plan your business launch. 🚀</div>
     <div class="ob-hint">We'll calculate the personal runway you need before you make the leap.</div>
   </div>
@@ -1287,7 +1363,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
 <div class="screen" id="ob-goal-trip">
   <div class="ob-header">
     <button class="ob-back" onclick="goBackFromGoal()">← Back</button>
-    <div class="ob-step-indicator"><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot done"></div><div class="ob-step-dot active"></div></div>
+    <div class="ob-progress-bar"><div class="ob-progress-fill" style="width:92%"></div></div>
     <div class="ob-question">Tell us about your dream trip. ✈️</div>
     <div class="ob-hint">We'll calculate a simple monthly savings target to make it happen.</div>
   </div>
@@ -3865,7 +3941,7 @@ function showRoadmapConfirm() {
     }
     const items = actions.map((a, ai) => {
       const preChecked = isAutoChecked(phase.num, a);
-      return `<div class="rc-item${preChecked?' selected':''}" data-phase="${phase.num}" data-idx="${ai}" onclick="this.classList.toggle('selected')"><div class="rc-checkbox"></div><div class="rc-item-text">${a}</div></div>`;
+      return `<div class="rc-item${preChecked?' selected':''}" data-phase="${phase.num}" data-idx="${ai}" onclick="this.classList.toggle('selected')"><div class="rc-checkbox"></div><div class="rc-item-text">${a}${preChecked?'<span class=\'rc-detected\'>detected</span>':''}</div></div>`;
     }).join('');
     body.innerHTML += `<div class="rc-phase-group"><div class="rc-phase-label">${phase.emoji} ${phase.name}</div>${items}</div>`;
   });
@@ -4446,6 +4522,72 @@ const _origBuildPlan = buildPlan;
 
 // ── ROADMAP PHASE CLASSES ──
 const PHASE_CLASSES = ['','foundation','growth','protection','optimization','legacy'];
+
+// ── PREMIUM QUIZ/PILL HELPERS ──
+function selectQuizPill(el, group, val) {
+  const parent = el.closest('.ob-quiz-block') || el.closest('.ob-pill-row');
+  if (parent) parent.querySelectorAll('.ob-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  state[group] = val;
+  // Reveal next quiz block
+  if (group === 'quizQ1') { const b2 = document.getElementById('quizBlock2'); if (b2) b2.style.opacity = '1'; }
+  if (group === 'quizQ2') { const b3 = document.getElementById('quizBlock3'); if (b3) b3.style.opacity = '1'; }
+  // Show risk result if all 3 risk questions answered
+  if (['riskQ1','riskQ2','riskQ3'].includes(group)) {
+    if (state.riskQ1 && state.riskQ2 && state.riskQ3) {
+      const scores = { riskQ1:{sell:0,hold:1,buy:2}, riskQ2:{soon:0,medium:1,long:2}, riskQ3:{preserve:0,balanced:1,maximize:2} };
+      let total = 0;
+      ['riskQ1','riskQ2','riskQ3'].forEach(q => { if (state[q] && scores[q][state[q]] !== undefined) total += scores[q][state[q]]; });
+      const profile = total <= 2 ? 'Conservative' : total <= 4 ? 'Moderate' : 'Aggressive';
+      const emoji = total <= 2 ? '🛡️' : total <= 4 ? '⚖️' : '🚀';
+      const chip = document.getElementById('riskResultChip');
+      const val2 = document.getElementById('riskResultValue');
+      if (chip && val2) { val2.textContent = `${emoji} ${profile} Investor`; chip.classList.add('show'); }
+    }
+  }
+}
+
+function selectStabilityCard(el, val) {
+  document.querySelectorAll('#ob3 .ob-color-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.stability = val;
+}
+
+// OB4 pill helpers
+function ob4SelectTypePill(type) {
+  ob4Type = type;
+  document.getElementById('ob4TypeSelect').value = type;
+  ['ob4TypeW2','ob4Type1099','ob4TypeBoth'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('selected', id === 'ob4Type' + (type === 'w2' ? 'W2' : type === '1099' ? '1099' : 'Both'));
+  });
+}
+
+function ob4SelectFilingPill(filing) {
+  ob4Filing = filing;
+  document.getElementById('ob4FilingSelect').value = filing;
+  ['ob4FilingSingle','ob4FilingMarried','ob4FilingHoh'].forEach(id => {
+    const el = document.getElementById(id);
+    const map = {ob4FilingSingle:'single',ob4FilingMarried:'married',ob4FilingHoh:'hoh'};
+    if (el) el.classList.toggle('selected', map[id] === filing);
+  });
+}
+
+// Challenge response
+const CHALLENGE_RESPONSES = {
+  prioritize: "You're not alone — most people feel overwhelmed. We'll give you a clear sequence so you always know what's next.",
+  debt: "Debt creates drag on everything else. We'll build an aggressive payoff plan and show you exactly when you'll be free.",
+  saving: "Consistency beats intensity. We'll set up a system that makes saving automatic — willpower not required.",
+  future: "The hardest part is not knowing if you're on track. We'll calculate your exact numbers so there's no guessing."
+};
+const _origSelectOption = selectOption;
+selectOption = function(el, group, val) {
+  _origSelectOption(el, group, val);
+  if (group === 'challenge' && CHALLENGE_RESPONSES[val]) {
+    const resp = document.getElementById('challengeResponse');
+    if (resp) { resp.textContent = CHALLENGE_RESPONSES[val]; resp.classList.add('show'); }
+  }
+};
 </script>
 </body>
 </html>
