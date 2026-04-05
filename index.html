@@ -882,6 +882,13 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
           <select class="ob-input" id="sp4TypeSelect" onchange="sp4SelectType(this.value)" style="display:none;">
             <option value="w2">W-2</option><option value="1099">1099</option><option value="both">Both</option><option value="none">Not working</option>
           </select>
+          <div id="sp4BothSubInputs" style="display:none;margin-top:10px;background:var(--cream);border-radius:12px;padding:12px;">
+            <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;">INCOME BREAKDOWN</div>
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;"><div class="ob-label" style="font-size:10px;">W-2 portion</div><div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);">$</span><input class="ob-input" type="text" inputmode="numeric" id="sp4W2Portion" placeholder="0" oninput="formatNumberInput(this);syncSpouseBothIncome()" style="padding-left:22px;font-size:14px;"/></div></div>
+              <div style="flex:1;"><div class="ob-label" style="font-size:10px;">1099 portion</div><div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);">$</span><input class="ob-input" type="text" inputmode="numeric" id="sp41099Portion" placeholder="0" oninput="formatNumberInput(this);syncSpouseBothIncome()" style="padding-left:22px;font-size:14px;"/></div></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -972,7 +979,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <!-- RETIREMENT ACCOUNTS -->
     <div class="ob-label" style="margin-bottom:10px;">Retirement Accounts</div>
     <div id="retirementAccountRows"></div>
-    <button class="add-debt-btn" onclick="addRetirementRow()" style="margin-bottom:16px;">+ Add a retirement account</button>
+    <button class="add-debt-btn" onclick="openSavSheet('primary')" style="margin-bottom:16px;">+ Add a retirement account</button>
 
     <!-- AUTO SAVINGS -->
     <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
@@ -1037,9 +1044,10 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="ob-hint">Same idea — only automated, intentional savings.</div>
   </div>
   <div class="ob-body">
+    <div style="background:rgba(30,35,64,0.04);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--slate);line-height:1.55;">💰 Same idea — what does your partner put away automatically each month?</div>
     <div class="ob-label" style="margin-bottom:10px;">Retirement Accounts</div>
     <div id="spouseRetirementRows"></div>
-    <button class="add-debt-btn" onclick="addSpouseRetirementRow()" style="margin-bottom:16px;">+ Add a retirement account</button>
+    <button class="add-debt-btn" onclick="openSavSheet('spouse')" style="margin-bottom:16px;">+ Add a retirement account</button>
 
     <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
     <div class="ob-label" style="margin-bottom:6px;">Does your partner auto-transfer to savings?</div>
@@ -1678,6 +1686,14 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
   <div class="bottom-sheet-handle"></div>
   <div class="bottom-sheet-title">Add a Liability</div>
   <div class="bottom-sheet-body" id="liabSheetBody"></div>
+</div>
+
+<!-- SAVINGS BOTTOM SHEET -->
+<div class="bottom-sheet-backdrop" id="savSheetBackdrop" onclick="closeSavSheet()"></div>
+<div class="bottom-sheet" id="savSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-title" id="savSheetTitle">Add Retirement Account</div>
+  <div class="bottom-sheet-body" id="savSheetBody"></div>
 </div>
 
 <!-- TOOLTIP POPUP -->
@@ -5074,9 +5090,19 @@ function sp4SelectTypePill(type) {
     const map = {'sp4-w2':'w2','sp4-1099':'1099','sp4-both':'both','sp4-none':'none'};
     if (el) el.classList.toggle('selected', map[id] === type);
   });
-  // Show/hide "not working" note
+  // Show/hide "not working" note and "both" sub-inputs
   const noteEl = document.getElementById('spouseNotWorkingNote');
   if (noteEl) noteEl.style.display = type === 'none' ? 'block' : 'none';
+  const bothEl = document.getElementById('sp4BothSubInputs');
+  if (bothEl) bothEl.style.display = type === 'both' ? 'block' : 'none';
+  ob4UpdateHouseholdPreview();
+}
+function syncSpouseBothIncome() {
+  const w2 = getInputNumber(document.getElementById('sp4W2Portion'));
+  const c1099 = getInputNumber(document.getElementById('sp41099Portion'));
+  const total = w2 + c1099;
+  const mainInput = document.getElementById('spouseGrossIncome');
+  if (mainInput) { mainInput.value = total > 0 ? total.toLocaleString() : ''; mainInput.dataset.raw = String(total); }
   ob4UpdateHouseholdPreview();
 }
 
@@ -5256,11 +5282,20 @@ function selectLiabSheetType(el, type) {
   const valArea = document.getElementById('liabSheetValueArea');
   let extraInput = '';
   if (type === 'Other') extraInput = `<div class="ob-label">What is this debt?</div><input class="ob-input" type="text" id="sheetLiabCustomName" placeholder="e.g. Tax lien, Family loan" style="margin-bottom:10px;border-bottom:2px solid var(--border);"/>`;
+  // Build asset link options
+  let assetLinkOpts = '<option value="">None</option>';
+  document.querySelectorAll('#assetRows .al-row').forEach((row, idx) => {
+    const t = row.querySelector('.asset-type')?.value || 'Asset';
+    const v = row.querySelector('.al-value-input')?.value;
+    assetLinkOpts += `<option value="${idx}">${t}${v ? ' ($'+Number(v).toLocaleString()+')' : ''}</option>`;
+  });
+  const hasAssets = document.querySelectorAll('#assetRows .al-row').length > 0;
   valArea.innerHTML = `${extraInput}
     <div class="ob-label">Balance</div>
     <div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:20px;color:var(--muted);">$</span><input class="ob-input-hero" type="text" inputmode="numeric" id="sheetLiabBal" placeholder="0" oninput="formatNumberInput(this)" style="font-size:24px;padding-left:24px;"/></div>
     <div class="ob-label">Interest Rate (APR)</div>
-    <div style="position:relative;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);">%</span><input class="ob-input" type="number" id="sheetLiabAPR" placeholder="0.0" step="0.1" style="padding-left:24px;"/></div>`;
+    <div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);">%</span><input class="ob-input" type="number" id="sheetLiabAPR" placeholder="0.0" step="0.1" style="padding-left:24px;"/></div>
+    ${hasAssets ? `<div class="ob-label">Linked Asset</div><select class="ob-input" id="sheetLiabLinkedAsset" style="margin-top:4px;">${assetLinkOpts}</select>` : ''}`;
 }
 
 function submitLiabSheet() {
@@ -5272,6 +5307,7 @@ function submitLiabSheet() {
   const type = pendingLiabType;
   const amount = getInputNumber(document.getElementById('sheetLiabBal'));
   const apr = parseFloat(document.getElementById('sheetLiabAPR')?.value) || 0;
+  const linkedAsset = document.getElementById('sheetLiabLinkedAsset')?.value || '';
   const customName = document.getElementById('sheetLiabCustomName')?.value || '';
   const displayName = customName || type;
   const liabIcons = {'Mortgage':'🏠','Car Loan':'🚗','Student Loan':'🎓','Credit Card':'💳','Personal Loan':'👤','Medical Debt':'🏥','HELOC':'🏦','Business Loan':'🏭','Other':'📋'};
@@ -5285,6 +5321,7 @@ function submitLiabSheet() {
   <input type="hidden" class="liability-type" value="${type}"/>
   <input type="hidden" class="al-bal" value="${amount}"/>
   <input type="hidden" class="al-apr" value="${apr}"/>
+  <input type="hidden" class="al-link-select" value="${linkedAsset}"/>
   ${pendingLiabOwner !== 'you' ? `<input type="hidden" class="liability-owner" value="${pendingLiabOwner}"/>` : ''}`;
   document.getElementById('liabilityRows').appendChild(row);
   updateNetWorth();
@@ -5294,6 +5331,98 @@ function submitLiabSheet() {
 function closeLiabSheet() {
   document.getElementById('liabSheetBackdrop').classList.remove('show');
   document.getElementById('liabSheet').classList.remove('show');
+}
+
+// ── SAVINGS BOTTOM SHEET ──
+let savSheetTarget = 'primary'; // 'primary' or 'spouse'
+let pendingSavType = '';
+const SAV_TYPES_GRID = [
+  {type:'401k / 403b',icon:'🏢',color:'var(--navy)',desc:'Pre-tax workplace retirement account'},
+  {type:'Roth 401k',icon:'🟢',color:'#10B981',desc:'After-tax workplace account — tax-free withdrawals'},
+  {type:'Roth IRA',icon:'📈',color:'#10B981',desc:'After-tax — withdrawals in retirement are tax-free'},
+  {type:'Traditional IRA',icon:'📉',color:'#3B82F6',desc:'Pre-tax or after-tax depending on your income'},
+  {type:'SEP IRA',icon:'🌿',color:'#8B5CF6',desc:'For self-employed — up to 25% of net earnings'},
+  {type:'HSA',icon:'🏥',color:'#EF4444',desc:'Triple tax advantage — requires high-deductible health plan'},
+  {type:'Pension',icon:'🏛️',color:'var(--slate)',desc:'Defined benefit — employer pays set amount in retirement'},
+];
+
+function openSavSheet(target) {
+  savSheetTarget = target;
+  pendingSavType = '';
+  const title = document.getElementById('savSheetTitle');
+  if (title) title.textContent = target === 'spouse' ? `Add ${state.spouseName||'Partner'}'s Account` : 'Add Retirement Account';
+  const body = document.getElementById('savSheetBody');
+  const age = target === 'spouse' ? (state.spouseAge||35) : (state.age||30);
+  body.innerHTML = `
+    <div class="ob-label" style="margin-bottom:4px;">Account Type</div>
+    <div class="type-grid" id="savTypeGrid">
+      ${SAV_TYPES_GRID.map(t => `<div class="type-grid-item" onclick="selectSavSheetType(this,'${t.type.replace(/'/g,"\\'")}')"><div class="type-grid-icon" style="background:${t.color}20;">${t.icon}</div><div class="type-grid-label">${t.type.replace(' / 403b','')}</div></div>`).join('')}
+    </div>
+    <div id="savSheetDesc" style="font-size:12px;font-style:italic;color:var(--muted);margin-bottom:8px;display:none;"></div>
+    <div id="savSheetIrsChip" style="display:none;margin-bottom:12px;"></div>
+    <div id="savSheetInputArea" style="display:none;">
+      <div class="ob-label" style="margin-bottom:6px;">Monthly Contribution</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="position:relative;flex:1;"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;">%</span><input class="ob-input" type="number" placeholder="6" min="0" max="100" style="padding-left:28px;" id="savSheetPct" oninput="syncSavSheetInput('pct')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">or</div>
+        <div style="position:relative;flex:1;"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;">$</span><input class="ob-input" type="number" placeholder="425" min="0" style="padding-left:28px;" id="savSheetAmt" oninput="syncSavSheetInput('amt')"/></div>
+        <div style="color:var(--muted);font-size:13px;flex-shrink:0;">/mo</div>
+      </div>
+    </div>
+    <button class="btn-primary" style="margin-top:16px;" onclick="submitSavSheet()">Add Account</button>
+    <div style="text-align:center;margin-top:8px;"><span style="font-size:13px;color:var(--muted);cursor:pointer;" onclick="closeSavSheet()">Cancel</span></div>`;
+  document.getElementById('savSheetBackdrop').classList.add('show');
+  document.getElementById('savSheet').classList.add('show');
+}
+
+function selectSavSheetType(el, type) {
+  pendingSavType = type;
+  document.querySelectorAll('#savTypeGrid .type-grid-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  const info = SAV_TYPES_GRID.find(t => t.type === type);
+  const descEl = document.getElementById('savSheetDesc');
+  if (descEl && info) { descEl.textContent = info.desc; descEl.style.display = 'block'; }
+  const age = savSheetTarget === 'spouse' ? (state.spouseAge||35) : (state.age||30);
+  const lim = irsLimit(type, age);
+  const chipEl = document.getElementById('savSheetIrsChip');
+  if (chipEl && lim) {
+    chipEl.innerHTML = `<span style="font-size:11px;font-weight:700;background:rgba(30,35,64,0.06);color:var(--slate);border-radius:6px;padding:3px 8px;">2025 max: ${fmt(lim)}/yr${age>=50?' (catch-up)':''}</span>`;
+    chipEl.style.display = 'block';
+  } else if (chipEl) { chipEl.style.display = 'none'; }
+  document.getElementById('savSheetInputArea').style.display = 'block';
+}
+
+function syncSavSheetInput(changedType) {
+  const gross = savSheetTarget === 'spouse' ? (state.spouseIncome||0) : (state.grossIncome||0);
+  if (gross <= 0) return;
+  const pctEl = document.getElementById('savSheetPct');
+  const amtEl = document.getElementById('savSheetAmt');
+  if (changedType === 'pct') {
+    const pct = parseFloat(pctEl.value) || 0;
+    amtEl.value = pct > 0 ? Math.round(gross * (pct / 100) / 12) : '';
+  } else {
+    const amt = parseFloat(amtEl.value) || 0;
+    pctEl.value = amt > 0 ? ((amt * 12 / gross) * 100).toFixed(1) : '';
+  }
+}
+
+function submitSavSheet() {
+  if (!pendingSavType) return;
+  const pct = parseFloat(document.getElementById('savSheetPct')?.value) || 0;
+  const amt = parseFloat(document.getElementById('savSheetAmt')?.value) || 0;
+  if (savSheetTarget === 'spouse') {
+    spouseRetRows.push({ type: pendingSavType, pct, amt });
+    renderSpouseRetRows();
+  } else {
+    retirementRows.push({ id: Date.now(), type: pendingSavType, pct, amt });
+    renderRetirementRows();
+  }
+  closeSavSheet();
+}
+
+function closeSavSheet() {
+  document.getElementById('savSheetBackdrop').classList.remove('show');
+  document.getElementById('savSheet').classList.remove('show');
 }
 </script>
 </body>
