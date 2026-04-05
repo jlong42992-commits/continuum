@@ -489,7 +489,34 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="splash-sub">A Living Financial Plan</div>
     <div class="splash-tagline">"Your financial life will change many times.<br>Your plan should change with it."</div>
     <button class="btn-primary" onclick="goTo('ob1')" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">Get Started</button>
-    <button class="btn-secondary" onclick="goTo('ob1')" style="-webkit-tap-highlight-color:transparent;">I already have an account</button>
+    <button class="btn-secondary" onclick="openLogin()" style="-webkit-tap-highlight-color:transparent;">I already have an account</button>
+  </div>
+</div>
+
+<!-- LOGIN: Returning user -->
+<div class="screen" id="login">
+  <div class="ob-header" style="padding-top:72px;">
+    <div class="ob-question">Welcome back.</div>
+    <div class="ob-hint">Your plan is saved on this device — tap below to pick up where you left off.</div>
+  </div>
+  <div class="ob-body">
+    <div id="loginSavedCard" style="display:none;">
+      <div style="background:var(--navy);border-radius:20px;padding:28px 24px;text-align:center;">
+        <div id="loginAvatar" style="width:60px;height:60px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:24px;color:white;margin:0 auto 14px;"></div>
+        <div id="loginSavedName" style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--cream);margin-bottom:4px;"></div>
+        <div id="loginSavedPhase" style="font-size:12px;color:rgba(245,240,232,0.6);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:6px;"></div>
+        <div id="loginSavedDate" style="font-size:11px;color:rgba(245,240,232,0.4);"></div>
+      </div>
+    </div>
+    <div id="loginNoSavedCard" style="display:none;background:white;border:1px solid var(--border);border-radius:16px;padding:28px 24px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:14px;">📭</div>
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px;">No saved plan found</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.55;">No plan was found on this device. Start fresh to build your personalised financial plan.</div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn-primary" id="loginContinueBtn" onclick="loadSavedPlan()" style="display:none;">Continue My Plan →</button>
+    <button class="btn-secondary" onclick="goTo('ob1')">Start Fresh Instead</button>
   </div>
 </div>
 
@@ -1308,7 +1335,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
     <div class="prog-header-title" id="progTitle">Progress</div>
     <div class="prog-header-sub" id="progSub">Here's how you're tracking across your plan.</div>
     <div class="prog-score-row">
-      <div class="prog-score-card"><div class="prog-score-val" id="progActionsVal">0</div><div class="prog-score-label">Actions Done</div></div>
+      <div class="prog-score-card"><div class="prog-score-val" id="progActionsVal">0%</div><div class="prog-score-label" id="progActionsLabel">Complete</div></div>
       <div class="prog-score-card"><div class="prog-score-val" id="progPhaseVal">—</div><div class="prog-score-label">Current Phase</div></div>
       <div class="prog-score-card"><div class="prog-score-val" id="progStreakVal">🔥 0</div><div class="prog-score-label">Momentum</div></div>
     </div>
@@ -1340,6 +1367,7 @@ body { background:#E8E3D8; font-family:'DM Sans',sans-serif; display:flex; justi
         <div class="prof-row"><div class="prof-row-icon">🧾</div><div class="prof-row-content"><div class="prof-row-label">Income Type / Filing</div><div class="prof-row-value" id="profDetailTaxType">—</div></div></div>
         <div class="prof-row"><div class="prof-row-icon">📊</div><div class="prof-row-content"><div class="prof-row-label">Effective Tax Rate</div><div class="prof-row-value" id="profDetailTaxRate">—</div></div></div>
         <div class="prof-row"><div class="prof-row-icon">🏠</div><div class="prof-row-content"><div class="prof-row-label">Monthly Expenses</div><div class="prof-row-value" id="profDetailExpenses">—</div></div></div>
+        <div class="prof-row"><div class="prof-row-icon">💰</div><div class="prof-row-content"><div class="prof-row-label">Savings Rate</div><div class="prof-row-value" id="profDetailSavingsRate">—</div></div></div>
         <div class="prof-row"><div class="prof-row-icon">💳</div><div class="prof-row-content"><div class="prof-row-label">Total Debt</div><div class="prof-row-value" id="profDetailDebt">—</div></div></div>
       </div>
     </div>
@@ -1465,6 +1493,49 @@ const state = {
   joinDate: new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),
   calc:{}, taxCalc:{}
 };
+
+// ── LOCAL STORAGE SAVE / LOAD ──
+const STORAGE_KEY = 'continuum_v1';
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, retirementRows, ts: Date.now() }));
+  } catch(e) {}
+}
+
+function tryLoadSaved() {
+  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; }
+  catch(e) { return null; }
+}
+
+function openLogin() {
+  const saved = tryLoadSaved();
+  const savedCard = document.getElementById('loginSavedCard');
+  const noCard = document.getElementById('loginNoSavedCard');
+  const btn = document.getElementById('loginContinueBtn');
+  if (saved && saved.state && saved.state.name) {
+    savedCard.style.display = 'block'; noCard.style.display = 'none'; btn.style.display = 'block';
+    document.getElementById('loginAvatar').textContent = saved.state.name[0].toUpperCase();
+    document.getElementById('loginSavedName').textContent = saved.state.name;
+    const pIdx = (saved.state.currentPhase||1)-1;
+    const pNames=['Foundation','Growth','Protection','Optimization','Legacy'];
+    const pEmojis=['🏗️','🌱','🛡️','⚙️','🌅'];
+    document.getElementById('loginSavedPhase').textContent = `${pEmojis[pIdx]||'🏗️'} ${pNames[pIdx]||'Foundation'} Phase`;
+    if (saved.ts) document.getElementById('loginSavedDate').textContent = `Last updated ${new Date(saved.ts).toLocaleDateString()}`;
+  } else {
+    savedCard.style.display = 'none'; noCard.style.display = 'block'; btn.style.display = 'none';
+  }
+  goTo('login');
+}
+
+function loadSavedPlan() {
+  const saved = tryLoadSaved();
+  if (!saved || !saved.state) return;
+  Object.assign(state, saved.state);
+  if (saved.retirementRows) retirementRows = saved.retirementRows;
+  buildRoadmap(state.currentPhase||1, state.name||'You');
+  goTo('roadmap');
+}
 
 // ── 2025 IRS CONTRIBUTION LIMITS ──
 const IRS_2025 = {
@@ -3022,7 +3093,7 @@ function buildPlan() {
   collectBusinessGoal();
   collectTripGoal();
   goTo('checking');
-  setTimeout(()=>{ computeFinancials(); computePlan(); goTo('result'); }, 2200);
+  setTimeout(()=>{ computeFinancials(); computePlan(); saveState(); goTo('result'); }, 2200);
 }
 
 // ── OB4 SELECTION HELPERS ──
@@ -3649,6 +3720,7 @@ function applyRoadmapConfirm() {
     if (!state.checks[key]) state.checks[key] = [];
     if (!state.checks[key].includes(actionIdx)) state.checks[key].push(actionIdx);
   });
+  saveState();
   goTo('roadmap');
 }
 
@@ -3682,6 +3754,7 @@ function toggleCheck(phaseNum, actionIdx) {
     naArr.splice(naArr.indexOf(actionIdx),1);
     buildRoadmap(state.currentPhase, state.name);
   }
+  saveState();
 }
 
 function showCelebration(phaseNum, actionIdx, doneCount, phase) {
@@ -3771,7 +3844,7 @@ function computeLifeChangeUpdate() {
 }
 function applyPlanUpdate() {
   if (state.pendingPhase!==undefined) state.currentPhase=state.pendingPhase;
-  buildRoadmap(state.currentPhase, state.name); goTo('roadmap');
+  buildRoadmap(state.currentPhase, state.name); saveState(); goTo('roadmap');
 }
 
 // ── PROGRESS ──
@@ -3780,10 +3853,13 @@ function openProgress() {
   const streak = Math.min(totalActions, 8);
   document.getElementById('progTitle').textContent = `${state.name||'Your'}'s Progress`;
   document.getElementById('progSub').textContent = `Tracking across all 5 phases, ${state.name||'there'}.`;
-  document.getElementById('progActionsVal').textContent = totalActions;
+  const phases = getPhases();
+  const totalAllActions = phases.reduce((s,ph) => s + ph.actions.length, 0);
+  const overallPct = totalAllActions > 0 ? Math.round((totalActions / totalAllActions) * 100) : 0;
+  document.getElementById('progActionsVal').textContent = overallPct + '%';
+  document.getElementById('progActionsLabel').textContent = `Complete · ${totalActions} done`;
   document.getElementById('progPhaseVal').textContent = state.currentPhase||1;
   document.getElementById('progStreakVal').textContent = `🔥 ${streak}`;
-  const phases = getPhases();
   const pp = document.getElementById('progPhases'); pp.innerHTML='';
   phases.forEach(ph => {
     const key=`p${ph.num}`; const done=(state.checks[key]||[]).length; const total=ph.actions.length;
@@ -3956,6 +4032,13 @@ function openProfile() {
   document.getElementById('profDetailTaxType').textContent = state.grossIncome > 0 ? `${taxTypeLabel} · ${filingLabel}` : '—';
   document.getElementById('profDetailTaxRate').textContent = state.taxCalc ? (state.taxCalc.effectiveRate * 100).toFixed(1) + '% effective · ' + (state.taxCalc.marginalRate * 100).toFixed(0) + '% marginal' : '—';
   document.getElementById('profDetailExpenses').textContent = state.monthlyExpenses > 0 ? fmt(state.monthlyExpenses)+'/month' : '—';
+  const srEl = document.getElementById('profDetailSavingsRate');
+  if (srEl) {
+    const sr = c.actualSavingsRate || 0;
+    const tgt = c.savTarget;
+    srEl.textContent = sr > 0 ? `${sr.toFixed(1)}% of gross${tgt ? ` (target: ${tgt.label})` : ''}` : '—';
+    srEl.style.color = sr > 0 ? (sr >= (tgt?.min||15) ? '#2E7D32' : 'var(--pink)') : '';
+  }
   document.getElementById('profDetailDebt').textContent = c.totalDebt > 0 ? fmt(c.totalDebt) : 'None tracked';
 
   // Targets card
